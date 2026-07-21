@@ -17,6 +17,7 @@ comentarios HTML y no se renderizan.
 <!-- Ejemplo: Atención al ciudadano en una alcaldía municipal. -->
 
 > _Escribe aquí el dominio concreto de tu proyecto._
+> 
 >  Apoyo a centros de salud rurales o regionales donde escasean los especialistas médicos.
 
 ---
@@ -34,8 +35,13 @@ Ejemplo:
   pedirle al ciudadano en el momento, en vez de mandarlo a averiguar y volver.
 -->
 
-> _¿Quién es el usuario concreto? ¿Qué decisión concreta toma distinto gracias
+> _¿Quién es el usuario concreto?
+> 
+> Un médico general rural o personal clínico de primer nivel que atiende en zonas con alta escasez de especialistas
+> 
+> ¿Qué decisión concreta toma distinto gracias
 > a tu sistema?_
+> 
 > Definir el protocolo específico de tratamiento o el tipo exacto de estudio de profundización que debe solicitarse, en lugar de arriesgarse a un retraso en la detección temprana de patologías por la falta de un especialista presencial que interprete los sintomas del paciente.
 
 ---
