@@ -24,15 +24,16 @@ comentarios HTML y no se renderizan.
 
 ## 2. Usuario + decisión
 
-> **Si la respuesta a "qué decide el usuario con esto" es "se informa", el
-> proyecto no está definido. Un sistema útil cambia una decisión concreta de
-> una persona concreta.**
+
 
 <!--
 Ejemplo:
 - Usuario: un funcionario de la ventanilla de atención.
 - Decisión que cambia: a qué dependencia enrutar un trámite y qué documentos
   pedirle al ciudadano en el momento, en vez de mandarlo a averiguar y volver.
+> **Si la respuesta a "qué decide el usuario con esto" es "se informa", el
+> proyecto no está definido. Un sistema útil cambia una decisión concreta de
+> una persona concreta.**
 -->
 
 > ¿Quién es el usuario concreto?
@@ -40,7 +41,7 @@ Ejemplo:
 > Un médico general rural o personal clínico de primer nivel que atiende en zonas con alta escasez de especialistas
 > 
 > ¿Qué decisión concreta toma distinto gracias
-> a tu sistema?_
+> a tu sistema?
 > 
 > Definir el protocolo específico de tratamiento o el tipo exacto de estudio de profundización que debe solicitarse, en lugar de arriesgarse a un retraso en la detección temprana de patologías por la falta de un especialista presencial que interprete los sintomas del paciente.
 
