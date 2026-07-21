@@ -35,7 +35,7 @@ Ejemplo:
   pedirle al ciudadano en el momento, en vez de mandarlo a averiguar y volver.
 -->
 
-> _¿Quién es el usuario concreto?
+> ¿Quién es el usuario concreto?
 > 
 > Un médico general rural o personal clínico de primer nivel que atiende en zonas con alta escasez de especialistas
 > 
