@@ -23,7 +23,7 @@ Adaptar el modelo multilingüe Sequence-to-Sequence **`google/mt5-small`** (~300
 ## 3. Dataset y Política de Splits Compartidos
 
 - **Corpus:** DisTEMIST (NER de entidades de enfermedades en español).
-- **Ruta de Entrada:** `/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M1/distemist_raw/training/`
+- **Ruta de Entrada:** `/content/drive/MyDrive/Colab Notebooks/Topicos/distemist_raw/`
   - `text_files/`: Archivos `.txt` con el texto completo de cada historia clínica.
   - `subtrack1_entities/`: Archivos `.tsv` con las menciones anotadas (offsets de inicio `off0` y fin `off1`, span y etiquetas).
 - **Partición Compartida:**
@@ -111,11 +111,11 @@ Para hacer comparable la salida generativa de mT5 con otros modelos sin inflar a
 
 ## 9. Estructura de Rutas y Persistencia en Google Drive
 
-Todas las rutas permanentes están centralizadas bajo `/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M1/`:
+Todas las rutas permanentes están centralizadas bajo `/content/drive/MyDrive/Colab Notebooks/Topicos/`:
 
 | Elemento | Ruta en Google Drive | Descripción |
 |---|---|---|
-| **Datos Crudos** | `distemist_raw/training/` | Textos `.txt` y anotaciones `.tsv` |
+| **Datos Crudos** | `distemist_raw/` | Textos `.txt` y anotaciones `.tsv` |
 | **Splits Crudos** | `distemist_final/distemist_raw_splits/` | Dataset Arrow compartido (train/dev/test) |
 | **Dataset mT5** | `distemist_final/distemist_mt5_format/` | Pares Seq2Seq listos para entrenamiento |
 | **Adaptador LoRA** | `saved_models/mt5-distemist-lora/` | Pesos `adapter_model.safetensors`, `adapter_config.json` y tokenizador |
