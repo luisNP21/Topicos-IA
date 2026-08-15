@@ -1,14 +1,4 @@
-# Plantilla de definición del proyecto integrador
-
-Completa esta plantilla con tu equipo (3–4 personas). Es el documento que hace
-crecer el proyecto módulo a módulo durante todo el semestre.
-
-> **En la Sesión 1 solo se exigen los campos 1 y 2.** El resto se completa para
-> la Sesión 2. No borres los campos vacíos: déjalos con su encabezado para
-> irlos llenando.
-
-Reemplaza cada bloque `> _...` con tu respuesta. Los ejemplos van entre
-comentarios HTML y no se renderizan.
+# Definición del proyecto integrador
 
 ---
 
@@ -16,15 +6,11 @@ comentarios HTML y no se renderizan.
 
 <!-- Ejemplo: Atención al ciudadano en una alcaldía municipal. -->
 
-> _Escribe aquí el dominio concreto de tu proyecto._
-> 
->  Apoyo a centros de salud rurales o regionales donde escasean los especialistas médicos.
+> Salud - Clínico
 
 ---
 
 ## 2. Usuario + decisión
-
-
 
 <!--
 Ejemplo:
@@ -37,13 +23,12 @@ Ejemplo:
 -->
 
 > ¿Quién es el usuario concreto?
-> 
-> Un médico general rural o personal clínico de primer nivel que atiende en zonas con alta escasez de especialistas
-> 
-> ¿Qué decisión concreta toma distinto gracias
-> a tu sistema?
-> 
-> Definir el protocolo específico de tratamiento o el tipo exacto de estudio de profundización que debe solicitarse, en lugar de arriesgarse a un retraso en la detección temprana de patologías por la falta de un especialista presencial que interprete los sintomas del paciente.
+
+Un médico o residente que está documentando un caso real (escribe una nota clínica de un paciente que tiene enfrente) y usa el sistema como asistente en ese momento.
+
+> ¿Qué decisión concreta toma distinto gracias a tu sistema?
+
+Qué sección de guía clínica o qué opción de tratamiento revisar primero para ese paciente, en vez de buscarla manualmente en el documento completo de la guía. El flujo pasa de "leo toda la guía de manejo de neumonía para encontrar la parte que aplica a este caso" a "el sistema ya me trae el fragmento relevante, ligado a lo que mencioné en la nota, y yo decido si lo sigo o no". 
 
 ---
 
@@ -52,7 +37,18 @@ Ejemplo:
 <!-- Ejemplo: clasificar el tipo de trámite a partir de la descripción libre
 del ciudadano. -->
 
-> _¿Qué tarea de ML resuelve el modelo ajustado del Módulo 1?_
+Como decisión del equipo, desarrollamos el M1 con tres modelos diferentes con las arquitecturas de abajo: 
+
+**Arquitectura Encoder:**
+* Roberta Base Biomedical: PlanTL-GOB-ES/roberta-base-biomedical-clinical-es
+* Bert Base Spanish: dccuchile/bert-base-spanish-wwm-cased
+
+**Arquitectura Encoder-Deocder:**
+* mT5 small: google/mt5-small
+
+> _¿Qué tarea de ML resuelven los modelos ajustados del Módulo 1?_
+
+Con los modelos prouestos resolvemos la tarea de NER (Named Entity Recognition o Reconocimiento de Entidades Nombradas) de nombres de enfermedades trabajando con texto clínico en español. Este es un buen primer paso para nuestro objetivo final de diagnóstico de enfermedades y sugerencia de tratameinto; en etapas posteriores se podrá conectar esta primera tarea con RAG sobre códigos de enfermedades para cerrar el ciclo completo, teniendo la ventaja de que DisTEMIST ya incluye las etiquetas Snomed-CT correspondientes a todas las enfermedades nombradas con su respectiva relación semántica.
 
 ---
 
@@ -61,7 +57,15 @@ del ciudadano. -->
 <!-- Ejemplo: 1.200 solicitudes históricas anonimizadas; licencia de uso
 interno con permiso de la entidad. -->
 
-> _¿Con qué datos entrenas/evalúas? ¿De dónde salen y bajo qué licencia?_
+> _¿Con qué datos entrenas/evalúas?_
+
+Nuestro dataset es DisTEMIST, un corpus de 1,000 casos clínicos en español de distintas especialidades médicas, anotados con menciones de enfermedad. Para este módulo usamos los 750 casos del training set, dividiéndolos en splits train/dev/test. Conectamos los textos clínicos con las entidades a través del campo doc_id, luego hicimos chunking con solapamiento de los documentos para no sobrepasar la venta de contexto de cada modelo (BERT, clinical-BERT y mT5), evitando así perder entidades por truncamiento. Como cada uno fragmenta el texto de forma distinta, calculamos una ventana de chunking específica por tokenizer, en vez de un único umbral fijo para los tres modelos. Cada fragmento conserva un doc_id derivado del documento original (caso_XXX_chunk0, caso_XXX_chunk1, etc.), lo que nos permite reagrupar las predicciones por caso clínico completo al momento de evaluar, evitando así inflar las métricas al tratar fragmentos de un mismo paciente como documentos independientes. El split train/dev/test se hizo sobre los documentos originales antes del chunking, para prevenir fuga de datos entre fragmentos de un mismo caso. Usamos únicamente el subtrack de reconocimiento de entidades (subtrack1_entities), no el de normalización a códigos SNOMED, ya que en este módulo trabajamos solo con los nombres de enfermedad mencionados en el texto. 
+
+> _¿De dónde salen y bajo qué licencia?_
+
+El corpus proviene de SPACCC (casos clínicos en español publicados en SciELO) y está disponible bajo licencia Creative Commons Attribution 4.0 (CC BY 4.0), de acceso abierto y sin necesidad de firmar un acuerdo de uso de datos.
+
+Cita: Miranda-Escalada, A., Eulàlia Farré, Luis Gasco, Salvador Lima& Martin Krallinger. (2022). DisTEMIST corpus: detection and normalization of disease mentions in spanish clinical cases (Version 5.1) [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.7614764
 
 ---
 
