@@ -30,13 +30,16 @@ La carpeta original descargada desde Zenodo debe quedar dentro de Google Drive e
 
 Dentro de esa carpeta, como mínimo, debes tener:
 
-- distemist_raw/
-  - training/
-    - text_files/
-    - subtrack1_entities/
-- distemist_final/
-- outputs/
-- saved_models/
+```
+project/
+├── distemist_raw/
+│   └── training/
+│       ├── text_files/
+│       └── subtrack1_entities/
+├── distemist_final/
+├── outputs/
+└── saved_models/
+```
 
 **Hay dos formas de subir DisTEMIST:**
 
