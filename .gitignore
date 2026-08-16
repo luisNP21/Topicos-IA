@@ -1,2 +1,8 @@
 # Backup local
 M1/mT5_pipeline_anterior/
+
+# Documentos e imágenes locales
+*.docx
+*.png
+*.jpg
+*.jpeg
