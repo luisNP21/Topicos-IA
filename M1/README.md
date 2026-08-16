@@ -18,7 +18,7 @@ En cada una de estas carpetas se guarda la ejecución específica del modelo jun
 
 A partir del análisis de resultados de los modelos implementados, seleccionamos el **Roberta Base Biomedical** como el modelo oficial para este módulo. Por esta razón, para ejecutar el modelo elegido, se pueden descargar directamente los notebooks 2 y 3 de la carpeta `clinical_BERT` y correrlos siguiendo la misma lógica del pipeline base, con la configuración adaptada a este modelo.
 
-> En el PDF `M1.pdf` se puede encontrar la explicación de principio a fin del desarrollo de este Módulo 1 junto a los resultados obtenidos.
+> En el PDF [Entrega_M1.pdf](https://github.com/luisNP21/Topicos-IA/blob/main/M1/Entrega_M1.pdf) se puede encontrar la explicación de principio a fin del desarrollo de este Módulo 1 junto a los resultados obtenidos.
 
 # Ejecución de los notebooks de M1 en Google Colab
 
