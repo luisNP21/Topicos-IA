@@ -37,7 +37,7 @@ Qué sección de guía clínica o qué opción de tratamiento revisar primero pa
 <!-- Ejemplo: clasificar el tipo de trámite a partir de la descripción libre
 del ciudadano. -->
 
-Como decisión del equipo, desarrollamos el M1 con tres modelos diferentes con las arquitecturas de abajo: 
+Como decisión del equipo, desarrollamos el M1 con tres modelos diferentes con las arquitecturas  continuación: 
 
 **Arquitectura Encoder:**
 * Roberta Base Biomedical: PlanTL-GOB-ES/roberta-base-biomedical-clinical-es
