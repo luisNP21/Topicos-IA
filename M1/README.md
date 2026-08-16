@@ -16,7 +16,7 @@ Además, dentro de la carpeta del proyecto se encuentran las ejecuciones propias
 
 En cada una de estas carpetas se guarda la ejecución específica del modelo junto con sus outputs y resultados asociados.
 
-A partir del análisis de resultados de los modelos implementados, seleccionamos el **Roberta Base Biomedical** como el modelo oficial para este módulo. Por esta razón, para ejecutar el modelo elegido, se pueden descargar directamente los notebooks 2 y 3 de la carpeta `clinical_BERT` y correrlos siguiendo la misma lógica del pipeline base, con la configuración adaptada a este modelo.
+A partir del análisis de resultados de los modelos implementados, seleccionamos **Roberta Base Biomedical** como el modelo oficial para este módulo. Por esta razón, para ejecutar el modelo elegido, se puede descargar el notebook 1 en este directorio y los notebooks 2 y 3 directamente de la carpeta `clinical_BERT` y correrlos siguiendo la misma lógica del pipeline base, con la configuración adaptada a este modelo.
 
 > En el PDF [Entrega_M1.pdf](https://github.com/luisNP21/Topicos-IA/blob/main/M1/Entrega_M1.pdf) se puede encontrar la explicación de principio a fin del desarrollo de este Módulo 1 junto a los resultados obtenidos.
 
@@ -38,9 +38,7 @@ project/
 │   └── training/
 │       ├── text_files/
 │       └── subtrack1_entities/
-├── distemist_final/
-├── outputs/
-└── saved_models/
+└── 
 ```
 
 **Hay dos formas de subir DisTEMIST:**
@@ -52,7 +50,7 @@ project/
 /content/drive/MyDrive/TopicosIA/Proyecto-Salud/M1/
 ```
 
-y asegúrate de que el nombre y la estructura interna coincidan con los nombres esperados por los notebooks, especialmente `distemist_raw` y `distemist_final`.
+y asegúrate de que el nombre y la estructura interna coincidan con los nombres esperados por los notebooks, especialmente `distemist_raw`.
 
 Si prefieres otra ruta, no importa, siempre que la uses de forma consistente en todos los notebooks. Lo importante es ajustar las rutas del código para que apunten a tu estructura real.
 
@@ -76,17 +74,17 @@ except ImportError:
 
 Eso ya está preparado para Colab. Si corres el notebook localmente, cambia la ruta manualmente.
 
-- Sigue las instrucciones en los notebooks para ajustar las variables necesarias dependiendo del caso.
+> Sigue las instrucciones en los notebooks para ajustar las variables necesarias dependiendo del caso.
 
 ## 3. Orden de ejecución
 
 ### Notebook 1: 01_dataset_preparation.ipynb
 
 **Objetivo:**
-- Cargar los datos crudos de DisTEMIST
-- Preparar el dataset base
-- Generar los splits train/dev/test
-- Guardar el resultado en la carpeta distemist_final
+- Cargar los datos crudos de DisTEMIST.
+- Preparar el dataset base.
+- Generar los splits train/dev/test.
+- Guardar el resultado en la carpeta distemist_final.
 
 **Instrucciones:**
 
@@ -110,10 +108,10 @@ FINAL_DATA_DIR = Path("/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M1/distem
 ### Notebook 2: 02_dataset_chunking_and_splits_base.ipynb
 
 **Objetivo:**
-- Cargar los splits generados por el Notebook 1
-- Definir la ventana de chunking
-- Transformar el texto en formatos adecuados para BERT/Roberta y mT5
-- Dejar los datos listos para entrenamiento
+- Cargar los splits generados por el Notebook 1.
+- Definir la ventana de chunking y elegir el tokenizador.
+- Transformar el texto en formatos adecuados para BERT/Roberta y mT5.
+- Dejar los datos listos para entrenamiento.
 
 Instrucciones explícitas:
 
