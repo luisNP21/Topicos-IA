@@ -16,7 +16,9 @@ Además, dentro de la carpeta del proyecto se encuentran las ejecuciones propias
 
 En cada una de estas carpetas se guarda la ejecución específica del modelo junto con sus outputs y resultados asociados.
 
-A partir del análisis de los resultados de los modelos implementados, seleccionamos el **Roberta Base Biomedical** como el modelo oficial para este módulo. Por esta razón, para ejecutar el modelo elegido, se pueden descargar directamente los notebooks 2 y 3 de la carpeta `clinical_BERT` y correrlos siguiendo la misma lógica del pipeline base, con la configuración adaptada a este modelo.
+A partir del análisis de resultados de los modelos implementados, seleccionamos el **Roberta Base Biomedical** como el modelo oficial para este módulo. Por esta razón, para ejecutar el modelo elegido, se pueden descargar directamente los notebooks 2 y 3 de la carpeta `clinical_BERT` y correrlos siguiendo la misma lógica del pipeline base, con la configuración adaptada a este modelo.
+
+> En el PDF `M1.pdf` se puede encontrar la explicación de principio a fin del desarrollo de este Módulo 1 junto a los resultados obtenidos.
 
 # Ejecución de los notebooks de M1 en Google Colab
 
@@ -46,7 +48,9 @@ project/
 1. Opción manual: descarga la carpeta original de DisTEMIST desde Zenodo y súbela manualmente a Google Drive en la ruta anterior.
 2. Opción con carpeta compartida del grupo: si recibes acceso a la carpeta compartida de Google Drive del grupo, crea un acceso directo a esa carpeta dentro de:
 
+```python
 /content/drive/MyDrive/TopicosIA/Proyecto-Salud/M1/
+```
 
 y asegúrate de que el nombre y la estructura interna coincidan con los nombres esperados por los notebooks, especialmente `distemist_raw` y `distemist_final`.
 
@@ -156,8 +160,3 @@ OUTPUT_DIR = Path("/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M1/outputs")
 ```
 
 6. Ejecuta todo el notebook completo.
-
-
-## 6. Resultados
-
-En el PDF `M1.pdf` se puede encontrar el PDF con la explicación de principio a fin del desarrollo de este Módulo 1 junto a los resultados obtenidos.
