@@ -1,8 +1,8 @@
 ---
-base_model: google/mt5-small
+base_model: PlanTL-GOB-ES/roberta-base-biomedical-clinical-es
 library_name: peft
 tags:
-- base_model:adapter:google/mt5-small
+- base_model:adapter:PlanTL-GOB-ES/roberta-base-biomedical-clinical-es
 - lora
 - transformers
 ---

@@ -3,7 +3,7 @@
   "alpha_pattern": {},
   "arrow_config": null,
   "auto_mapping": null,
-  "base_model_name_or_path": "google/mt5-small",
+  "base_model_name_or_path": "dccuchile/bert-base-spanish-wwm-cased",
   "bias": "none",
   "corda_config": null,
   "ensure_weight_tying": false,
@@ -22,7 +22,10 @@
   "lora_ga_config": null,
   "megatron_config": null,
   "megatron_core": "megatron.core",
-  "modules_to_save": null,
+  "modules_to_save": [
+    "classifier",
+    "score"
+  ],
   "peft_type": "LORA",
   "peft_version": "0.19.1",
   "qalora_group_size": 16,
@@ -30,11 +33,11 @@
   "rank_pattern": {},
   "revision": null,
   "target_modules": [
-    "v",
-    "q"
+    "value",
+    "query"
   ],
   "target_parameters": null,
-  "task_type": "SEQ_2_SEQ_LM",
+  "task_type": "TOKEN_CLS",
   "trainable_token_indices": null,
   "use_bdlora": null,
   "use_dora": false,
