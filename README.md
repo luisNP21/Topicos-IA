@@ -50,6 +50,8 @@ Como decisión del equipo, desarrollamos el M1 con tres modelos diferentes con l
 
 Con los modelos prouestos resolvemos la tarea de NER (Named Entity Recognition o Reconocimiento de Entidades Nombradas) de nombres de enfermedades trabajando con texto clínico en español. Este es un buen primer paso para nuestro objetivo final de diagnóstico de enfermedades y sugerencia de tratameinto; en etapas posteriores se podrá conectar esta primera tarea con RAG sobre códigos de enfermedades para cerrar el ciclo completo, teniendo la ventaja de que DisTEMIST ya incluye las etiquetas Snomed-CT correspondientes a todas las enfermedades nombradas con su respectiva relación semántica.
 
+En el documento [Entrega_M1.pdf](https://github.com/luisNP21/Topicos-IA/blob/main/M1/Entrega_M1.pdf) se encuentra la explicación a detalle del desarrollo de este módulo junto con los resultados obtenidos.
+
 ---
 
 ## 4. Dataset + licencia
