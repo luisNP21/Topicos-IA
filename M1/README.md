@@ -6,7 +6,7 @@ En esta carpeta se encuentran 3 notebooks base:
 - 02_dataset_chunking_and_splits_base.ipynb
 - 03_finetuning_base.ipynb
 
-Estos fueron el punto de partida para desarrollar el mismo pipeline con los modelos propuestos en este módulo. Fueron utilizados como base para la comparación y la implementación del flujo completo de preparación, chunking y fine-tuning.
+Estos fueron el punto de partida para desarrollar el mismo pipeline con todos los modelos propuestos en este módulo. Fueron utilizados como base para la comparación y la implementación del flujo completo de preparación, chunking y fine-tuning.
 
 Además, dentro de la carpeta del proyecto se encuentran las ejecuciones propias de cada modelo:
 
@@ -14,7 +14,7 @@ Además, dentro de la carpeta del proyecto se encuentran las ejecuciones propias
 - clinical_BERT/
 - mT5/
 
-En cada una de estas carpetas se guarda la ejecución específica del modelo junto con sus outputs y resultados asociados.
+En cada una de estas carpetas se guarda la ejecución específica del modelo junto con sus outputs y resultados asociados, además de la carpeta del modelo ajustado.
 
 A partir del análisis de resultados de los modelos implementados, seleccionamos **Roberta Base Biomedical** como el modelo oficial para este módulo. Por esta razón, para ejecutar el modelo elegido, se puede descargar el notebook 1 en este directorio y los notebooks 2 y 3 directamente de la carpeta `clinical_BERT` y correrlos siguiendo la misma lógica del pipeline base, con la configuración adaptada a este modelo.
 
