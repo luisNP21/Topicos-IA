@@ -29,10 +29,10 @@ cada dimension; el script es lo que se corre para generar el entregable final.
 
 | Notebook | Autor | Que mide | Depende de |
 |---|---|---|---|
-| `dimension1_exact_match.ipynb` | Luis | ¿La prediccion coincide caracter a caracter con el gold? | Nada (punto de partida) |
-| `dimension1b_similitud_semantica.ipynb` | Pau | ¿La prediccion es semanticamente equivalente al gold, aunque el span no coincida exacto? | Salida de Luis (reusa las mismas predicciones) |
-| `llm_judge.ipynb` | Agustin | ¿Un LLM juez califica la respuesta como buena, con controles de sesgo? | Nada (corre su propia inferencia) |
-| `harness.ipynb` | Isa | Junta las tres dimensiones anteriores en un scorecard unico con diagnostico de debilidad | Salidas de los tres notebooks anteriores |
+| `dimension1_exact_match.ipynb` | ¿La prediccion coincide caracter a caracter con el gold? | Nada (punto de partida) |
+| `dimension1b_similitud_semantica.ipynb` | ¿La prediccion es semanticamente equivalente al gold, aunque el span no coincida exacto? | Salida de Luis (reusa las mismas predicciones) |
+| `llm_judge.ipynb` | ¿Un LLM juez califica la respuesta como buena, con controles de sesgo? | Nada (corre su propia inferencia) |
+| `harness.ipynb` | Junta las tres dimensiones anteriores en un scorecard unico con diagnostico de debilidad | Salidas de los tres notebooks anteriores |
 
 **Nota importante:** `harness.ipynb` no es un cuarto analisis independiente — reimplementa
 dentro de un solo notebook la logica completa de los tres notebooks individuales (exact-match,
@@ -116,8 +116,6 @@ principal, tal como dice el propio docstring del modulo.
 ### Configuracion
 
 **`.env`** (no versionado, uno por maquina):
-
-PROJECT_ROOT=/ruta/a/TopicosIA/Proyecto-Salud
 GROQ_API_KEY=gsk_...
 
 
