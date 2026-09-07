@@ -210,10 +210,3 @@ juntas.
 - Las rutas de entrada/salida son las mismas dentro de cada sistema (notebooks entre si,
   script consigo mismo) pero **no coinciden exactamente entre notebooks y script** — ver
   pendiente 2.
-- `chunking.window_words`/`overlap_words` estan hardcodeados a proposito para que coincidan
-  con los valores usados durante el entrenamiento en M1 (comentario explicito en
-  `config.yaml`: "NO recalcular aca") — ver pendiente 1, el valor actual no coincide con lo
-  reportado en la entrega de M1.
-- El unico punto no determinista en todo el sistema es el LLM juez: aun con
-  `judge_temperature: 0.0`, la API externa no garantiza el mismo output byte a byte entre
-  corridas.
