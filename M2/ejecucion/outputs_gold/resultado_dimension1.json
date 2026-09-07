@@ -1,0 +1,1894 @@
+{
+  "dimension": "metrica_clasica_exact_match",
+  "rol": "luis",
+  "modelo": "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es",
+  "adaptador_lora": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M1/saved_models/clinical_bert-distemist-lora",
+  "gold_set": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/eval_harness/gold_examples_20.jsonl",
+  "n_ejemplos_evaluados": 20,
+  "metrics": {
+    "precision": 0.7222222222222222,
+    "recall": 0.731457800511509,
+    "f1": 0.7268106734434563,
+    "tp": 286,
+    "fp": 110,
+    "fn": 105
+  },
+  "true_by_doc": {
+    "ex_0": [
+      "adenopatías",
+      "adenopatías bilaterales en las cadenas iliacas interna y externa y en las cadenas inguinales",
+      "adenopatías bilaterales ilíacas e inguinales",
+      "afectación de las cadenas ganglionares",
+      "brucelosis",
+      "carcinoma verrugoso de buscke-lowenstein",
+      "condiloma acuminado gigante de buschke-lowenstein",
+      "herida de la incisión de linfadenectomía",
+      "hipogonadismo hipergonadotrópico",
+      "infiltraba igualmente los tejidos pubianos, el escroto",
+      "infiltración de la grasa del tejido celular subcutáneo de la pared interna de los muslos ni de la grasa del periné",
+      "infiltración metastásica",
+      "infiltrar también la fascia del músculo aductor",
+      "lesiones óseas en las ramas isquio-ileo-pubianas",
+      "lesión",
+      "lesión penoescrotal",
+      "lesión tumoral",
+      "linfogranuloma venéreo",
+      "lúes",
+      "masa tumoral",
+      "metástasis de carcinoma",
+      "metástasis tumorales",
+      "orificio fistuloso",
+      "pene una lesión tumoral exofítica",
+      "sarcoma infectado",
+      "tumor",
+      "tumor benigno",
+      "ulceración en el surco balanoprepucial"
+    ],
+    "ex_1": [
+      "acidosis metabólica",
+      "alcalosis respiratoria",
+      "bacteriemia asociada a streptococcus epidermidis meticilin-resistente",
+      "bacteriemia por catéter",
+      "broncoaspiración",
+      "carcinoma epidermoide orofaríngeo",
+      "derrame pleural",
+      "diabetes mellitus",
+      "diarrea por clostridium difficile",
+      "disfagia",
+      "endocarditis",
+      "fallo pre-renal con hiponatremia",
+      "fallo renal agudo",
+      "fibrilación auricular paroxística",
+      "hipernatremia",
+      "hipertensión",
+      "hipertensión arterial",
+      "hiponatremia hipoosmolar",
+      "intoxicación por vancomicina",
+      "neumonía bilo-bar por broncoaspiración",
+      "sangrado asociado a tumoración faríngea",
+      "siadh",
+      "siadh paraneoplásico",
+      "síndrome de secreción inadecuada de hormona antidiurética (siadh) paraneoplásico",
+      "síndrome guillen-barré"
+    ],
+    "ex_2": [
+      "apéndices auriculares bilaterales",
+      "baja implantación del pabellón auditivo",
+      "bifidez piélica",
+      "bifidez renal derecha",
+      "bronquiolitis",
+      "coloboma localizado en el ojo",
+      "dilataciones ureterales bilaterales no obstructivos",
+      "dilatación de la uretra posterior",
+      "dilatación ureteral bilateral",
+      "granulomas cutáneos",
+      "hidronefrosis bilateral",
+      "hipertensión",
+      "hipoplasia mandibular",
+      "infección respiratoria",
+      "micrognatismo",
+      "patología heredo-familiar",
+      "patología heredo-familiar, renal",
+      "reflujo vésico-ureteral",
+      "rubéola",
+      "toxoplasmosis",
+      "uretero-hidronefrosis bilateral",
+      "urosepsis",
+      "vejiga trabeculada",
+      "válvulas de la uretra posterior"
+    ],
+    "ex_3": [
+      "anemia",
+      "fibrosis en el parénquima pulmonar",
+      "gripe a y b",
+      "hematotoxicidad por el tratamiento previo de linezolid",
+      "histoplasmosis",
+      "infección por vih",
+      "infección viral",
+      "insuficiencia renal grave",
+      "insuficiencia respiratoria",
+      "insuficiencia respiratoria refractaria secundaria a síndrome de distrés respiratorio agudo",
+      "ir aguda",
+      "ir progresiva",
+      "nefrotoxicidad",
+      "neumomediastino",
+      "neumonía extrahospitalaria grave",
+      "neumonía organizativa",
+      "neumonía por adenovirus con síndrome de distrés respiratorio agudo",
+      "neumotórax bilateral",
+      "sangrado intraalveolar",
+      "shock séptico",
+      "síndrome de distrés respiratorio agudo",
+      "síndrome renopulmonar autoinmune",
+      "vasculitis"
+    ],
+    "ex_4": [
+      "abuso de cocaína",
+      "accidente isquémico transitorio",
+      "aneurisma de arteria renal",
+      "arritmia cardíaca",
+      "dilatación aórtica",
+      "dilatación del tracto urinario",
+      "discinesia miocárdica",
+      "embolismo",
+      "enfermedad protrombótica y vascular",
+      "enfermedad sistémica",
+      "episodios embólicos",
+      "episodios tromboembólicos",
+      "hematuria macroscópica",
+      "hepatitis b o c",
+      "hipertensión",
+      "isquemia",
+      "isquemia miocárdica aguda",
+      "litiasis urinaria",
+      "macro/ microaneurismas o alteraciones de la arteria renal principal o aorta",
+      "patología del aparato valvular cardiaco",
+      "valvulopatía",
+      "vegetaciones valvulares"
+    ],
+    "ex_5": [
+      "adenopatías",
+      "adenopatías celiacas",
+      "adenopatías en el área subcarinal, supraclavicular",
+      "adenopatías en retroperitoneo, área retrocrural y cadena iliaca",
+      "carcinoma de célula pequeña tipo “oat-cell” ulcerado e infiltrante",
+      "carcinoma de células pequeñas tipo oat-cell",
+      "carcinoma tipo oat-cell",
+      "cicatriz subcostal derecha e infraumbilical",
+      "disfagia moderada",
+      "fumadora",
+      "hernia de hiato",
+      "infiltraba esófago",
+      "invasión pleural",
+      "lesión a nivel de tercio medio de esófago",
+      "lesión ocupante de espacio a nivel pulmonar",
+      "metástasis hepáticas bilobulares",
+      "neoplasia",
+      "neoplasia a nivel del tercio medio esofágico",
+      "polimiomatosis uterina",
+      "quiste esplénico",
+      "tumor primario"
+    ],
+    "ex_6": [
+      "adenopatías inguinales",
+      "adenopatías locoregionales",
+      "carcinoma papilar del tiroides",
+      "condrosarcoma",
+      "condrosarcoma de alto grado",
+      "cáncer de mama",
+      "diabetes mellitus 2",
+      "enfermedad coronaria",
+      "hiperglicemia",
+      "hipertensión arterial",
+      "infección del tracto urinario",
+      "lesión tumoral",
+      "liposarcoma bien diferenciado",
+      "liposarcoma bien diferenciado (lipoma-like",
+      "liposarcoma desdiferenciado",
+      "liposarcoma desdiferenciado de cordón espermático",
+      "neoplasia maligna de origen mesenquimal y sarcomatosa",
+      "recidiva tumoral",
+      "respuesta inflamatoria sistémica",
+      "tumor cerebral"
+    ],
+    "ex_7": [
+      "acidosis metabólica",
+      "afectación polirradicular sensitivo-motora",
+      "alcalosis respiratoria",
+      "alteraciones del equilibrio ácido-base",
+      "atrofia corticosubcortical",
+      "caa",
+      "cetoacidosis alcohólica",
+      "cuadro maníaco relacionado con ingesta alcohólica",
+      "debilidad facial bilateral",
+      "déficits electrolíticos",
+      "etilismo crónico activo",
+      "hepatopatía alcohólica",
+      "hipernatremia",
+      "hipo-fosfatemia severa",
+      "hipofosfatemia",
+      "hipokaliemia severas",
+      "hipomagnesemia leve",
+      "hipopotasemia",
+      "patología endocraneal aguda",
+      "polirradiculoneurittis aguda sensitivo-motora axonal secundarios a hipo-fosfatemia severa"
+    ],
+    "ex_8": [
+      "anasarca",
+      "anemia de trastornos crónicos severa",
+      "anemización",
+      "cuadros suboclusivos",
+      "desnutrición por síndrome malabsortivo",
+      "desnutrición proteico-calórica grave",
+      "estenosis ureteral",
+      "hipoalbuminemia grave",
+      "infección del tracto urinario",
+      "malnutrición",
+      "obstrucción intestinal",
+      "pielonefritis de repetición",
+      "reflujo alcalino",
+      "sangrado digestivo",
+      "síndrome de inmovilidad",
+      "tbc renal",
+      "úlcera gástrica",
+      "úlceras en región sacra",
+      "úlceras por presión en región sacra y talones"
+    ],
+    "ex_9": [
+      "adenocarcinoma cecal",
+      "autolisis pancreática y peripancreática",
+      "colangiolitis",
+      "coma",
+      "fallo multiorgánico",
+      "hepatitis aguda",
+      "hepatitis isquémica",
+      "hepatomegalia",
+      "infiltración de serosa y grasa perivascular",
+      "infiltración linfática y venular",
+      "insuficiencia hepática",
+      "lesiones cerebrales",
+      "lesiones hepáticas",
+      "lesiones hepáticas ocupantes de espacio",
+      "mts",
+      "mts en ganglios locorregionales infradiafragmáticos",
+      "mts en ganglios locorregionales infradiafragmáticos y en parénquima pulmonar",
+      "mts hepáticas",
+      "tumor primario"
+    ],
+    "ex_10": [
+      "adenopatía de carcinoma escamoso moderadamente diferenciado",
+      "adenopatía inguinal",
+      "adenopatías",
+      "adenopatías inguinales",
+      "carcinoma escamoso",
+      "carcinoma escamoso de uretra con adenopatía inguinal",
+      "colección de 3 cm entre uretra y cuerpos cavernosos",
+      "herida inguinal",
+      "hernia inguinal",
+      "hernia inguinal derecha incarcerada",
+      "itu febril",
+      "lesiones cutáneas",
+      "lesiones nodulares cutáneas en pubis y muslo",
+      "lesión pulmonar",
+      "lesión subpleural en lóbulo superior del pulmón",
+      "letàlides",
+      "letálides",
+      "metástasis",
+      "seroma subcicatricial a nivel inguinal"
+    ],
+    "ex_11": [
+      "absceso en la pared abdominal",
+      "adenocarcinoma",
+      "adenocarcinoma de colon moderadamente diferenciado",
+      "adenopatías retroperitoneales",
+      "afectación ganglionar",
+      "carcinoma de colon",
+      "carcinoma de colon descendente",
+      "cordón espermático derecho palpamos otra lesión",
+      "epidídimo derecho, una lesión nodular",
+      "implantes mesentéricos, hepáticos",
+      "lesiones",
+      "lesiones crónicas fibrocicatriciales en tórax",
+      "lesión heterogénea, con zonas sólidas y quísticas, a nivel de cuerpo del epidídimo",
+      "metástasis de un adenocarcinoma",
+      "mo",
+      "neoformaciones epiteliales malignas con estructuras glandulares",
+      "nódulos pulmonares",
+      "prostatismo",
+      "síndrome depresivo"
+    ],
+    "ex_12": [
+      "ascitis, secundaria a peritonitis por echerichia coli",
+      "calcificación peritoneal",
+      "esclerosis y calcificación de toda la membrana peritoneal",
+      "eventración peritoneal en el orificio del catéter",
+      "hiperparatiroidismo grave",
+      "hipogonadismo",
+      "infección de túnel por el estafilococo",
+      "insuficiencia renal",
+      "isquemia aguda en miembro inferior",
+      "obesidad",
+      "obstrucción femoropoplítea",
+      "peritonitis",
+      "peritonitis por echerichia coli",
+      "peritonitis, causada por dos gérmenes (staphilococcus epidermidis y pseudomona aeruginosa",
+      "polidactilia",
+      "retinitis pigmentaria",
+      "retraso mental",
+      "síndrome de laurence-moon-biell",
+      "trombosis venosa"
+    ],
+    "ex_13": [
+      "abscesos en músculos paravertebrales y psoas",
+      "abscesos epidurales localizadas en l4-l5 y en d12-l4",
+      "abscesos epidurales, psoas y musculatura dorso-lumbar",
+      "artritis séptica poliarticular",
+      "cólicos nefríticos de repetición",
+      "diabetes mellitus tipo 2",
+      "edema óseo",
+      "espondilitis",
+      "espondilodiscitis",
+      "fibrilación auricular con respuesta ventricular rápida",
+      "hiperbilirrubinemia",
+      "hipertensión arterial",
+      "infección de partes blandas",
+      "infección urinaria por e. coli",
+      "osteoporosis",
+      "parada cardiorrespiratoria",
+      "proceso inflamatorio-infeccioso",
+      "rotura disco l4-l5"
+    ],
+    "ex_14": [
+      "abcedificación del parénquima renal y del tejido adiposo perirenal",
+      "adenocarcinoma",
+      "adenocarcinoma de tipo intestinal",
+      "anemia normocítica normocrómica",
+      "arbol piélico presenta contenido purulento y se identifican cálculos",
+      "atrofia marcada del parénquima renal",
+      "cálculos radiopacos localizados en el riñón",
+      "dilatación del árbol pielo-calicial",
+      "enfermedades de tipo urológico",
+      "fibrilación auricular",
+      "formaciones litiásicas de gran tamaño localizadas en la pelvis renal",
+      "hematuria microscópica",
+      "insuficiencia cardiaca",
+      "metaplasia glandular del epitelio urotelial",
+      "neoplasia",
+      "neoplasia invade el tejido conjuntivo subepitelial",
+      "pionefrosis"
+    ],
+    "ex_15": [
+      "alergias medicamentosas",
+      "celda submaxilar izquierda, con áreas de necrosis o abscesificación",
+      "componente adenopático",
+      "esteatosis hepática",
+      "fractura del brazo",
+      "infiltración linfomatosa",
+      "lesión intranasal",
+      "linfoma nk extraganglionar tipo nasal",
+      "mielofibrosis",
+      "mononucleosis infecciosa",
+      "obesidad mórbida",
+      "obstrucción nasal",
+      "obstrucción nasal izquierda",
+      "quiste paralateronasal",
+      "trombocitemia esencial",
+      "trombocitosis reactiva",
+      "tumoración submandibular evidenciaba una infiltración masiva por células neoplásicas de estirpe linfoide"
+    ],
+    "ex_16": [
+      "absceso",
+      "adenopatías en cadena mesentérica, iliacas e inguinales",
+      "anemia",
+      "deshidratación",
+      "enfermedad de crohn con afectación ileal y perianal",
+      "enfermedad perianal",
+      "fracaso renal",
+      "fístula perianal",
+      "hipotenso",
+      "insuficiencia renal",
+      "insuficiencia renal multifactorial",
+      "lesión perirrectal",
+      "neoplasia",
+      "orificio fistuloso en glúteo",
+      "plasmocitoma plasmoblástico con predominio de cadenas ligeras tipo lamda que infiltraba íleon terminal y ciego, raíz del mesenterio, ganglios linfáticos abdominales y médula ósea",
+      "sepsis"
+    ],
+    "ex_17": [
+      "alérgico",
+      "asma bronquial",
+      "carcinoma suprarrenal",
+      "cólico renal",
+      "diabético",
+      "esofagitis péptica",
+      "feocromocitoma",
+      "feocromocitoma maligno",
+      "fumador",
+      "gastroenteritis aguda",
+      "hernia de hiato",
+      "leve hiponatremia",
+      "masa suprarrenal",
+      "trombo tumoral en una vena",
+      "tumoración en glándula suprarrenal"
+    ],
+    "ex_18": [
+      "alérgico a las sulfamidas",
+      "carcinoma embrionario",
+      "infiltración vascular ni linfática",
+      "invasión vascular ni linfática",
+      "microcalcificaciones en testículo",
+      "neoplasia",
+      "neoplasia intratubular de células germinales",
+      "orquiepididimitis",
+      "seminoma de 0,5 cm que infiltra cápsula",
+      "teratoma",
+      "testículo atrófico",
+      "tumor de células germinales mixto de 2 cm formado por carcinoma embrionario y focos de teratoma",
+      "tumor germinal no seminomatoso",
+      "tumor testicular",
+      "varicocele"
+    ],
+    "ex_19": [
+      "crisis convulsivas",
+      "embarazo molar",
+      "fumadora",
+      "hematomas en hombro y glúteo",
+      "hemorragia intraventricular",
+      "hidrocefalia fetal bilateral",
+      "hidrocefalia grave",
+      "hidrocefalia grave secundaria a hemorragia intraventricular",
+      "líquido cefalorraquídeo hemorrágico",
+      "macrocefalia con fontanela anterior a tensión",
+      "meningitis",
+      "oligoamnios",
+      "tfna",
+      "tombocitopenia grave",
+      "ventriculitis"
+    ]
+  },
+  "pred_by_doc": {
+    "ex_0": [
+      "adenopatías",
+      "adenopatías bilaterales en las cadenas iliacas interna y externa y en las cadenas inguinales",
+      "adenopatías bilaterales ilíacas e inguinales",
+      "carcinoma verrugoso de",
+      "condiloma acuminado gigante",
+      "ganglio linfático",
+      "hipogonadismo hipergonadotrópico",
+      "infiltración metastásica",
+      "lesiones óseas en las ramas isquio-ileo-pubianas",
+      "lesión",
+      "lesión penoescrotal",
+      "lesión tumoral",
+      "lesión tumoral exofítica",
+      "linfogranuloma venéreo",
+      "masa sólida infiltraba el pene, el escroto",
+      "masa tumoral",
+      "metástasis de carcinoma",
+      "metástasis tumorales",
+      "necrosis parcial de una pequeña zona de la herida de la incisión de linfadenectomía",
+      "pene afectaba a",
+      "sarcoma infectado",
+      "tumor",
+      "tumor benigno",
+      "ulceración en el surco balanoprepucial"
+    ],
+    "ex_1": [
+      "acidosis metabólica",
+      "alcalosis respiratoria",
+      "bacteriemia asociada a streptococcus epidermidis meticilin-resistente",
+      "bacteriemia por catéter",
+      "carcinoma epidermoide orofaríngeo",
+      "derrame pleural izquierdo",
+      "diabetes mellitus",
+      "diarrea",
+      "diarrea por clostridium difficile",
+      "disfagia intensa",
+      "endocarditis",
+      "fallo pre-renal",
+      "fallo renal agudo",
+      "fibrilación auricular paroxística",
+      "hipernatremia",
+      "hipertensión",
+      "hipertensión arterial",
+      "hiponatremia",
+      "hiponatremia hipoosmolar",
+      "intoxicación por vancomicina",
+      "neumonía bilo-bar por broncoaspiración",
+      "siadh paraneoplásico",
+      "siadh) paraneoplásico",
+      "síndrome de secreción inadecuada de hormona antidiurética",
+      "síndrome guillen-barré",
+      "tumoración faríngea"
+    ],
+    "ex_2": [
+      "alteraciones",
+      "alteraciones vertebrales",
+      "alteraciones óseas",
+      "apéndices auriculares bilaterales",
+      "baja implantación del pabellón auditivo",
+      "bifidez piélica",
+      "bifidez renal",
+      "bronquiolitis",
+      "coloboma localizado en el ojo",
+      "cuadro de",
+      "dilataciones ureterales bilaterales",
+      "dilatación de la uretra posterior",
+      "dilatación ureteral bilateral",
+      "granulomas cutáneos",
+      "hipertensión",
+      "hipoplasia mandibular",
+      "infección respiratoria",
+      "micrognatismo con",
+      "patología heredo-familiar, renal",
+      "reflujo vésico-ureteral",
+      "rubéola inmune",
+      "toxoplasmosis no inmune",
+      "uretero-hidronefrosis bilateral",
+      "urosepsis",
+      "vejiga trabeculada",
+      "válvulas de la uretra posterior"
+    ],
+    "ex_3": [
+      "anemia progresiva",
+      "cuadro",
+      "fibrosis en el parénquima pulmonar",
+      "hematotoxicidad",
+      "histoplasmosis",
+      "infección por vih",
+      "infección viral",
+      "insuficiencia renal grave",
+      "insuficiencia respiratoria",
+      "insuficiencia respiratoria refractaria",
+      "ir",
+      "ir aguda",
+      "ir progresiva",
+      "nefrotoxicidad",
+      "neumomediastino",
+      "neumonía extrahospitalaria grave",
+      "neumonía organizativa",
+      "neumonía por adenovirus",
+      "neumotórax bilateral",
+      "plaquetopenia",
+      "shock séptico",
+      "shock séptico y nefrotoxicidad",
+      "síndrome de distrés respiratorio agudo",
+      "síndrome de distrés respiratorio agudo secundario",
+      "síndrome renopulmonar autoinmune",
+      "vasculitis"
+    ],
+    "ex_4": [
+      "abuso de cocaína",
+      "accidente isquémico transitorio",
+      "alteraciones de la arteria renal principal o aorta",
+      "aneurisma de arteria renal",
+      "arritmia cardíaca",
+      "dilatación aórtica",
+      "dilatación del tracto urinario",
+      "discinesia miocárdica",
+      "déficit funcional de la unidad renal",
+      "embolismo",
+      "enfermedad protrombótica y vascular",
+      "enfermedad sistémica",
+      "episodios embólicos",
+      "episodios tromboembólicos",
+      "hematuria",
+      "hepatitis b o c",
+      "hipertensión",
+      "isquemia miocárdica aguda",
+      "litiasis urinaria",
+      "macro",
+      "microaneurismas",
+      "patología del aparato valvular cardiaco",
+      "proceso isquémico",
+      "valvulopatía",
+      "vegetaciones valvulares"
+    ],
+    "ex_5": [
+      "adenopatías",
+      "adenopatías celiacas",
+      "adenopatías en el área subcarinal, supraclavicular izquierda",
+      "adenopatías en retroperitoneo, área retrocrural y cadena iliaca derecha",
+      "carcinoma de célula pequeña tipo “oat-cell” ulcerado e infiltrante",
+      "carcinoma de células pequeñas tipo oat-cell",
+      "carcinoma tipo oat-cell",
+      "cicatriz subcostal derecha e infraumbilical continentes",
+      "disfagia moderada a sólidos",
+      "fumadora",
+      "hernia de hiato",
+      "invasión pleural",
+      "lesión",
+      "lesión a nivel de tercio medio de esófago",
+      "lesión ocupante de espacio a nivel pulmonar",
+      "lesión plana y ulcerada",
+      "metástasis hepáticas bilobulares",
+      "neoplasia",
+      "neoplasia a nivel del tercio medio esofágico",
+      "polimiomatosis uterina",
+      "quiste esplénico",
+      "tumor primario",
+      "tumoración esofágica vegetante y ulcerada"
+    ],
+    "ex_6": [
+      "adenopatías inguinales",
+      "adenopatías locoregionales",
+      "carcinoma papilar del tiroides",
+      "condrosarcoma",
+      "condrosarcoma de alto grado",
+      "cáncer de mama",
+      "diabetes mellitus 2",
+      "enfermedad coronaria",
+      "hiperglicemia",
+      "hipertensión arterial",
+      "infección del tracto urinario",
+      "lesión tumoral",
+      "lipoma-like",
+      "liposarcoma bien diferenciado",
+      "liposarcoma desdiferenciado",
+      "liposarcoma desdiferenciado de cordón espermático",
+      "neoplasia maligna de origen mesenquimal y sarcomatosa",
+      "recidiva tumoral",
+      "respuesta inflamatoria sistémica",
+      "tumor",
+      "tumor cerebral"
+    ],
+    "ex_7": [
+      "acidosis metabólica",
+      "afectación polirradicular sensitivo-motora de predominio axonal severa de extremidades inferiores (eeii",
+      "alcalosis respiratoria",
+      "atrofia corticosubcortical",
+      "caa",
+      "cetoacidosis alcohólica",
+      "cuadro maníaco relacionado",
+      "déficits",
+      "déficits electrolíticos",
+      "etilismo crónico activo",
+      "hepatopatía alcohólica secundaria",
+      "hipernatremia",
+      "hipo-fosfatemia severa",
+      "hipofosfatemia e",
+      "hipokaliemia severas",
+      "hipomagnesemia leve",
+      "hipopotasemia",
+      "patología endocraneal aguda",
+      "polirradiculoneurittis aguda sensitivo-motora axonal secundarios a",
+      "síndrome confusional"
+    ],
+    "ex_8": [
+      "anasarca",
+      "anemia de trastornos crónicos severa",
+      "cuadros suboclusivos",
+      "desnutrición por síndrome malabsortivo",
+      "desnutrición proteico-calórica grave",
+      "estenosis ureteral",
+      "incontinencia urinaria",
+      "infección del tracto urinario",
+      "malnutrición con hipoalbuminemia grave",
+      "obstrucción intestinal",
+      "pielonefritis",
+      "reflujo alcalino",
+      "sangrado digestivo",
+      "síndrome de inmovilidad",
+      "tbc renal",
+      "úlcera gástrica",
+      "úlceras en región sacra",
+      "úlceras por presión en región sacra y talones"
+    ],
+    "ex_9": [
+      "adenocarcinoma cecal",
+      "autolisis pancreática y peripancreática",
+      "colangiolitis",
+      "coma",
+      "fallo multiorgánico",
+      "hepatitis aguda",
+      "hepatitis isquémica asociada",
+      "hepatomegalia",
+      "infiltración linfática y venular",
+      "insuficiencia hepática",
+      "lesiones cerebrales",
+      "lesiones de",
+      "lesiones hepáticas",
+      "lesiones hepáticas ocupantes",
+      "mts",
+      "mts en ganglios locorregionales infradiafragmáticos y en parénquima pulmonar",
+      "mts hepáticas",
+      "mts hepáticas extensas",
+      "tumor primario"
+    ],
+    "ex_10": [
+      "adenopatía de carcinoma escamoso moderadamente diferenciado",
+      "adenopatía inguinal",
+      "adenopatías",
+      "adenopatías inguinales",
+      "carcinoma escamoso",
+      "carcinoma escamoso de uretra",
+      "colección de",
+      "colección de 3 cm entre uretra y cuerpos cavernosos",
+      "extravasado en uretra peneana proximal",
+      "globo vesical",
+      "herida inguinal",
+      "hernia inguinal",
+      "itu febril",
+      "lesiones",
+      "lesiones cutáneas",
+      "lesiones nodulares cutáneas en pubis y muslo derecho",
+      "lesión pulmonar",
+      "lesión subpleural en lóbulo superior del pulmón derecho",
+      "metástasis",
+      "seroma subcicatricial a nivel inguinal derecho"
+    ],
+    "ex_11": [
+      "absceso en la pared abdominal",
+      "adenocarcinoma",
+      "adenocarcinoma de colon moderadamente diferenciado, que infiltra hasta la grasa subserosa",
+      "adenopatías retroperitoneales",
+      "afectación",
+      "carcinoma de colon",
+      "carcinoma de colon descendente",
+      "implantes mesentéricos, hepáticos",
+      "infiltración",
+      "lesiones",
+      "lesiones crónicas fibrocicatriciales en tórax",
+      "lesión",
+      "lesión heterogénea",
+      "lesión nodular",
+      "metástasis de un adenocarcinoma posiblemente de colon",
+      "neoformaciones epiteliales malignas",
+      "nódulos",
+      "prostatismo",
+      "síndrome depresivo"
+    ],
+    "ex_12": [
+      "ascitis",
+      "calcificación peritoneal",
+      "esclerosis y calcificación de toda la membrana peritoneal",
+      "eventración peritoneal en el orificio del catéter",
+      "hiperparatiroidismo grave",
+      "hipogonadismo con",
+      "infección de túnel por el estafilococo",
+      "insuficiencia renal",
+      "isquemia aguda en miembro inferior derecho",
+      "membrana",
+      "obesidad",
+      "obstrucción femoropoplítea",
+      "peritonitis",
+      "peritonitis por echerichia coli",
+      "polidactilia",
+      "retinitis pigmentaria",
+      "retraso mental",
+      "síndrome de laurence-moon-biell",
+      "trombosis venosa"
+    ],
+    "ex_13": [
+      "abscesos en músculos paravertebrales y psoas derechos",
+      "abscesos epidurales localizadas en l4-l5 y en d12-l4",
+      "abscesos epidurales, psoas y musculatura dorso-lumbar",
+      "artritis séptica poliarticular",
+      "colecciones",
+      "cólicos nefríticos de repetición",
+      "descompensación glucémica",
+      "diabetes mellitus tipo 2",
+      "espondilitis",
+      "espondilodiscitis",
+      "fibrilación auricular con respuesta ventricular rápida",
+      "hiperbilirrubinemia",
+      "hipertensión arterial",
+      "infección de partes blandas",
+      "infección urinaria por e. coli",
+      "osteoporosis",
+      "parada cardiorrespiratoria",
+      "proceso inflamatorio-infeccioso",
+      "rotura disco l4-l5"
+    ],
+    "ex_14": [
+      "adenocarcinoma",
+      "adenocarcinoma de tipo intestinal",
+      "anemia normocítica normocrómica",
+      "atrofia marcada del parénquima renal",
+      "cálculos",
+      "dilatación del árbol pielo-calicial",
+      "dilatación del árbol pielo-calicial y",
+      "enfermedades de tipo urológico",
+      "fibrilación auricular",
+      "formaciones litiásicas de gran tamaño localizadas en la pelvis renal",
+      "hematuria",
+      "insuficiencia cardiaca asociada a",
+      "metaplasia glandular del epitelio urotelial",
+      "neoplasia invade el tejido conjuntivo subepitelial",
+      "neoplasia presenta",
+      "pionefrosis"
+    ],
+    "ex_15": [
+      "adenopático",
+      "alergias medicamentosas",
+      "diseminación a distancia",
+      "esteatosis hepática",
+      "fractura del brazo",
+      "granulomas",
+      "infiltración linfomatosa",
+      "infiltración masiva por células neoplásicas de estirpe linfoide",
+      "lesión",
+      "lesión intranasal",
+      "linfoma nk extraganglionar tipo nasal",
+      "linfoma nk extraganglionar tipo nasal en estadio localizado",
+      "mielofibrosis",
+      "mononucleosis infecciosa",
+      "obesidad mórbida",
+      "obstrucción nasal",
+      "quiste paralateronasal",
+      "trombocitemia esencial",
+      "trombocitosis"
+    ],
+    "ex_16": [
+      "absceso",
+      "adenopatías en cadena mesentérica, iliacas e inguinales",
+      "anemia",
+      "deshidratación",
+      "enfermedad de crohn con afectación ileal y perianal compleja",
+      "enfermedad perianal",
+      "fracaso renal",
+      "fístula perianal",
+      "insuficiencia renal",
+      "insuficiencia renal multifactorial (salicilatos",
+      "lesión",
+      "lesión perirrectal",
+      "lesión, en flanco",
+      "neoplasia",
+      "orificio fistuloso en glúteo",
+      "plasmocitoma plasmoblástico con predominio de cadenas ligeras tipo lamda que infiltraba íleon terminal y ciego, raíz del mesenterio, ganglios linfáticos abdominales y médula ósea",
+      "sepsis"
+    ],
+    "ex_17": [
+      "asma bronquial no alérgico",
+      "carcinoma suprarrenal",
+      "cólico renal",
+      "diabético",
+      "esofagitis péptica",
+      "feocromocitoma",
+      "feocromocitoma maligno",
+      "fumador",
+      "gastroenteritis aguda",
+      "hernia de hiato",
+      "hiponatremia",
+      "invasión capsular",
+      "trombo tumoral en una vena de grueso calibre (la vena clampada"
+    ],
+    "ex_18": [
+      "alérgico a las sulfamidas",
+      "infiltración vascular ni linfática",
+      "invasión vascular ni linfática",
+      "neoplasia",
+      "neoplasia intratubular de células germinales",
+      "orquiepididimitis",
+      "seminoma",
+      "teratoma",
+      "tumor",
+      "tumor de células germinales mixto",
+      "tumor germinal no seminomatoso",
+      "tumor testicular",
+      "varicocele"
+    ],
+    "ex_19": [
+      "crisis convulsivas",
+      "embarazo molar",
+      "fumadora",
+      "hematomas en hombro y glúteo",
+      "hemorragia intraventricular",
+      "hidrocefalia fetal bilateral",
+      "hidrocefalia grave secundaria a",
+      "macrocefalia con fontanela anterior a tensión",
+      "meningitis",
+      "oligoamnios",
+      "tfna",
+      "tombocitopenia grave",
+      "ventriculitis"
+    ]
+  },
+  "casos_boundary": [
+    {
+      "doc_id": "ex_0",
+      "predicho": "adenopatías",
+      "gold": "adenopatías bilaterales ilíacas e inguinales"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "adenopatías",
+      "gold": "adenopatías bilaterales en las cadenas iliacas interna y externa y en las cadenas inguinales"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "adenopatías bilaterales en las cadenas iliacas interna y externa y en las cadenas inguinales",
+      "gold": "adenopatías"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "masa tumoral",
+      "gold": "tumor"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "metástasis tumorales",
+      "gold": "tumor"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "necrosis parcial de una pequeña zona de la herida de la incisión de linfadenectomía",
+      "gold": "herida de la incisión de linfadenectomía"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "carcinoma verrugoso de",
+      "gold": "carcinoma verrugoso de buscke-lowenstein"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "lesión tumoral exofítica",
+      "gold": "pene una lesión tumoral exofítica"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "lesión tumoral exofítica",
+      "gold": "lesión tumoral"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "lesión tumoral exofítica",
+      "gold": "tumor"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "lesión tumoral exofítica",
+      "gold": "lesión"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "condiloma acuminado gigante",
+      "gold": "condiloma acuminado gigante de buschke-lowenstein"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "lesión",
+      "gold": "pene una lesión tumoral exofítica"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "lesión",
+      "gold": "lesión tumoral"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "lesión",
+      "gold": "lesión penoescrotal"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "lesión penoescrotal",
+      "gold": "lesión"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "lesión tumoral",
+      "gold": "pene una lesión tumoral exofítica"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "lesión tumoral",
+      "gold": "tumor"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "lesión tumoral",
+      "gold": "lesión"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "tumor benigno",
+      "gold": "tumor"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "tumor",
+      "gold": "metástasis tumorales"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "tumor",
+      "gold": "pene una lesión tumoral exofítica"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "tumor",
+      "gold": "lesión tumoral"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "tumor",
+      "gold": "tumor benigno"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "tumor",
+      "gold": "masa tumoral"
+    },
+    {
+      "doc_id": "ex_0",
+      "predicho": "adenopatías bilaterales ilíacas e inguinales",
+      "gold": "adenopatías"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "siadh) paraneoplásico",
+      "gold": "síndrome de secreción inadecuada de hormona antidiurética (siadh) paraneoplásico"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "siadh) paraneoplásico",
+      "gold": "siadh"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "hiponatremia",
+      "gold": "fallo pre-renal con hiponatremia"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "hiponatremia",
+      "gold": "hiponatremia hipoosmolar"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "diarrea",
+      "gold": "diarrea por clostridium difficile"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "fallo pre-renal",
+      "gold": "fallo pre-renal con hiponatremia"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "hipertensión arterial",
+      "gold": "hipertensión"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "derrame pleural izquierdo",
+      "gold": "derrame pleural"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "siadh paraneoplásico",
+      "gold": "siadh"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "neumonía bilo-bar por broncoaspiración",
+      "gold": "broncoaspiración"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "disfagia intensa",
+      "gold": "disfagia"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "síndrome de secreción inadecuada de hormona antidiurética",
+      "gold": "síndrome de secreción inadecuada de hormona antidiurética (siadh) paraneoplásico"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "hipertensión",
+      "gold": "hipertensión arterial"
+    },
+    {
+      "doc_id": "ex_1",
+      "predicho": "tumoración faríngea",
+      "gold": "sangrado asociado a tumoración faríngea"
+    },
+    {
+      "doc_id": "ex_2",
+      "predicho": "toxoplasmosis no inmune",
+      "gold": "toxoplasmosis"
+    },
+    {
+      "doc_id": "ex_2",
+      "predicho": "micrognatismo con",
+      "gold": "micrognatismo"
+    },
+    {
+      "doc_id": "ex_2",
+      "predicho": "rubéola inmune",
+      "gold": "rubéola"
+    },
+    {
+      "doc_id": "ex_2",
+      "predicho": "bifidez renal",
+      "gold": "bifidez renal derecha"
+    },
+    {
+      "doc_id": "ex_2",
+      "predicho": "patología heredo-familiar, renal",
+      "gold": "patología heredo-familiar"
+    },
+    {
+      "doc_id": "ex_2",
+      "predicho": "dilataciones ureterales bilaterales",
+      "gold": "dilataciones ureterales bilaterales no obstructivos"
+    },
+    {
+      "doc_id": "ex_2",
+      "predicho": "uretero-hidronefrosis bilateral",
+      "gold": "hidronefrosis bilateral"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "síndrome de distrés respiratorio agudo secundario",
+      "gold": "síndrome de distrés respiratorio agudo"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "ir",
+      "gold": "ir progresiva"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "ir",
+      "gold": "insuficiencia respiratoria refractaria secundaria a síndrome de distrés respiratorio agudo"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "ir",
+      "gold": "infección viral"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "ir",
+      "gold": "síndrome de distrés respiratorio agudo"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "ir",
+      "gold": "insuficiencia respiratoria"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "ir",
+      "gold": "ir aguda"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "ir",
+      "gold": "neumonía por adenovirus con síndrome de distrés respiratorio agudo"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "anemia progresiva",
+      "gold": "anemia"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "neumonía por adenovirus",
+      "gold": "neumonía por adenovirus con síndrome de distrés respiratorio agudo"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "shock séptico y nefrotoxicidad",
+      "gold": "nefrotoxicidad"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "shock séptico y nefrotoxicidad",
+      "gold": "shock séptico"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "síndrome de distrés respiratorio agudo",
+      "gold": "insuficiencia respiratoria refractaria secundaria a síndrome de distrés respiratorio agudo"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "síndrome de distrés respiratorio agudo",
+      "gold": "neumonía por adenovirus con síndrome de distrés respiratorio agudo"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "insuficiencia respiratoria",
+      "gold": "insuficiencia respiratoria refractaria secundaria a síndrome de distrés respiratorio agudo"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "insuficiencia respiratoria refractaria",
+      "gold": "insuficiencia respiratoria refractaria secundaria a síndrome de distrés respiratorio agudo"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "insuficiencia respiratoria refractaria",
+      "gold": "insuficiencia respiratoria"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "hematotoxicidad",
+      "gold": "hematotoxicidad por el tratamiento previo de linezolid"
+    },
+    {
+      "doc_id": "ex_4",
+      "predicho": "macro",
+      "gold": "hematuria macroscópica"
+    },
+    {
+      "doc_id": "ex_4",
+      "predicho": "macro",
+      "gold": "macro/ microaneurismas o alteraciones de la arteria renal principal o aorta"
+    },
+    {
+      "doc_id": "ex_4",
+      "predicho": "hematuria",
+      "gold": "hematuria macroscópica"
+    },
+    {
+      "doc_id": "ex_4",
+      "predicho": "microaneurismas",
+      "gold": "macro/ microaneurismas o alteraciones de la arteria renal principal o aorta"
+    },
+    {
+      "doc_id": "ex_4",
+      "predicho": "alteraciones de la arteria renal principal o aorta",
+      "gold": "macro/ microaneurismas o alteraciones de la arteria renal principal o aorta"
+    },
+    {
+      "doc_id": "ex_4",
+      "predicho": "isquemia miocárdica aguda",
+      "gold": "isquemia"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "adenopatías",
+      "gold": "adenopatías celiacas"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "adenopatías",
+      "gold": "adenopatías en retroperitoneo, área retrocrural y cadena iliaca"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "adenopatías",
+      "gold": "adenopatías en el área subcarinal, supraclavicular"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "neoplasia a nivel del tercio medio esofágico",
+      "gold": "neoplasia"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "adenopatías en el área subcarinal, supraclavicular izquierda",
+      "gold": "adenopatías"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "adenopatías en el área subcarinal, supraclavicular izquierda",
+      "gold": "adenopatías en el área subcarinal, supraclavicular"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "adenopatías celiacas",
+      "gold": "adenopatías"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "disfagia moderada a sólidos",
+      "gold": "disfagia moderada"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "adenopatías en retroperitoneo, área retrocrural y cadena iliaca derecha",
+      "gold": "adenopatías en retroperitoneo, área retrocrural y cadena iliaca"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "adenopatías en retroperitoneo, área retrocrural y cadena iliaca derecha",
+      "gold": "adenopatías"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "lesión",
+      "gold": "lesión a nivel de tercio medio de esófago"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "lesión",
+      "gold": "lesión ocupante de espacio a nivel pulmonar"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "cicatriz subcostal derecha e infraumbilical continentes",
+      "gold": "cicatriz subcostal derecha e infraumbilical"
+    },
+    {
+      "doc_id": "ex_5",
+      "predicho": "neoplasia",
+      "gold": "neoplasia a nivel del tercio medio esofágico"
+    },
+    {
+      "doc_id": "ex_6",
+      "predicho": "condrosarcoma",
+      "gold": "condrosarcoma de alto grado"
+    },
+    {
+      "doc_id": "ex_6",
+      "predicho": "liposarcoma bien diferenciado",
+      "gold": "liposarcoma bien diferenciado (lipoma-like"
+    },
+    {
+      "doc_id": "ex_6",
+      "predicho": "liposarcoma desdiferenciado",
+      "gold": "liposarcoma desdiferenciado de cordón espermático"
+    },
+    {
+      "doc_id": "ex_6",
+      "predicho": "condrosarcoma de alto grado",
+      "gold": "condrosarcoma"
+    },
+    {
+      "doc_id": "ex_6",
+      "predicho": "liposarcoma desdiferenciado de cordón espermático",
+      "gold": "liposarcoma desdiferenciado"
+    },
+    {
+      "doc_id": "ex_6",
+      "predicho": "lipoma-like",
+      "gold": "liposarcoma bien diferenciado (lipoma-like"
+    },
+    {
+      "doc_id": "ex_6",
+      "predicho": "tumor",
+      "gold": "lesión tumoral"
+    },
+    {
+      "doc_id": "ex_6",
+      "predicho": "tumor",
+      "gold": "tumor cerebral"
+    },
+    {
+      "doc_id": "ex_6",
+      "predicho": "tumor",
+      "gold": "recidiva tumoral"
+    },
+    {
+      "doc_id": "ex_7",
+      "predicho": "cuadro maníaco relacionado",
+      "gold": "cuadro maníaco relacionado con ingesta alcohólica"
+    },
+    {
+      "doc_id": "ex_7",
+      "predicho": "hipofosfatemia e",
+      "gold": "hipofosfatemia"
+    },
+    {
+      "doc_id": "ex_7",
+      "predicho": "hepatopatía alcohólica secundaria",
+      "gold": "hepatopatía alcohólica"
+    },
+    {
+      "doc_id": "ex_7",
+      "predicho": "polirradiculoneurittis aguda sensitivo-motora axonal secundarios a",
+      "gold": "polirradiculoneurittis aguda sensitivo-motora axonal secundarios a hipo-fosfatemia severa"
+    },
+    {
+      "doc_id": "ex_7",
+      "predicho": "déficits",
+      "gold": "déficits electrolíticos"
+    },
+    {
+      "doc_id": "ex_7",
+      "predicho": "afectación polirradicular sensitivo-motora de predominio axonal severa de extremidades inferiores (eeii",
+      "gold": "afectación polirradicular sensitivo-motora"
+    },
+    {
+      "doc_id": "ex_7",
+      "predicho": "hipo-fosfatemia severa",
+      "gold": "polirradiculoneurittis aguda sensitivo-motora axonal secundarios a hipo-fosfatemia severa"
+    },
+    {
+      "doc_id": "ex_8",
+      "predicho": "malnutrición con hipoalbuminemia grave",
+      "gold": "malnutrición"
+    },
+    {
+      "doc_id": "ex_8",
+      "predicho": "malnutrición con hipoalbuminemia grave",
+      "gold": "hipoalbuminemia grave"
+    },
+    {
+      "doc_id": "ex_8",
+      "predicho": "pielonefritis",
+      "gold": "pielonefritis de repetición"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "lesiones hepáticas ocupantes",
+      "gold": "lesiones hepáticas ocupantes de espacio"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "lesiones hepáticas ocupantes",
+      "gold": "lesiones hepáticas"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "hepatitis isquémica asociada",
+      "gold": "hepatitis isquémica"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "mts hepáticas extensas",
+      "gold": "mts hepáticas"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "mts hepáticas extensas",
+      "gold": "mts"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "mts hepáticas",
+      "gold": "mts"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "mts en ganglios locorregionales infradiafragmáticos y en parénquima pulmonar",
+      "gold": "mts en ganglios locorregionales infradiafragmáticos"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "mts en ganglios locorregionales infradiafragmáticos y en parénquima pulmonar",
+      "gold": "mts"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "lesiones hepáticas",
+      "gold": "lesiones hepáticas ocupantes de espacio"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "mts",
+      "gold": "mts hepáticas"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "mts",
+      "gold": "mts en ganglios locorregionales infradiafragmáticos y en parénquima pulmonar"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "mts",
+      "gold": "mts en ganglios locorregionales infradiafragmáticos"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "adenopatías",
+      "gold": "adenopatías inguinales"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "seroma subcicatricial a nivel inguinal derecho",
+      "gold": "seroma subcicatricial a nivel inguinal"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "adenopatía de carcinoma escamoso moderadamente diferenciado",
+      "gold": "carcinoma escamoso"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "carcinoma escamoso",
+      "gold": "adenopatía de carcinoma escamoso moderadamente diferenciado"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "carcinoma escamoso",
+      "gold": "carcinoma escamoso de uretra con adenopatía inguinal"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "lesión subpleural en lóbulo superior del pulmón derecho",
+      "gold": "lesión subpleural en lóbulo superior del pulmón"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "colección de",
+      "gold": "colección de 3 cm entre uretra y cuerpos cavernosos"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "adenopatías inguinales",
+      "gold": "adenopatías"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "hernia inguinal",
+      "gold": "hernia inguinal derecha incarcerada"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "lesiones nodulares cutáneas en pubis y muslo derecho",
+      "gold": "lesiones nodulares cutáneas en pubis y muslo"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "carcinoma escamoso de uretra",
+      "gold": "carcinoma escamoso"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "carcinoma escamoso de uretra",
+      "gold": "carcinoma escamoso de uretra con adenopatía inguinal"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "lesiones",
+      "gold": "lesiones cutáneas"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "lesiones",
+      "gold": "lesiones nodulares cutáneas en pubis y muslo"
+    },
+    {
+      "doc_id": "ex_10",
+      "predicho": "adenopatía inguinal",
+      "gold": "carcinoma escamoso de uretra con adenopatía inguinal"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "adenocarcinoma de colon moderadamente diferenciado, que infiltra hasta la grasa subserosa",
+      "gold": "adenocarcinoma"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "adenocarcinoma de colon moderadamente diferenciado, que infiltra hasta la grasa subserosa",
+      "gold": "mo"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "adenocarcinoma de colon moderadamente diferenciado, que infiltra hasta la grasa subserosa",
+      "gold": "adenocarcinoma de colon moderadamente diferenciado"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "adenocarcinoma de colon moderadamente diferenciado, que infiltra hasta la grasa subserosa",
+      "gold": "carcinoma de colon"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "lesiones crónicas fibrocicatriciales en tórax",
+      "gold": "lesiones"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "adenocarcinoma",
+      "gold": "adenocarcinoma de colon moderadamente diferenciado"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "adenocarcinoma",
+      "gold": "metástasis de un adenocarcinoma"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "afectación",
+      "gold": "afectación ganglionar"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "prostatismo",
+      "gold": "mo"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "carcinoma de colon descendente",
+      "gold": "carcinoma de colon"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "neoformaciones epiteliales malignas",
+      "gold": "neoformaciones epiteliales malignas con estructuras glandulares"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "nódulos",
+      "gold": "nódulos pulmonares"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "lesión",
+      "gold": "cordón espermático derecho palpamos otra lesión"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "lesión",
+      "gold": "lesión heterogénea, con zonas sólidas y quísticas, a nivel de cuerpo del epidídimo"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "lesión",
+      "gold": "epidídimo derecho, una lesión nodular"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "lesión heterogénea",
+      "gold": "lesión heterogénea, con zonas sólidas y quísticas, a nivel de cuerpo del epidídimo"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "metástasis de un adenocarcinoma posiblemente de colon",
+      "gold": "adenocarcinoma"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "metástasis de un adenocarcinoma posiblemente de colon",
+      "gold": "metástasis de un adenocarcinoma"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "lesiones",
+      "gold": "lesiones crónicas fibrocicatriciales en tórax"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "carcinoma de colon",
+      "gold": "carcinoma de colon descendente"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "carcinoma de colon",
+      "gold": "adenocarcinoma de colon moderadamente diferenciado"
+    },
+    {
+      "doc_id": "ex_11",
+      "predicho": "lesión nodular",
+      "gold": "epidídimo derecho, una lesión nodular"
+    },
+    {
+      "doc_id": "ex_12",
+      "predicho": "peritonitis por echerichia coli",
+      "gold": "ascitis, secundaria a peritonitis por echerichia coli"
+    },
+    {
+      "doc_id": "ex_12",
+      "predicho": "peritonitis por echerichia coli",
+      "gold": "peritonitis"
+    },
+    {
+      "doc_id": "ex_12",
+      "predicho": "ascitis",
+      "gold": "ascitis, secundaria a peritonitis por echerichia coli"
+    },
+    {
+      "doc_id": "ex_12",
+      "predicho": "membrana",
+      "gold": "esclerosis y calcificación de toda la membrana peritoneal"
+    },
+    {
+      "doc_id": "ex_12",
+      "predicho": "hipogonadismo con",
+      "gold": "hipogonadismo"
+    },
+    {
+      "doc_id": "ex_12",
+      "predicho": "isquemia aguda en miembro inferior derecho",
+      "gold": "isquemia aguda en miembro inferior"
+    },
+    {
+      "doc_id": "ex_12",
+      "predicho": "peritonitis",
+      "gold": "peritonitis, causada por dos gérmenes (staphilococcus epidermidis y pseudomona aeruginosa"
+    },
+    {
+      "doc_id": "ex_12",
+      "predicho": "peritonitis",
+      "gold": "peritonitis por echerichia coli"
+    },
+    {
+      "doc_id": "ex_12",
+      "predicho": "peritonitis",
+      "gold": "ascitis, secundaria a peritonitis por echerichia coli"
+    },
+    {
+      "doc_id": "ex_13",
+      "predicho": "abscesos en músculos paravertebrales y psoas derechos",
+      "gold": "abscesos en músculos paravertebrales y psoas"
+    },
+    {
+      "doc_id": "ex_14",
+      "predicho": "hematuria",
+      "gold": "hematuria microscópica"
+    },
+    {
+      "doc_id": "ex_14",
+      "predicho": "cálculos",
+      "gold": "arbol piélico presenta contenido purulento y se identifican cálculos"
+    },
+    {
+      "doc_id": "ex_14",
+      "predicho": "cálculos",
+      "gold": "cálculos radiopacos localizados en el riñón"
+    },
+    {
+      "doc_id": "ex_14",
+      "predicho": "adenocarcinoma",
+      "gold": "adenocarcinoma de tipo intestinal"
+    },
+    {
+      "doc_id": "ex_14",
+      "predicho": "insuficiencia cardiaca asociada a",
+      "gold": "insuficiencia cardiaca"
+    },
+    {
+      "doc_id": "ex_14",
+      "predicho": "neoplasia presenta",
+      "gold": "neoplasia"
+    },
+    {
+      "doc_id": "ex_14",
+      "predicho": "neoplasia invade el tejido conjuntivo subepitelial",
+      "gold": "neoplasia"
+    },
+    {
+      "doc_id": "ex_14",
+      "predicho": "adenocarcinoma de tipo intestinal",
+      "gold": "adenocarcinoma"
+    },
+    {
+      "doc_id": "ex_14",
+      "predicho": "dilatación del árbol pielo-calicial y",
+      "gold": "dilatación del árbol pielo-calicial"
+    },
+    {
+      "doc_id": "ex_15",
+      "predicho": "trombocitosis",
+      "gold": "trombocitosis reactiva"
+    },
+    {
+      "doc_id": "ex_15",
+      "predicho": "linfoma nk extraganglionar tipo nasal en estadio localizado",
+      "gold": "linfoma nk extraganglionar tipo nasal"
+    },
+    {
+      "doc_id": "ex_15",
+      "predicho": "adenopático",
+      "gold": "componente adenopático"
+    },
+    {
+      "doc_id": "ex_15",
+      "predicho": "lesión",
+      "gold": "lesión intranasal"
+    },
+    {
+      "doc_id": "ex_15",
+      "predicho": "obstrucción nasal",
+      "gold": "obstrucción nasal izquierda"
+    },
+    {
+      "doc_id": "ex_15",
+      "predicho": "infiltración masiva por células neoplásicas de estirpe linfoide",
+      "gold": "tumoración submandibular evidenciaba una infiltración masiva por células neoplásicas de estirpe linfoide"
+    },
+    {
+      "doc_id": "ex_16",
+      "predicho": "lesión",
+      "gold": "lesión perirrectal"
+    },
+    {
+      "doc_id": "ex_16",
+      "predicho": "insuficiencia renal multifactorial (salicilatos",
+      "gold": "insuficiencia renal multifactorial"
+    },
+    {
+      "doc_id": "ex_16",
+      "predicho": "insuficiencia renal multifactorial (salicilatos",
+      "gold": "insuficiencia renal"
+    },
+    {
+      "doc_id": "ex_16",
+      "predicho": "enfermedad de crohn con afectación ileal y perianal compleja",
+      "gold": "enfermedad de crohn con afectación ileal y perianal"
+    },
+    {
+      "doc_id": "ex_16",
+      "predicho": "insuficiencia renal",
+      "gold": "insuficiencia renal multifactorial"
+    },
+    {
+      "doc_id": "ex_17",
+      "predicho": "trombo tumoral en una vena de grueso calibre (la vena clampada",
+      "gold": "trombo tumoral en una vena"
+    },
+    {
+      "doc_id": "ex_17",
+      "predicho": "hiponatremia",
+      "gold": "leve hiponatremia"
+    },
+    {
+      "doc_id": "ex_17",
+      "predicho": "asma bronquial no alérgico",
+      "gold": "asma bronquial"
+    },
+    {
+      "doc_id": "ex_17",
+      "predicho": "asma bronquial no alérgico",
+      "gold": "alérgico"
+    },
+    {
+      "doc_id": "ex_17",
+      "predicho": "feocromocitoma",
+      "gold": "feocromocitoma maligno"
+    },
+    {
+      "doc_id": "ex_17",
+      "predicho": "feocromocitoma maligno",
+      "gold": "feocromocitoma"
+    },
+    {
+      "doc_id": "ex_18",
+      "predicho": "neoplasia intratubular de células germinales",
+      "gold": "neoplasia"
+    },
+    {
+      "doc_id": "ex_18",
+      "predicho": "tumor de células germinales mixto",
+      "gold": "tumor de células germinales mixto de 2 cm formado por carcinoma embrionario y focos de teratoma"
+    },
+    {
+      "doc_id": "ex_18",
+      "predicho": "seminoma",
+      "gold": "seminoma de 0,5 cm que infiltra cápsula"
+    },
+    {
+      "doc_id": "ex_18",
+      "predicho": "seminoma",
+      "gold": "tumor germinal no seminomatoso"
+    },
+    {
+      "doc_id": "ex_18",
+      "predicho": "tumor",
+      "gold": "tumor de células germinales mixto de 2 cm formado por carcinoma embrionario y focos de teratoma"
+    },
+    {
+      "doc_id": "ex_18",
+      "predicho": "tumor",
+      "gold": "tumor germinal no seminomatoso"
+    },
+    {
+      "doc_id": "ex_18",
+      "predicho": "tumor",
+      "gold": "tumor testicular"
+    },
+    {
+      "doc_id": "ex_18",
+      "predicho": "neoplasia",
+      "gold": "neoplasia intratubular de células germinales"
+    },
+    {
+      "doc_id": "ex_18",
+      "predicho": "teratoma",
+      "gold": "tumor de células germinales mixto de 2 cm formado por carcinoma embrionario y focos de teratoma"
+    },
+    {
+      "doc_id": "ex_19",
+      "predicho": "hidrocefalia grave secundaria a",
+      "gold": "hidrocefalia grave secundaria a hemorragia intraventricular"
+    },
+    {
+      "doc_id": "ex_19",
+      "predicho": "hidrocefalia grave secundaria a",
+      "gold": "hidrocefalia grave"
+    },
+    {
+      "doc_id": "ex_19",
+      "predicho": "hemorragia intraventricular",
+      "gold": "hidrocefalia grave secundaria a hemorragia intraventricular"
+    }
+  ]
+}

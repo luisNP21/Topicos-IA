@@ -1,0 +1,180 @@
+{
+  "dimension": "llm_as_judge",
+  "rol": "agustin",
+  "modelo_evaluado": "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es",
+  "modelo_juez": "openai/gpt-oss-120b",
+  "judge_provider": "groq",
+  "predicciones_origen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/outputs/resultado_dimension1.json",
+  "n_ejemplos_evaluados": 10,
+  "seed": 42,
+  "metrics": {
+    "score_juez_mean": 3.975,
+    "score_juez_std": 0.7163759100112485,
+    "f1_exacto_mean": 0.35333333333333333
+  },
+  "sesgo_posicion": {
+    "delta_mean": 0.55,
+    "delta_max": 1.0,
+    "delta_median": 0.5,
+    "pct_delta_mayor_a_1": 0.0,
+    "mitigacion": "promedio de score_normal y score_inverted"
+  },
+  "sesgo_longitud": {
+    "pares_evaluados": 5,
+    "pares_calidad_gana": 5,
+    "pct_calidad_gana": 1.0,
+    "mitigacion": "pares de validacion con asimetria de longitud controlada"
+  },
+  "sesgo_autopreferencia": {
+    "output_anonimizado": true,
+    "formato_estandarizado": true,
+    "familia_cruzada": true,
+    "test_cross_family_disponible": false,
+    "nota": "No se puede cuantificar sin un segundo juez de otra familia distinta",
+    "terminos_encontrados": []
+  },
+  "distribucion_patrones": {
+    "E — caso mixto": 7,
+    "A — boundary error (comprensión OK, span malo)": 2,
+    "D — referencia positiva": 1
+  },
+  "resultados_por_doc": {
+    "ex_0": {
+      "gold": [
+        "fiebre",
+        "mocos",
+        "muerto"
+      ],
+      "pred": [],
+      "score_juez": 2.5,
+      "delta_posicion": 1.0,
+      "f1_exacto": 0.0,
+      "patron": "E — caso mixto"
+    },
+    "ex_1": {
+      "gold": [
+        "fractura de muñeca"
+      ],
+      "pred": [
+        "fractura de muñeca localizada en el pie"
+      ],
+      "score_juez": 3.75,
+      "delta_posicion": 0.5,
+      "f1_exacto": 0.0,
+      "patron": "A — boundary error (comprensión OK, span malo)"
+    },
+    "ex_2": {
+      "gold": [
+        "gripa",
+        "tos persistente"
+      ],
+      "pred": [
+        "gripa"
+      ],
+      "score_juez": 4.5,
+      "delta_posicion": 0.0,
+      "f1_exacto": 0.6666666666666666,
+      "patron": "E — caso mixto"
+    },
+    "ex_3": {
+      "gold": [
+        "diabetes mellitus tipo 2 descompensada",
+        "insuficiencia renal cronica",
+        "neumonia bilateral"
+      ],
+      "pred": [
+        "diabetes mellitus tipo 2 descompensada",
+        "insuficiencia renal cronica agudizada",
+        "neumonia bilateral"
+      ],
+      "score_juez": 4.625,
+      "delta_posicion": 0.25,
+      "f1_exacto": 0.6666666666666666,
+      "patron": "E — caso mixto"
+    },
+    "ex_4": {
+      "gold": [
+        "cólicos menstruales",
+        "dismenorrea",
+        "sangrado vaginal abundante"
+      ],
+      "pred": [
+        "colicos menstruales",
+        "dismenorrea"
+      ],
+      "score_juez": 4.625,
+      "delta_posicion": 0.25,
+      "f1_exacto": 0.4,
+      "patron": "E — caso mixto"
+    },
+    "ex_5": {
+      "gold": [
+        "apendicitis aguda",
+        "irritacion peritoneal"
+      ],
+      "pred": [
+        "apendicitis aguda",
+        "apendicitis complicada"
+      ],
+      "score_juez": 3.5,
+      "delta_posicion": 1.0,
+      "f1_exacto": 0.5,
+      "patron": "E — caso mixto"
+    },
+    "ex_6": {
+      "gold": [
+        "shock hipovolemico"
+      ],
+      "pred": [
+        "shock hipovolemico secundario a sangrado digestivo alto"
+      ],
+      "score_juez": 4.25,
+      "delta_posicion": 0.5,
+      "f1_exacto": 0.0,
+      "patron": "A — boundary error (comprensión OK, span malo)"
+    },
+    "ex_7": {
+      "gold": [
+        "ascitis",
+        "cirrosis hepatica bilateral",
+        "edema de miembros inferiores"
+      ],
+      "pred": [
+        "ascitis",
+        "cirrosis hepatica bilateral"
+      ],
+      "score_juez": 4.75,
+      "delta_posicion": 0.5,
+      "f1_exacto": 0.8,
+      "patron": "D — referencia positiva"
+    },
+    "ex_8": {
+      "gold": [
+        "disuria",
+        "polaquiuria",
+        "prostatitis aguda"
+      ],
+      "pred": [
+        "prostatitis aguda"
+      ],
+      "score_juez": 3.875,
+      "delta_posicion": 0.75,
+      "f1_exacto": 0.5,
+      "patron": "E — caso mixto"
+    },
+    "ex_9": {
+      "gold": [
+        "fiebre",
+        "neumonia adquirida en la comunidad",
+        "tos productiva"
+      ],
+      "pred": [
+        "neumonia adquirida"
+      ],
+      "score_juez": 3.375,
+      "delta_posicion": 0.75,
+      "f1_exacto": 0.0,
+      "patron": "E — caso mixto"
+    }
+  }
+}

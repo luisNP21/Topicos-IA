@@ -1,0 +1,292 @@
+{
+  "dimension": "metrica_clasica_matching_semantico",
+  "rol": "pau",
+  "modelo": "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es",
+  "predicciones_origen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/outputs/resultado_dimension1.json",
+  "gold_set": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/eval_harness/gold_examples_adversariales.jsonl",
+  "n_ejemplos_evaluados": 10,
+  "configuracion": {
+    "modelo_embeddings": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "funcion_similitud": "emb",
+    "algoritmo_asignacion": "hungaro",
+    "restriccion": "uno a uno",
+    "umbral": 0.6,
+    "criterio_umbral": "indice de Youden sobre positivos boundary vs negativos cross-document",
+    "umbral_tpr_positivos": 1.0,
+    "umbral_fpr_negativos": 0.0104
+  },
+  "metrics": {
+    "precision": 1.0,
+    "recall": 0.5833333333333334,
+    "f1": 0.7368421052631579,
+    "tp": 14,
+    "fp": 0,
+    "fn": 10,
+    "soft_precision": 0.9050300674779075,
+    "soft_recall": 0.5279342060287794,
+    "soft_f1": 0.6668642602468793
+  },
+  "metrics_exact_match_referencia": {
+    "precision": 0.5714285714285714,
+    "recall": 0.3333333333333333,
+    "f1": 0.4210526315789474,
+    "tp": 8,
+    "fp": 6,
+    "fn": 16
+  },
+  "aciertos_por_categoria": {
+    "boundary (uno contiene al otro)": 4,
+    "exacto": 7,
+    "solapamiento parcial de palabras": 2,
+    "sinonimo/parafrasis (sin solapamiento lexico)": 1
+  },
+  "aciertos_nuevos": [
+    {
+      "doc_id": "ex_1",
+      "pred": "fractura de muñeca localizada en el pie",
+      "gold": "fractura de muñeca",
+      "sim": 0.7928,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_3",
+      "pred": "insuficiencia renal cronica agudizada",
+      "gold": "insuficiencia renal cronica",
+      "sim": 0.9852,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_4",
+      "pred": "colicos menstruales",
+      "gold": "cólicos menstruales",
+      "sim": 0.9279,
+      "exacto": false,
+      "categoria": "solapamiento parcial de palabras"
+    },
+    {
+      "doc_id": "ex_5",
+      "pred": "apendicitis complicada",
+      "gold": "apendicitis aguda",
+      "sim": 0.8887,
+      "exacto": false,
+      "categoria": "solapamiento parcial de palabras"
+    },
+    {
+      "doc_id": "ex_5",
+      "pred": "apendicitis aguda",
+      "gold": "irritacion peritoneal",
+      "sim": 0.6179,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_6",
+      "pred": "shock hipovolemico secundario a sangrado digestivo alto",
+      "gold": "shock hipovolemico",
+      "sim": 0.6558,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_9",
+      "pred": "neumonia adquirida",
+      "gold": "neumonia adquirida en la comunidad",
+      "sim": 0.8021,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    }
+  ],
+  "emparejamientos_solo_embedding": [
+    {
+      "doc_id": "ex_5",
+      "pred": "apendicitis aguda",
+      "gold": "irritacion peritoneal",
+      "sim": 0.6179,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    }
+  ],
+  "ambiguedad_gold": {
+    "pares_ambiguos": 2,
+    "pares_totales": 20,
+    "fraccion": 0.1,
+    "ejemplos": [
+      {
+        "doc_id": "ex_0",
+        "gold_a": "mocos",
+        "gold_b": "muerto",
+        "sim": 0.7277
+      },
+      {
+        "doc_id": "ex_5",
+        "gold_a": "apendicitis aguda",
+        "gold_b": "irritacion peritoneal",
+        "sim": 0.6179
+      }
+    ]
+  },
+  "detalle_emparejamientos": {
+    "ex_1": [
+      {
+        "pred": "fractura de muñeca localizada en el pie",
+        "gold": "fractura de muñeca",
+        "sim": 0.7928,
+        "exacto": false
+      }
+    ],
+    "ex_2": [
+      {
+        "pred": "gripa",
+        "gold": "gripa",
+        "sim": 1.0,
+        "exacto": true
+      }
+    ],
+    "ex_3": [
+      {
+        "pred": "diabetes mellitus tipo 2 descompensada",
+        "gold": "diabetes mellitus tipo 2 descompensada",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neumonia bilateral",
+        "gold": "neumonia bilateral",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "insuficiencia renal cronica agudizada",
+        "gold": "insuficiencia renal cronica",
+        "sim": 0.9852,
+        "exacto": false
+      }
+    ],
+    "ex_4": [
+      {
+        "pred": "dismenorrea",
+        "gold": "dismenorrea",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "colicos menstruales",
+        "gold": "cólicos menstruales",
+        "sim": 0.9279,
+        "exacto": false
+      }
+    ],
+    "ex_5": [
+      {
+        "pred": "apendicitis complicada",
+        "gold": "apendicitis aguda",
+        "sim": 0.8887,
+        "exacto": false
+      },
+      {
+        "pred": "apendicitis aguda",
+        "gold": "irritacion peritoneal",
+        "sim": 0.6179,
+        "exacto": false
+      }
+    ],
+    "ex_6": [
+      {
+        "pred": "shock hipovolemico secundario a sangrado digestivo alto",
+        "gold": "shock hipovolemico",
+        "sim": 0.6558,
+        "exacto": false
+      }
+    ],
+    "ex_7": [
+      {
+        "pred": "ascitis",
+        "gold": "ascitis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "cirrosis hepatica bilateral",
+        "gold": "cirrosis hepatica bilateral",
+        "sim": 1.0,
+        "exacto": true
+      }
+    ],
+    "ex_8": [
+      {
+        "pred": "prostatitis aguda",
+        "gold": "prostatitis aguda",
+        "sim": 1.0,
+        "exacto": true
+      }
+    ],
+    "ex_9": [
+      {
+        "pred": "neumonia adquirida",
+        "gold": "neumonia adquirida en la comunidad",
+        "sim": 0.8021,
+        "exacto": false
+      }
+    ]
+  },
+  "no_emparejados": {
+    "ex_0": {
+      "fp": [],
+      "fn": [
+        "fiebre",
+        "mocos",
+        "muerto"
+      ]
+    },
+    "ex_1": {
+      "fp": [],
+      "fn": []
+    },
+    "ex_2": {
+      "fp": [],
+      "fn": [
+        "tos persistente"
+      ]
+    },
+    "ex_3": {
+      "fp": [],
+      "fn": []
+    },
+    "ex_4": {
+      "fp": [],
+      "fn": [
+        "sangrado vaginal abundante"
+      ]
+    },
+    "ex_5": {
+      "fp": [],
+      "fn": []
+    },
+    "ex_6": {
+      "fp": [],
+      "fn": []
+    },
+    "ex_7": {
+      "fp": [],
+      "fn": [
+        "edema de miembros inferiores"
+      ]
+    },
+    "ex_8": {
+      "fp": [],
+      "fn": [
+        "disuria",
+        "polaquiuria"
+      ]
+    },
+    "ex_9": {
+      "fp": [],
+      "fn": [
+        "fiebre",
+        "tos productiva"
+      ]
+    }
+  }
+}

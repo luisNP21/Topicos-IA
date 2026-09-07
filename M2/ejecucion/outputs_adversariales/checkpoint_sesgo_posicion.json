@@ -1,0 +1,241 @@
+{
+  "position_results": [
+    {
+      "doc_id": "ex_0",
+      "n_gold": 3,
+      "n_pred": 0,
+      "gold": [
+        "fiebre",
+        "mocos",
+        "muerto"
+      ],
+      "pred": [],
+      "score_normal": 2.0,
+      "score_inverted": 3.0,
+      "delta_posicion": 1.0,
+      "score_mitigado": 2.5,
+      "result_normal": {
+        "completitud": 1,
+        "exactitud_boundary": 1,
+        "relevancia_clinica": 1,
+        "ausencia_ruido": 5,
+        "justificacion": "No se detectó ninguna enfermedad, por lo que falla en completitud y exactitud, aunque no genera falsos positivos."
+      }
+    },
+    {
+      "doc_id": "ex_1",
+      "n_gold": 1,
+      "n_pred": 1,
+      "gold": [
+        "fractura de muñeca"
+      ],
+      "pred": [
+        "fractura de muñeca localizada en el pie"
+      ],
+      "score_normal": 3.5,
+      "score_inverted": 4.0,
+      "delta_posicion": 0.5,
+      "score_mitigado": 3.75,
+      "result_normal": {
+        "completitud": 5,
+        "exactitud_boundary": 3,
+        "relevancia_clinica": 3,
+        "ausencia_ruido": 3,
+        "justificacion": "Capturó la enfermedad gold pero añadió información incorrecta que afecta la precisión del límite y la validez clínica."
+      }
+    },
+    {
+      "doc_id": "ex_2",
+      "n_gold": 2,
+      "n_pred": 1,
+      "gold": [
+        "gripa",
+        "tos persistente"
+      ],
+      "pred": [
+        "gripa"
+      ],
+      "score_normal": 4.5,
+      "score_inverted": 4.5,
+      "delta_posicion": 0.0,
+      "score_mitigado": 4.5,
+      "result_normal": {
+        "completitud": 3,
+        "exactitud_boundary": 5,
+        "relevancia_clinica": 5,
+        "ausencia_ruido": 5,
+        "justificacion": "Detectó correctamente 'gripa' pero omitió 'tos persistente', sin errores adicionales."
+      }
+    },
+    {
+      "doc_id": "ex_3",
+      "n_gold": 3,
+      "n_pred": 3,
+      "gold": [
+        "diabetes mellitus tipo 2 descompensada",
+        "insuficiencia renal cronica",
+        "neumonia bilateral"
+      ],
+      "pred": [
+        "diabetes mellitus tipo 2 descompensada",
+        "insuficiencia renal cronica agudizada",
+        "neumonia bilateral"
+      ],
+      "score_normal": 4.75,
+      "score_inverted": 4.5,
+      "delta_posicion": 0.25,
+      "score_mitigado": 4.625,
+      "result_normal": {
+        "completitud": 5,
+        "exactitud_boundary": 4,
+        "relevancia_clinica": 5,
+        "ausencia_ruido": 5,
+        "justificacion": "Capturó todas las enfermedades gold; dos coincidencias exactas y una con exceso de calificativo, todas son términos clínicos válidos y sin falsos positivos."
+      }
+    },
+    {
+      "doc_id": "ex_4",
+      "n_gold": 3,
+      "n_pred": 2,
+      "gold": [
+        "cólicos menstruales",
+        "dismenorrea",
+        "sangrado vaginal abundante"
+      ],
+      "pred": [
+        "colicos menstruales",
+        "dismenorrea"
+      ],
+      "score_normal": 4.75,
+      "score_inverted": 4.5,
+      "delta_posicion": 0.25,
+      "score_mitigado": 4.625,
+      "result_normal": {
+        "completitud": 4,
+        "exactitud_boundary": 5,
+        "relevancia_clinica": 5,
+        "ausencia_ruido": 5,
+        "justificacion": "Capturó dos de tres enfermedades correctas, con nombres casi idénticos y sin falsos positivos."
+      }
+    },
+    {
+      "doc_id": "ex_5",
+      "n_gold": 2,
+      "n_pred": 2,
+      "gold": [
+        "apendicitis aguda",
+        "irritacion peritoneal"
+      ],
+      "pred": [
+        "apendicitis aguda",
+        "apendicitis complicada"
+      ],
+      "score_normal": 4.0,
+      "score_inverted": 3.0,
+      "delta_posicion": 1.0,
+      "score_mitigado": 3.5,
+      "result_normal": {
+        "completitud": 3,
+        "exactitud_boundary": 3,
+        "relevancia_clinica": 5,
+        "ausencia_ruido": 5,
+        "justificacion": "Capturó una de dos enfermedades gold y una coincidencia exacta, ambas predicciones son términos de enfermedad válidos sin falsos positivos."
+      }
+    },
+    {
+      "doc_id": "ex_6",
+      "n_gold": 1,
+      "n_pred": 1,
+      "gold": [
+        "shock hipovolemico"
+      ],
+      "pred": [
+        "shock hipovolemico secundario a sangrado digestivo alto"
+      ],
+      "score_normal": 4.5,
+      "score_inverted": 4.0,
+      "delta_posicion": 0.5,
+      "score_mitigado": 4.25,
+      "result_normal": {
+        "completitud": 5,
+        "exactitud_boundary": 3,
+        "relevancia_clinica": 5,
+        "ausencia_ruido": 5,
+        "justificacion": "Capturó el único término gold, aunque añadió modificadores que amplían el concepto, manteniendo relevancia clínica y sin falsos positivos."
+      }
+    },
+    {
+      "doc_id": "ex_7",
+      "n_gold": 3,
+      "n_pred": 2,
+      "gold": [
+        "ascitis",
+        "cirrosis hepatica bilateral",
+        "edema de miembros inferiores"
+      ],
+      "pred": [
+        "ascitis",
+        "cirrosis hepatica bilateral"
+      ],
+      "score_normal": 4.5,
+      "score_inverted": 5.0,
+      "delta_posicion": 0.5,
+      "score_mitigado": 4.75,
+      "result_normal": {
+        "completitud": 3,
+        "exactitud_boundary": 5,
+        "relevancia_clinica": 5,
+        "ausencia_ruido": 5,
+        "justificacion": "Capturó dos de tres enfermedades gold con coincidencia exacta y sin falsos positivos."
+      }
+    },
+    {
+      "doc_id": "ex_8",
+      "n_gold": 3,
+      "n_pred": 1,
+      "gold": [
+        "disuria",
+        "polaquiuria",
+        "prostatitis aguda"
+      ],
+      "pred": [
+        "prostatitis aguda"
+      ],
+      "score_normal": 4.25,
+      "score_inverted": 3.5,
+      "delta_posicion": 0.75,
+      "score_mitigado": 3.875,
+      "result_normal": {
+        "completitud": 2,
+        "exactitud_boundary": 5,
+        "relevancia_clinica": 5,
+        "ausencia_ruido": 5,
+        "justificacion": "Solo se detectó una de las tres enfermedades, pero la entidad encontrada coincide exactamente y es clínicamente válida sin falsos positivos."
+      }
+    },
+    {
+      "doc_id": "ex_9",
+      "n_gold": 3,
+      "n_pred": 1,
+      "gold": [
+        "fiebre",
+        "neumonia adquirida en la comunidad",
+        "tos productiva"
+      ],
+      "pred": [
+        "neumonia adquirida"
+      ],
+      "score_normal": 3.75,
+      "score_inverted": 3.0,
+      "delta_posicion": 0.75,
+      "score_mitigado": 3.375,
+      "result_normal": {
+        "completitud": 2,
+        "exactitud_boundary": 3,
+        "relevancia_clinica": 5,
+        "ausencia_ruido": 5,
+        "justificacion": "Capturó solo una de tres enfermedades y la truncó, pero el término es clínicamente válido y no hay falsos positivos."
+      }
+    }
+  ]
+}
