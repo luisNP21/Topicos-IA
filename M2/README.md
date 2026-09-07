@@ -27,10 +27,10 @@ cada dimension; el script es lo que se corre para generar el entregable final.
 
 ## Parte 1 — Los notebooks
 
-| Notebook | Autor | Que mide | Depende de |
+| Notebook | Que mide | Depende de |
 |---|---|---|---|
 | `dimension1_exact_match.ipynb` | ¿La prediccion coincide caracter a caracter con el gold? | Nada (punto de partida) |
-| `dimension1b_similitud_semantica.ipynb` | ¿La prediccion es semanticamente equivalente al gold, aunque el span no coincida exacto? | Salida de Luis (reusa las mismas predicciones) |
+| `dimension1b_similitud_semantica.ipynb` | ¿La prediccion es semanticamente equivalente al gold, aunque el span no coincida exacto? | Salida del notebook anterior (reusa las mismas predicciones) |
 | `llm_judge.ipynb` | ¿Un LLM juez califica la respuesta como buena, con controles de sesgo? | Nada (corre su propia inferencia) |
 | `harness.ipynb` | Junta las tres dimensiones anteriores en un scorecard unico con diagnostico de debilidad | Salidas de los tres notebooks anteriores |
 
