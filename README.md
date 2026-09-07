@@ -75,8 +75,35 @@ Cita: Miranda-Escalada, A., Eulàlia Farré, Luis Gasco, Salvador Lima& Martin K
 
 <!-- Ejemplo: F1 macro > 0.80 en enrutamiento; y que el funcionario acepte la
 sugerencia en ≥ 70% de los casos en la prueba con usuarios. -->
+A continuación se encuentran los scorecard del modelo para el dataset de ejemplos gold y el de ejemplos adversariales.
 
-> _¿Cómo mides que el sistema sirve? Métrica técnica y señal de valor real._
+# Scorecard -- M2 -- Evaluacion Clinical BERT (DisTEMIST)
+
+**Ejemplos evaluados:** 20 documentos gold tomados de DisTEMIST
+
+## Metricas globales
+
+| Dimension | Precision | Recall | F1 |
+|---|---|---|---|
+| Exact-match | 0.722 | 0.731 | 0.727 |
+| Similitud semantica | 0.922 | 0.934 | 0.928 |
+| LLM-as-judge (score 1-5) | -- | -- | 3.731 |
+
+**Ejemplos evaluados:** 10 documentos adversariales creados por el equipo
+
+## Metricas globales
+
+| Dimension | Precision | Recall | F1 |
+|---|---|---|---|
+| Exact-match | 0.571 | 0.333 | 0.421 |
+| Similitud semantica | 1.000 | 0.583 | 0.737 |
+| LLM-as-judge (score 1-5) | -- | -- | 3.975 |
+
+## Mitigacion de sesgos del juez
+
+- **Posicion:** delta medio = 0.403 (mitigado con promedio de score_normal y score_inverted)
+- **Longitud:** el juez premio calidad en 5/5 pares (100.0%)
+- **Auto-preferencia:** documentado, sin test cross-family disponible (limitacion)
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "proyecto": "M2 -- Evaluacion Clinical BERT (DisTEMIST)",
-  "n_ejemplos": 20,
+  "n_ejemplos": 10,
   "metricas_globales": {
     "exact_match": {
       "precision": 0.5714285714285714,
@@ -18,17 +18,17 @@
       "umbral": 0.6
     },
     "llm_judge": {
-      "score_juez_mean": 3.73125,
-      "score_juez_std": 0.41808421148703623,
-      "f1_exacto_mean": 0.7289019988061941
+      "score_juez_mean": 3.975,
+      "score_juez_std": 0.7163759100112485,
+      "f1_exacto_mean": 0.35333333333333333
     }
   },
   "mitigacion_sesgos_juez": {
     "posicion": {
-      "delta_mean": 0.4027777777777778,
-      "delta_max": 1.25,
-      "delta_median": 0.25,
-      "pct_delta_mayor_a_1": 0.05555555555555555,
+      "delta_mean": 0.55,
+      "delta_max": 1.0,
+      "delta_median": 0.5,
+      "pct_delta_mayor_a_1": 0.0,
       "mitigacion": "promedio de score_normal y score_inverted"
     },
     "longitud": {
@@ -47,169 +47,89 @@
     }
   },
   "distribucion_debilidad": {
-    "caso mixto": 6,
-    "funcionamiento correcto": 4,
-    "datos incompletos": 10
+    "caso mixto": 7,
+    "boundary/formato -- el modelo entiende, falla el limite del span": 2,
+    "funcionamiento correcto": 1
   },
   "detalle_por_doc": [
     {
       "doc_id": "ex_0",
-      "n_gold": 28,
-      "f1_exacto": 0.6538,
+      "n_gold": 3,
+      "f1_exacto": 0.0,
       "f1_semantico": 0.0,
-      "score_juez": 3.0,
+      "score_juez": 2.5,
       "debilidad": "caso mixto"
     },
     {
       "doc_id": "ex_1",
-      "n_gold": 25,
-      "f1_exacto": 0.7059,
+      "n_gold": 1,
+      "f1_exacto": 0.0,
       "f1_semantico": 1.0,
-      "score_juez": 3.5,
-      "debilidad": "funcionamiento correcto"
-    },
-    {
-      "doc_id": "ex_10",
-      "n_gold": 19,
-      "f1_exacto": 0.6154,
-      "f1_semantico": null,
       "score_juez": 3.75,
-      "debilidad": "datos incompletos"
-    },
-    {
-      "doc_id": "ex_11",
-      "n_gold": 19,
-      "f1_exacto": 0.5263,
-      "f1_semantico": null,
-      "score_juez": 3.375,
-      "debilidad": "datos incompletos"
-    },
-    {
-      "doc_id": "ex_12",
-      "n_gold": 19,
-      "f1_exacto": 0.7895,
-      "f1_semantico": null,
-      "score_juez": 4.125,
-      "debilidad": "datos incompletos"
-    },
-    {
-      "doc_id": "ex_13",
-      "n_gold": 18,
-      "f1_exacto": 0.8649,
-      "f1_semantico": null,
-      "score_juez": 4.375,
-      "debilidad": "datos incompletos"
-    },
-    {
-      "doc_id": "ex_14",
-      "n_gold": 17,
-      "f1_exacto": 0.6667,
-      "f1_semantico": null,
-      "score_juez": 3.625,
-      "debilidad": "datos incompletos"
-    },
-    {
-      "doc_id": "ex_15",
-      "n_gold": 17,
-      "f1_exacto": 0.6667,
-      "f1_semantico": null,
-      "score_juez": 3.125,
-      "debilidad": "datos incompletos"
-    },
-    {
-      "doc_id": "ex_16",
-      "n_gold": 16,
-      "f1_exacto": 0.7879,
-      "f1_semantico": null,
-      "score_juez": 3.625,
-      "debilidad": "datos incompletos"
-    },
-    {
-      "doc_id": "ex_17",
-      "n_gold": 15,
-      "f1_exacto": 0.6429,
-      "f1_semantico": null,
-      "score_juez": 3.125,
-      "debilidad": "datos incompletos"
-    },
-    {
-      "doc_id": "ex_18",
-      "n_gold": 15,
-      "f1_exacto": 0.7143,
-      "f1_semantico": null,
-      "score_juez": 3.875,
-      "debilidad": "datos incompletos"
-    },
-    {
-      "doc_id": "ex_19",
-      "n_gold": 15,
-      "f1_exacto": 0.8571,
-      "f1_semantico": null,
-      "score_juez": 4.5,
-      "debilidad": "datos incompletos"
+      "debilidad": "boundary/formato -- el modelo entiende, falla el limite del span"
     },
     {
       "doc_id": "ex_2",
-      "n_gold": 24,
-      "f1_exacto": 0.68,
+      "n_gold": 2,
+      "f1_exacto": 0.6667,
       "f1_semantico": 0.6667,
-      "score_juez": 3.875,
+      "score_juez": 4.5,
       "debilidad": "caso mixto"
     },
     {
       "doc_id": "ex_3",
-      "n_gold": 23,
-      "f1_exacto": 0.6939,
+      "n_gold": 3,
+      "f1_exacto": 0.6667,
+      "f1_semantico": 1.0,
+      "score_juez": 4.625,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_4",
+      "n_gold": 3,
+      "f1_exacto": 0.4,
+      "f1_semantico": 0.8,
+      "score_juez": 4.625,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_5",
+      "n_gold": 2,
+      "f1_exacto": 0.5,
       "f1_semantico": 1.0,
       "score_juez": 3.5,
       "debilidad": "caso mixto"
     },
     {
-      "doc_id": "ex_4",
-      "n_gold": 22,
-      "f1_exacto": 0.8085,
-      "f1_semantico": 0.8,
-      "score_juez": 4.25,
-      "debilidad": "funcionamiento correcto"
-    },
-    {
-      "doc_id": "ex_5",
-      "n_gold": 21,
-      "f1_exacto": 0.7273,
-      "f1_semantico": 1.0,
-      "score_juez": 3.625,
-      "debilidad": "funcionamiento correcto"
-    },
-    {
       "doc_id": "ex_6",
-      "n_gold": 20,
-      "f1_exacto": 0.9268,
+      "n_gold": 1,
+      "f1_exacto": 0.0,
       "f1_semantico": 1.0,
       "score_juez": 4.25,
-      "debilidad": "funcionamiento correcto"
+      "debilidad": "boundary/formato -- el modelo entiende, falla el limite del span"
     },
     {
       "doc_id": "ex_7",
-      "n_gold": 20,
-      "f1_exacto": 0.65,
+      "n_gold": 3,
+      "f1_exacto": 0.8,
       "f1_semantico": 0.8,
-      "score_juez": 3.625,
-      "debilidad": "caso mixto"
+      "score_juez": 4.75,
+      "debilidad": "funcionamiento correcto"
     },
     {
       "doc_id": "ex_8",
-      "n_gold": 19,
-      "f1_exacto": 0.8108,
+      "n_gold": 3,
+      "f1_exacto": 0.5,
       "f1_semantico": 0.5,
-      "score_juez": 3.625,
+      "score_juez": 3.875,
       "debilidad": "caso mixto"
     },
     {
       "doc_id": "ex_9",
-      "n_gold": 19,
-      "f1_exacto": 0.7895,
+      "n_gold": 3,
+      "f1_exacto": 0.0,
       "f1_semantico": 0.5,
-      "score_juez": 3.875,
+      "score_juez": 3.375,
       "debilidad": "caso mixto"
     }
   ]
