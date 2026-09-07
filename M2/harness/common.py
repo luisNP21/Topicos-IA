@@ -7,7 +7,26 @@ metrics_semantic.py y metrics_judge.py sin duplicacion.
 
 import re
 import string
+import random
+import sys
+from datetime import datetime
+import numpy as np
 
+
+def log(msg: str):
+    ts = datetime.now().strftime("%H:%M:%S")
+    print(f"[{ts}] {msg}")
+    sys.stdout.flush()
+
+
+def fijar_seeds(seed: int):
+    random.seed(seed)
+    np.random.seed(seed)
+    try:
+        import torch
+        torch.manual_seed(seed)
+    except ImportError:
+        pass
 
 def normalizar_entidad(e: str) -> str:
     """Quita puntuacion de borde que es artefacto de tokenizar con .split()."""
