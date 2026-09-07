@@ -11,7 +11,7 @@ paquetes_requeridos:
   - torchao
 
 rutas:
-  gold_set: "M2/eval_harness/gold_examples_20.jsonl"
+  gold_set: "M2/eval_harness/gold_examples_adversariales.jsonl"
   outputs_dir: "M2/outputs"
   model_dir: "M1/saved_models/clinical_bert-distemist-lora"
 
