@@ -6,8 +6,10 @@
   `MyDrive/TopicosIA/Proyecto-Salud/M1/saved_models/clinical_bert-distemist-lora/`
 - Tener el gold set correspondiente al notebook elegido en:
   `MyDrive/TopicosIA/Proyecto-Salud/M2/eval_harness/`
-- Crear una API key de Groq y guardarla en los secretos de Colab con el nombre
-  `GROQ_API_KEY`.
+- Crear una API key de Groq (en console.groq.com/keys) y agregarla en la ventana de **Secretos / Keys** de Colab (icono de llave  en la barra lateral izquierda):
+  - **Nombre:** `GROQ_API_KEY`
+  - **Valor:** tu clave de Groq (`gsk_...`)
+  - Asegurarse de activar el interruptor de **Acceso de Notebook** (*Notebook access*).
 
 ## Configuracion
 
@@ -28,7 +30,7 @@ Durante la ejecucion del notebook tambien se utilizan las variables
 1. Cargar en Google Colab uno de estos notebooks:
   - `start_gold.ipynb` para evaluar el gold set normal.
   - `start_adversarial.ipynb` para evaluar el gold set adversarial.
-2. Crear el secreto `GROQ_API_KEY` en Colab.
+2. Asegurarse de tener la key `GROQ_API_KEY` configurada y activa en la ventana de Secretos de Colab.
 3. Ejecutar las celdas en orden y autorizar el acceso a Google Drive cuando Colab lo solicite.
 4. Verificar o ajustar en `M2/harness/config.yaml` estas variables:
 

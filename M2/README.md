@@ -76,8 +76,10 @@ archivos, sin tener que re-ejecutar todo.
 2. Verificar en la celda de rutas que `MODEL_DIR` y `GOLD_SET_PATH` existan (`.exists()` en
    `True`) antes de seguir. Si `MODEL_DIR` no existe, el modelo LoRA no se subio a Drive
    todavia o la ruta cambio.
-3. En `04_llm_judge.ipynb` y en `harness.ipynb`, pegar la `GROQ_API_KEY` en la celda
-   correspondiente, o guardarla en Colab Secrets con ese mismo nombre.
+3. Para la evaluación con LLM juez (`04_llm_judge.ipynb` y `harness.ipynb`), se requiere una API key de Groq (gratuita en console.groq.com/keys). En Google Colab, se debe agregar en la ventana de secretos / keys (icono de llave  en la barra lateral izquierda):
+   - **Nombre:** `GROQ_API_KEY`
+   - **Valor:** tu clave `gsk_...`
+   - Activar la casilla **Acceso de Notebook** (*Notebook access*).
 4. Correr todo de arriba a abajo. `harness.ipynb` es el mas largo (77 celdas, reproduce las
    tres dimensiones): puede tardar varios minutos, sobre todo en la Seccion 7 (llamadas al
    LLM juez).
@@ -164,7 +166,7 @@ python run_harness.py --config config.yaml
 ```
 
 Antes de ejecutarlo, verificar que el adaptador LoRA y el gold set correspondiente existan
-en las rutas configuradas en `config.yaml`, y crear el secreto `GROQ_API_KEY` en Colab.
+en las rutas configuradas en `config.yaml`, y agregar la clave `GROQ_API_KEY` en la ventana de secretos/keys de Colab (icono de llave  en el menú lateral izquierdo, habilitando la opción de acceso al notebook).
 Las instrucciones detalladas estan en [`ejecucion/README.md`](ejecucion/README.md).
 
 ### Salidas del script
