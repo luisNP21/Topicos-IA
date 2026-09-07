@@ -142,9 +142,7 @@ def _generar_markdown(scorecard: dict, path):
     )
 
     texto = "\n".join(lineas)
-
-    with open(rutas["scorecard_json_path"], "w", encoding="utf-8") as f:
-            json.dump(scorecard, f, indent=2, ensure_ascii=False)
-
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(texto)
     print(f"Scorecard (Markdown) guardado en: {path}")
     print(texto)
