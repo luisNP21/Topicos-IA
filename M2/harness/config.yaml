@@ -11,7 +11,7 @@ paquetes_requeridos:
   - torchao
 
 rutas:
-  gold_set: "M2/eval_harness/gold_examples_3.jsonl"
+  gold_set: "M2/eval_harness/gold_examples_20.jsonl"
   outputs_dir: "M2/outputs"
   model_dir: "M1/saved_models/clinical_bert-distemist-lora"
 
@@ -41,7 +41,7 @@ dimension1b_similitud_semantica:
     seed: 42
 
 dimension3_llm_judge:
-  judge_model: "openai/gpt-oss-20b"
+  judge_model: "openai/gpt-oss-120b"
   judge_provider: "groq"
   judge_temperature: 0.0
   judge_max_tokens: 1500
