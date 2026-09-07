@@ -207,11 +207,23 @@ def cargar_rich_examples(dim1_path) -> list[dict]:
     return rich_examples
 
 
-def medir_sesgo_posicion(rich_examples: list[dict], judge: JudgeClient) -> tuple[list, pd.Series]:
+def medir_sesgo_posicion(rich_examples: list[dict], judge: JudgeClient, checkpoint_path=None) -> tuple[list, "pd.Series"]:
     print(f"Corriendo juez (normal + invertido) sobre {len(rich_examples)} ejemplos...")
+
+    # Si ya existe un checkpoint parcial de una corrida anterior, retomar desde ahi
+    # en vez de volver a pagar las llamadas ya hechas.
     position_results = []
+    ya_procesados = set()
+    if checkpoint_path and checkpoint_path.exists():
+        with open(checkpoint_path, "r", encoding="utf-8") as f:
+            position_results = json.load(f)["position_results"]
+        ya_procesados = {r["doc_id"] for r in position_results}
+        print(f"Checkpoint encontrado: {len(position_results)} ejemplos ya procesados, se retoma desde ahi.")
 
     for i, doc in enumerate(rich_examples):
+        if doc["doc_id"] in ya_procesados:
+            continue
+
         print(f"  [{i + 1}/{len(rich_examples)}] {doc['doc_id']}")
         result_normal = judge.call(doc["gold"], doc["pred"], order="normal")
         score_normal = compute_score(result_normal)
@@ -229,6 +241,12 @@ def medir_sesgo_posicion(rich_examples: list[dict], judge: JudgeClient) -> tuple
             "delta_posicion": delta, "score_mitigado": score_mitigado,
             "result_normal": result_normal,
         })
+
+        # Escritura incremental -- si algo falla en el siguiente ejemplo,
+        # todo lo hecho hasta aca ya esta a salvo en disco.
+        if checkpoint_path:
+            with open(checkpoint_path, "w", encoding="utf-8") as f:
+                json.dump({"position_results": position_results}, f, indent=2, ensure_ascii=False)
 
     df_pos = pd.DataFrame(position_results)
     deltas = df_pos["delta_posicion"].dropna()
@@ -314,7 +332,8 @@ def run(cfg: dict, project_root) -> dict:
 
     rich_examples = cargar_rich_examples(rutas["dim1_path"])
 
-    position_results, deltas = medir_sesgo_posicion(rich_examples, judge)
+    checkpoint_path = rutas["output_dir"] / "checkpoint_sesgo_posicion.json"
+    position_results, deltas = medir_sesgo_posicion(rich_examples, judge, checkpoint_path=checkpoint_path)
 
     scorecard_rows = []
     for row in position_results:
@@ -327,7 +346,11 @@ def run(cfg: dict, project_root) -> dict:
     df_sc = pd.DataFrame(scorecard_rows)
     df_sc["patron"] = df_sc.apply(classify_pattern, axis=1)
 
-    pares_longitud_path = project_root / "harness" / judge_cfg["pares_longitud_path"]
+    from pathlib import Path as _Path
+    _HARNESS_DIR = _Path(__file__).resolve().parent  # carpeta donde vive metrics_judge.py
+
+    pares_longitud_path = _HARNESS_DIR / judge_cfg["pares_longitud_path"]
+
     with open(pares_longitud_path, "r", encoding="utf-8") as f:
         pares_longitud = json.load(f)
     df_len, n_ok, n_total = medir_sesgo_longitud(pares_longitud, judge)
