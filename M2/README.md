@@ -12,7 +12,7 @@ proyecto.
 
 | | Notebooks | Script (`run_harness.py`) |
 |---|---|---|
-| Entorno | Google Colab, monta Drive | Cualquier maquina con Python, sin Colab |
+| Entorno | Google Colab, monta Drive | Cualquier maquina con Python, sin Colab obligatorio|
 | Configuracion | variables hardcodeadas al inicio de cada notebook | `.env` + `config.yaml`, versionados |
 | Ejecucion | celda por celda, manual | `python run_harness.py --config config.yaml` |
 | Uso previsto | revisar/depurar una dimension en detalle, iterar | correr todo de una sola vez, reproducible, para entregar |
