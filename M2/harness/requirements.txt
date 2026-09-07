@@ -1,0 +1,11 @@
+torch==2.x.x
+transformers==4.4x.x
+peft==0.1x.x
+sentence-transformers==3.x.x
+scipy==1.x.x
+numpy==1.x.x
+pandas==2.x.x
+pyyaml==6.x.x
+python-dotenv==1.x.x
+groq==0.x.x
+datasets==3.x.x

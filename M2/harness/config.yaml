@@ -1,0 +1,56 @@
+proyecto:
+  nombre: "M2 -- Evaluacion Clinical BERT (DisTEMIST)"
+  seed_global: 42
+
+paquetes_requeridos:
+  - groq
+  - peft
+  - datasets
+  - transformers
+  - accelerate
+  - torchao
+
+rutas:
+  gold_set: "M2/eval_harness/gold_examples.jsonl"
+  outputs_dir: "M2/outputs"
+  model_dir: "M1/saved_models/clinical_bert-distemist-lora"
+
+archivos_salida:
+  dimension1: "resultado_dimension1.json"
+  dimension1b: "resultado_dimension1b.json"
+  dimension3: "resultado_dimension3.json"
+  scorecard_json: "scorecard_m2.json"
+  scorecard_md: "scorecard_m2.md"
+
+modelo:
+  base_checkpoint: "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es"
+  label_list: ["O", "B-ENFERMEDAD", "I-ENFERMEDAD"]
+
+chunking:
+  # Valores fijos, calculados una vez en 02_dataset_chunking_and_splits.ipynb.
+  # NO recalcular aca -- deben ser identicos a los usados en entrenamiento.
+  window_words: 277
+  overlap_words: 50
+
+dimension1b_similitud_semantica:
+  modelo_embeddings: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+  funcion_similitud: "emb"
+  algoritmo_asignacion: "hungaro"
+  calibracion_umbral:
+    n_pares_negativos: 4000
+    seed: 42
+
+dimension3_llm_judge:
+  judge_model: "openai/gpt-oss-120b"
+  judge_provider: "groq"
+  judge_temperature: 0.0
+  judge_max_tokens: 1500
+  fallar_si_modelo_no_disponible: true
+  pares_longitud_path: "length_bias_pairs.json"
+
+scorecard:
+  umbrales_debilidad:
+    f1_bajo: 0.2
+    f1_alto: 0.7
+    score_juez_bajo: 2.5
+    score_juez_alto: 3.5

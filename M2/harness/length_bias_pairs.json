@@ -1,0 +1,39 @@
+[
+  {
+    "tipo": "A", "descripcion": "Correcta corta vs. Incorrecta larga",
+    "gold": ["neumonía", "sepsis"],
+    "pred_correcta": ["neumonía"],
+    "pred_incorrecta": ["hiperglucemia", "dislipidemia", "hipotiroidismo",
+                         "artritis reumatoide", "fibromialgia",
+                         "esclerosis múltiple", "enfermedad de crohn", "psoriasis"]
+  },
+  {
+    "tipo": "A", "descripcion": "Correcta corta vs. Incorrecta larga",
+    "gold": ["infarto agudo de miocardio", "insuficiencia cardiaca", "fibrilación auricular"],
+    "pred_correcta": ["infarto agudo de miocardio"],
+    "pred_incorrecta": ["diabetes mellitus tipo 2", "hipertensión arterial",
+                         "anemia ferropénica", "neuropatía diabética",
+                         "retinopatía diabética", "enfermedad renal crónica", "osteoporosis"]
+  },
+  {
+    "tipo": "B", "descripcion": "Correcta larga vs. Incorrecta corta",
+    "gold": ["neumonía", "sepsis", "insuficiencia respiratoria aguda"],
+    "pred_correcta": ["neumonía", "sepsis", "insuficiencia respiratoria aguda"],
+    "pred_incorrecta": ["fibromialgia"]
+  },
+  {
+    "tipo": "B", "descripcion": "Correcta larga vs. Incorrecta corta",
+    "gold": ["carcinoma ductal infiltrante", "metástasis hepática",
+             "anemia", "trombocitopenia", "neutropenia febril"],
+    "pred_correcta": ["carcinoma ductal infiltrante", "metástasis hepática",
+                       "anemia", "trombocitopenia"],
+    "pred_incorrecta": ["psoriasis"]
+  },
+  {
+    "tipo": "A", "descripcion": "Correcta vacía vs. Incorrecta larga (FP puros)",
+    "gold": [],
+    "pred_correcta": [],
+    "pred_incorrecta": ["artritis", "hipertensión", "diabetes",
+                         "anemia", "fibromialgia", "neuropatía"]
+  }
+]
