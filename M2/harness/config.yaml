@@ -54,3 +54,4 @@ scorecard:
     f1_alto: 0.7
     score_juez_bajo: 2.5
     score_juez_alto: 3.5
+  archivo_salida_json: "scorecard_m2.json y scorecard_m2.md"
