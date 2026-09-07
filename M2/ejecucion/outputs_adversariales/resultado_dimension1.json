@@ -1,0 +1,119 @@
+{
+  "dimension": "metrica_clasica_exact_match",
+  "rol": "luis",
+  "modelo": "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es",
+  "adaptador_lora": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M1/saved_models/clinical_bert-distemist-lora",
+  "gold_set": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/eval_harness/gold_examples_adversariales.jsonl",
+  "n_ejemplos_evaluados": 10,
+  "metrics": {
+    "precision": 0.5714285714285714,
+    "recall": 0.3333333333333333,
+    "f1": 0.4210526315789474,
+    "tp": 8,
+    "fp": 6,
+    "fn": 16
+  },
+  "true_by_doc": {
+    "ex_0": [
+      "fiebre",
+      "mocos",
+      "muerto"
+    ],
+    "ex_1": [
+      "fractura de muñeca"
+    ],
+    "ex_2": [
+      "gripa",
+      "tos persistente"
+    ],
+    "ex_3": [
+      "diabetes mellitus tipo 2 descompensada",
+      "insuficiencia renal cronica",
+      "neumonia bilateral"
+    ],
+    "ex_4": [
+      "cólicos menstruales",
+      "dismenorrea",
+      "sangrado vaginal abundante"
+    ],
+    "ex_5": [
+      "apendicitis aguda",
+      "irritacion peritoneal"
+    ],
+    "ex_6": [
+      "shock hipovolemico"
+    ],
+    "ex_7": [
+      "ascitis",
+      "cirrosis hepatica bilateral",
+      "edema de miembros inferiores"
+    ],
+    "ex_8": [
+      "disuria",
+      "polaquiuria",
+      "prostatitis aguda"
+    ],
+    "ex_9": [
+      "fiebre",
+      "neumonia adquirida en la comunidad",
+      "tos productiva"
+    ]
+  },
+  "pred_by_doc": {
+    "ex_0": [],
+    "ex_1": [
+      "fractura de muñeca localizada en el pie"
+    ],
+    "ex_2": [
+      "gripa"
+    ],
+    "ex_3": [
+      "diabetes mellitus tipo 2 descompensada",
+      "insuficiencia renal cronica agudizada",
+      "neumonia bilateral"
+    ],
+    "ex_4": [
+      "colicos menstruales",
+      "dismenorrea"
+    ],
+    "ex_5": [
+      "apendicitis aguda",
+      "apendicitis complicada"
+    ],
+    "ex_6": [
+      "shock hipovolemico secundario a sangrado digestivo alto"
+    ],
+    "ex_7": [
+      "ascitis",
+      "cirrosis hepatica bilateral"
+    ],
+    "ex_8": [
+      "prostatitis aguda"
+    ],
+    "ex_9": [
+      "neumonia adquirida"
+    ]
+  },
+  "casos_boundary": [
+    {
+      "doc_id": "ex_1",
+      "predicho": "fractura de muñeca localizada en el pie",
+      "gold": "fractura de muñeca"
+    },
+    {
+      "doc_id": "ex_3",
+      "predicho": "insuficiencia renal cronica agudizada",
+      "gold": "insuficiencia renal cronica"
+    },
+    {
+      "doc_id": "ex_6",
+      "predicho": "shock hipovolemico secundario a sangrado digestivo alto",
+      "gold": "shock hipovolemico"
+    },
+    {
+      "doc_id": "ex_9",
+      "predicho": "neumonia adquirida",
+      "gold": "neumonia adquirida en la comunidad"
+    }
+  ]
+}
