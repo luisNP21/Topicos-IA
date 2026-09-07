@@ -21,9 +21,7 @@ No son fuentes independientes de verdad — el script reimplementa la misma logi
 valido en los notebooks, refactorizada en modulos importables (`common.py`,
 `metrics_exact.py`, `metrics_semantic.py`, `metrics_judge.py`, `scorecard.py`) para poder
 correr sin abrir Colab. Los notebooks siguen siendo la referencia para entender y depurar
-cada dimension; el script es lo que se corre para generar el entregable final. **Ver la
-seccion de pendientes: hay diferencias de nombre de archivo entre ambos que hay que
-resolver antes de tratarlos como intercambiables.**
+cada dimension; el script es lo que se corre para generar el entregable final.
 
 ---
 
@@ -112,8 +110,7 @@ pip install -r requirements.txt
 | `PyYAML` | 6.0.3 | Leer `config.yaml` |
 | `python-dotenv` | 1.2.3 | Leer `.env` |
 
-`environment.asegurar_paquetes()` es un respaldo de auto-instalacion, **no cubre toda la
-lista de arriba** (ver pendientes) — usar `pip install -r requirements.txt` como mecanismo
+`environment.asegurar_paquetes()` es un respaldo de auto-instalacion, usar `pip install -r requirements.txt` como mecanismo
 principal, tal como dice el propio docstring del modulo.
 
 ### Configuracion
@@ -129,10 +126,10 @@ GROQ_API_KEY=gsk_...
 | Clave | Valor actual | Notas |
 |---|---|---|
 | `proyecto.seed_global` | 42 | misma semilla en los 4 notebooks y el script |
-| `rutas.gold_set` | `M2/eval_harness/gold_examples_20.jsonl` | **distinto al `gold_examples.jsonl` de los notebooks — ver pendiente 3** |
+| `rutas.gold_set` | `M2/eval_harness/gold_examples_20.jsonl` | **distinto al `gold_examples.jsonl` de los notebooks** |
 | `rutas.model_dir` | `M1/saved_models/clinical_bert-distemist-lora` | requiere `adapter_config.json` + `adapter_model.safetensors` |
 | `modelo.base_checkpoint` | `PlanTL-GOB-ES/roberta-base-biomedical-clinical-es` | |
-| `chunking.window_words` / `overlap_words` | 277 / 50 | **ver pendiente 1** |
+| `chunking.window_words` / `overlap_words` | 277 / 50 |  |
 | `dimension1b_similitud_semantica.modelo_embeddings` | `paraphrase-multilingual-MiniLM-L12-v2` | |
 | `dimension1b...calibracion_umbral` | 4000 pares negativos, seed 42 | |
 | `dimension3_llm_judge.judge_model` | `openai/gpt-oss-120b` (via Groq) | temperatura 0.0 |
@@ -208,5 +205,4 @@ juntas.
   exact-match — correr `--solo semantica` o `--solo judge` aislado no reimprime versiones
   de librerias, pero la seed ya quedo fijada antes por `run_harness.py`).
 - Las rutas de entrada/salida son las mismas dentro de cada sistema (notebooks entre si,
-  script consigo mismo) pero **no coinciden exactamente entre notebooks y script** — ver
-  pendiente 2.
+  script consigo mismo) pero **no coinciden exactamente entre notebooks y script**.
