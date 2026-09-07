@@ -77,11 +77,11 @@ Cita: Miranda-Escalada, A., Eulàlia Farré, Luis Gasco, Salvador Lima& Martin K
 sugerencia en ≥ 70% de los casos en la prueba con usuarios. -->
 A continuación se encuentran los scorecard del modelo para el dataset de ejemplos gold y el de ejemplos adversariales.
 
-# Scorecard -- M2 -- Evaluacion Clinical BERT (DisTEMIST)
+### Scorecard  M2 - Evaluacion Clinical BERT (DisTEMIST)
 
 **Ejemplos evaluados:** 20 documentos gold tomados de DisTEMIST
 
-## Metricas globales
+ Metricas globales
 
 | Dimension | Precision | Recall | F1 |
 |---|---|---|---|
@@ -91,7 +91,7 @@ A continuación se encuentran los scorecard del modelo para el dataset de ejempl
 
 **Ejemplos evaluados:** 10 documentos adversariales creados por el equipo
 
-## Metricas globales
+Metricas globales
 
 | Dimension | Precision | Recall | F1 |
 |---|---|---|---|
