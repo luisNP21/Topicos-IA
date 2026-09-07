@@ -31,7 +31,7 @@ cada dimension; el script es lo que se corre para generar el entregable final.
 |---|---|---|---|
 | `dimension1_exact_match.ipynb` | Luis | ¿La prediccion coincide caracter a caracter con el gold? | Nada (punto de partida) |
 | `dimension1b_similitud_semantica.ipynb` | Pau | ¿La prediccion es semanticamente equivalente al gold, aunque el span no coincida exacto? | Salida de Luis (reusa las mismas predicciones) |
-| `04_llm_judge.ipynb` | Agustin | ¿Un LLM juez califica la respuesta como buena, con controles de sesgo? | Nada (corre su propia inferencia) |
+| `llm_judge.ipynb` | Agustin | ¿Un LLM juez califica la respuesta como buena, con controles de sesgo? | Nada (corre su propia inferencia) |
 | `harness.ipynb` | Isa | Junta las tres dimensiones anteriores en un scorecard unico con diagnostico de debilidad | Salidas de los tres notebooks anteriores |
 
 **Nota importante:** `harness.ipynb` no es un cuarto analisis independiente — reimplementa
@@ -152,6 +152,21 @@ python run_harness.py --config config.yaml --solo scorecard   # requiere que las
 `verificar_prerequisitos()` corre antes que nada y falla rapido (gold set, adaptador LoRA,
 `GROQ_API_KEY`) en vez de tronar a mitad de la dimension 3 despues de haber gastado tiempo
 en las dos primeras.
+
+### Ejecucion del script desde Google Colab
+
+Para ejecutar el script en Colab, cargar en Google Colab alguno de los notebooks
+`ejecucion/start_gold.ipynb` o `ejecucion/start_adversarial.ipynb`, segun el gold set que se
+quiera evaluar, y correr sus celdas en orden. El notebook monta Google Drive, instala los
+requerimientos, configura `PROJECT_ROOT` y `GROQ_API_KEY`, y ejecuta:
+
+```bash
+python run_harness.py --config config.yaml
+```
+
+Antes de ejecutarlo, verificar que el adaptador LoRA y el gold set correspondiente existan
+en las rutas configuradas en `config.yaml`, y crear el secreto `GROQ_API_KEY` en Colab.
+Las instrucciones detalladas estan en [`ejecucion/README.md`](ejecucion/README.md).
 
 ### Salidas del script
 
