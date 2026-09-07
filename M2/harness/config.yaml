@@ -41,7 +41,7 @@ dimension1b_similitud_semantica:
     seed: 42
 
 dimension3_llm_judge:
-  judge_model: "openai/gpt-oss-120b"
+  judge_model: "openai/gpt-oss-20b"
   judge_provider: "groq"
   judge_temperature: 0.0
   judge_max_tokens: 1500
