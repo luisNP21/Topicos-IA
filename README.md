@@ -90,6 +90,8 @@ A continuación se encuentran los scorecard del modelo para el dataset de ejempl
 | LLM-as-judge (score 1-5) | -- | -- | 3.869 |
 | Aciertos de dominio (si/no) | -- | -- | 0.593 |
 
+> **Como leer la tabla.** Las columnas Precision/Recall solo aplican a las metricas de clasificacion (exact-match y similitud semantica), que cuentan aciertos y errores. Las dos ultimas filas no son de ese tipo y por eso se marcan con `--` (no aplica, **no es un dato faltante**): el **LLM-as-judge** es una escala 1-5 y su valor es el promedio de notas; **Aciertos de dominio** es una proporcion si/no y su valor es la tasa de cumplimiento del criterio (aciertos / total). Derivar precision/recall de esas filas exigiria un gold humano de "cumple / no cumple" que no existe.
+
 **Ejemplos evaluados:** 10 documentos adversariales creados por el equipo
 
 Metricas globales
@@ -100,6 +102,8 @@ Metricas globales
 | Similitud semantica | 1.000 | 0.583 | 0.737 |
 | LLM-as-judge (score 1-5) | -- | -- | 3.950 |
 | Aciertos de dominio (si/no) | -- | -- | 0.300 |
+
+> La nota de "Como leer la tabla" de arriba aplica igual a esta tabla: `--` significa "no aplica" para Precision/Recall en las dimensiones de juez (escala) y de dominio (tasa).
 
 ## Mitigacion de sesgos del juez
 
