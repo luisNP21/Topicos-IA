@@ -77,9 +77,21 @@ Evalua la prediccion del 1 al 5 en cada dimension, con estas anclas explicitas:
 Ademas responde la pregunta binaria de dominio, que es la que define el
 "acierto de dominio" del harness (S06, Dimension 3):
 
-- **cumple_criterio**: "si" si la prediccion cumple el criterio de ESTE caso
-  (el recall y la precision exigidos arriba); "no" en caso contrario.
-  No respondas "si" por cortesia: si el recall o la precision no cumplen, es "no".
+- **cumple_criterio**: responde "si" cuando la prediccion es UTIL para el
+  criterio de ESTE caso; "no" cuando no lo es. Regla objetiva para decidir:
+    * "si" si la mayoria de las enfermedades gold estan capturadas (completitud
+      >= 4) Y las que se detectan son clinicamente validas (relevancia >= 4) Y no
+      hay ruido grave (ausencia_ruido >= 3). Los errores leves de boundary/formato
+      NO impiden el "si": una lista util con un limite de span imperfecto sigue
+      sirviendo a un clinico.
+    * "no" si falta una parte sustancial de las enfermedades, o si domina el
+      ruido (falsos positivos), o si hay entidades inventadas.
+  Referencia cuantitativa (usala para no dudar): si la prediccion captura
+  aproximadamente el 75% o mas de las enfermedades gold y no tiene ruido grave,
+  la respuesta es "si" aunque falte alguna entidad. Ejemplo: gold de 4 entidades
+  y la prediccion acierta 3 -> es "si" (cumple). gold de 4 y acierta 2 -> es "no".
+  No respondas "si" por cortesia, pero tampoco exijas perfeccion: el "si" es
+  "esto sirve para el criterio del caso", no "esto es identico al gold".
 
 ## Respuesta
 Responde UNICAMENTE con JSON valido, sin texto adicional:
@@ -199,14 +211,36 @@ def compute_score(d: dict) -> float | None:
 
 
 class JudgeClient:
-    """Encapsula el cliente Groq y el estado de deteccion de JSON mode."""
+    """Encapsula el cliente Groq y el estado de deteccion de JSON mode.
+
+    Soporta ROTACION DE CLAVES: Groq aplica un cupo diario por organizacion
+    (200.000 tokens/dia en el tier gratuito). Cuando una clave agota su cupo se
+    pasa automaticamente a la siguiente, de modo que varias cuentas gratuitas
+    suman su cupo para completar la corrida en un solo dia.
+    """
 
     def __init__(self, api_key: str, model: str, temperature: float, max_tokens: int,
-                 fallar_si_no_disponible: bool = True):
-        self.client = Groq(api_key=api_key)
+                 fallar_si_no_disponible: bool = True, pausa_entre_llamadas: float = 1.0,
+                 max_reintentos_rate_limit: int = 8, api_keys: list | None = None):
+        # api_keys permite pasar varias; 'api_key' se mantiene por compatibilidad.
+        claves = [k for k in (api_keys or [api_key]) if k]
+        # Se eliminan duplicados conservando el orden.
+        self.api_keys = list(dict.fromkeys(claves))
+        if not self.api_keys:
+            raise RuntimeError("No se recibio ninguna GROQ_API_KEY para el juez.")
+
         self.model = model
         self.temperature = temperature
         self.max_tokens = max_tokens
+        # Groq aplica limites por minuto (TPM/OTPM/RPM). Sin pausa, una rafaga de
+        # llamadas los agota y genera 429 en cadena. Esta pausa espacia las
+        # peticiones para mantenerse por debajo del cupo del tier gratuito.
+        self.pausa_entre_llamadas = pausa_entre_llamadas
+        self.max_reintentos_rate_limit = max_reintentos_rate_limit
+
+        self._key_idx = 0
+        self.client = Groq(api_key=self.api_keys[0])
+        print(f"[juez] {len(self.api_keys)} clave(s) de Groq cargada(s).")
 
         if not self._test_ping(model):
             raise RuntimeError(
@@ -217,6 +251,16 @@ class JudgeClient:
         print(f"[OK] Modelo juez '{model}' verificado.")
 
         self.supports_json_mode = self._detectar_json_mode()
+
+    def _rotar_clave(self) -> bool:
+        """Pasa a la siguiente clave con cupo. False si ya no quedan claves."""
+        if self._key_idx + 1 >= len(self.api_keys):
+            return False
+        self._key_idx += 1
+        self.client = Groq(api_key=self.api_keys[self._key_idx])
+        print(f"    [claves] cupo agotado -> rotando a la clave "
+              f"{self._key_idx + 1}/{len(self.api_keys)}")
+        return True
 
     def _test_ping(self, model_name: str) -> bool:
         try:
@@ -246,10 +290,14 @@ class JudgeClient:
 
     def _complete(self, system: str, user: str, retry: int = 5, sleep_s: float = 1.0,
                   use_json: bool = False) -> str:
-        """Llamada base con reintentos. Devuelve el texto crudo del juez."""
+        """Llamada base con reintentos y espaciado. Devuelve el texto crudo del juez."""
         use_json_mode = use_json and self.supports_json_mode
+        rate_limit_seguidos = 0
         for attempt in range(retry):
             try:
+                # Espaciado preventivo contra los limites por minuto de Groq.
+                time.sleep(self.pausa_entre_llamadas)
+
                 kwargs = {
                     "model": self.model,
                     "messages": [
@@ -263,31 +311,80 @@ class JudgeClient:
                     kwargs["response_format"] = {"type": "json_object"}
 
                 response = self.client.chat.completions.create(**kwargs)
+                content = response.choices[0].message.content or ""
+                finish = getattr(response.choices[0], "finish_reason", None)
+
+                # gpt-oss-120b (y otros modelos de razonamiento) consumen tokens
+                # internos de reasoning. Si finish_reason == 'length', el presupuesto
+                # de tokens se agoto antes de emitir el JSON: no sirve reintentar
+                # igual, hay que subir el limite.
+                if finish == "length" and not content.strip():
+                    nuevo_limite = min(self.max_tokens * 2, 8000)
+                    if nuevo_limite > kwargs["max_tokens"]:
+                        print(f"    [Ajuste] finish_reason='length' sin contenido -> "
+                              f"max_tokens {kwargs['max_tokens']} -> {nuevo_limite}")
+                        self.max_tokens = nuevo_limite
+                        continue
+
                 time.sleep(sleep_s)
-                return response.choices[0].message.content or ""
+                return content
 
             except Exception as e:
                 err_str = str(e)
                 if "response_format" in err_str or "json_object" in err_str:
                     use_json_mode = False
                 is_rate_limit = "429" in err_str or "rate_limit" in err_str.lower()
-                wait_time = (5 if is_rate_limit else 2) * (attempt + 1)
-                print(f"    [Reintento {attempt + 1}/{retry}] {e} -> esperando {wait_time}s...")
+
+                if is_rate_limit:
+                    # Distingue cupo DIARIO agotado (TPD) de limite POR MINUTO.
+                    # El diario no se resuelve esperando: se rota la clave.
+                    cupo_diario = "tokens per day" in err_str or "(TPD)" in err_str
+                    if cupo_diario and self._rotar_clave():
+                        rate_limit_seguidos = 0
+                        continue
+
+                    rate_limit_seguidos += 1
+                    # El servidor indica cuanto esperar ('try again in Xs'). Se
+                    # respeta ese valor y se aumenta la pausa para las siguientes
+                    # llamadas, evitando la cascada de 429.
+                    espera = self.pausa_entre_llamadas
+                    m = re.search(r"try again in ([0-9.]+)s", err_str)
+                    if m:
+                        espera = max(espera, float(m.group(1)) + 2)
+                    else:
+                        espera = max(espera, 10 * rate_limit_seguidos)
+                    self.pausa_entre_llamadas = min(self.pausa_entre_llamadas * 1.5, 30.0)
+                    print(f"    [429] limite de tasa; esperando {espera:.1f}s "
+                          f"(pausa futura {self.pausa_entre_llamadas:.1f}s)...")
+                    time.sleep(espera)
+
+                    # Si el limite se repite, se amplia el numero de intentos.
+                    if rate_limit_seguidos >= retry:
+                        retry = min(retry + self.max_reintentos_rate_limit, 40)
+                    continue
+
+                print(f"    [Error del juez] {type(e).__name__}: {err_str[:300]}")
+                wait_time = 2 * (attempt + 1)
+                print(f"    [Reintento {attempt + 1}/{retry}] esperando {wait_time}s...")
                 time.sleep(wait_time)
         return ""
 
     def call_pointwise(self, gold: list, pred: list, criterio: str = "") -> dict:
         """Juez pointwise: 4 dimensiones 1-5 + veredicto binario de dominio."""
         prompt = build_judge_prompt(gold, pred, criterio)
+
+        # 1) Intento con JSON mode nativo.
         content = self._complete(RUBRICA_SYSTEM, prompt, use_json=True)
         parsed = parse_judge_response(content)
-
-        if not any(parsed.get(k) is not None for k in DIM_KEYS) and self.supports_json_mode:
-            content = self._complete(RUBRICA_SYSTEM, prompt, use_json=False)
-            parsed = parse_judge_response(content)
-
         if any(parsed.get(k) is not None for k in DIM_KEYS):
             return parsed
+
+        # 2) Fallback sin JSON mode (parseo robusto por regex sobre texto libre).
+        content = self._complete(RUBRICA_SYSTEM, prompt, use_json=False)
+        parsed = parse_judge_response(content)
+        if any(parsed.get(k) is not None for k in DIM_KEYS):
+            return parsed
+
         return {**{k: None for k in DIM_KEYS}, "cumple_criterio": None,
                 "justificacion": "JUDGE_CALL_FAILED"}
 
@@ -522,9 +619,19 @@ def run(cfg: dict, project_root) -> dict:
     if not api_key:
         raise RuntimeError("GROQ_API_KEY no definida en .env")
 
+    # Recolecta claves adicionales opcionales (GROQ_API_KEY_2, GROQ_API_KEY_3, ...)
+    # para sumar cupo diario y completar la corrida en un solo dia.
+    api_keys = [api_key]
+    for sufijo in ["_2", "_3", "_4", "_5"]:
+        extra = os.environ.get(f"GROQ_API_KEY{sufijo}", "")
+        if extra:
+            api_keys.append(extra)
+
     judge = JudgeClient(
         api_key=api_key, model=judge_cfg["judge_model"],
         temperature=judge_cfg["judge_temperature"], max_tokens=judge_cfg["judge_max_tokens"],
+        pausa_entre_llamadas=judge_cfg.get("judge_pausa_entre_llamadas", 1.0),
+        api_keys=api_keys,
     )
 
     rich_examples = cargar_rich_examples(rutas["dim1_path"], rutas["gold_set_path"])

@@ -2,8 +2,8 @@
   "dimension": "metrica_clasica_matching_semantico",
   "rol": "pau",
   "modelo": "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es",
-  "predicciones_origen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/outputs/resultado_dimension1.json",
-  "gold_set": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/eval_harness/gold_examples_adversariales.jsonl",
+  "predicciones_origen": "D:\\Clase-topicos-IA\\Dupla\\proyecto\\M2\\outputs\\resultado_dimension1.json",
+  "gold_set": "D:\\Clase-topicos-IA\\Dupla\\proyecto\\M2\\eval_harness\\gold_examples_adversariales.jsonl",
   "n_ejemplos_evaluados": 10,
   "configuracion": {
     "modelo_embeddings": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
@@ -22,9 +22,9 @@
     "tp": 14,
     "fp": 0,
     "fn": 10,
-    "soft_precision": 0.9050300674779075,
-    "soft_recall": 0.5279342060287794,
-    "soft_f1": 0.6668642602468793
+    "soft_precision": 0.9050300249031612,
+    "soft_recall": 0.5279341811935107,
+    "soft_f1": 0.6668642288760135
   },
   "metrics_exact_match_referencia": {
     "precision": 0.5714285714285714,
@@ -146,14 +146,14 @@
     ],
     "ex_3": [
       {
-        "pred": "diabetes mellitus tipo 2 descompensada",
-        "gold": "diabetes mellitus tipo 2 descompensada",
+        "pred": "neumonia bilateral",
+        "gold": "neumonia bilateral",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "neumonia bilateral",
-        "gold": "neumonia bilateral",
+        "pred": "diabetes mellitus tipo 2 descompensada",
+        "gold": "diabetes mellitus tipo 2 descompensada",
         "sim": 1.0,
         "exacto": true
       },
@@ -202,14 +202,14 @@
     ],
     "ex_7": [
       {
-        "pred": "ascitis",
-        "gold": "ascitis",
+        "pred": "cirrosis hepatica bilateral",
+        "gold": "cirrosis hepatica bilateral",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "cirrosis hepatica bilateral",
-        "gold": "cirrosis hepatica bilateral",
+        "pred": "ascitis",
+        "gold": "ascitis",
         "sim": 1.0,
         "exacto": true
       }

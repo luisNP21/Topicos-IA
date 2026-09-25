@@ -2,8 +2,8 @@
   "dimension": "metrica_clasica_exact_match",
   "rol": "luis",
   "modelo": "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es",
-  "adaptador_lora": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M1/saved_models/clinical_bert-distemist-lora",
-  "gold_set": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/eval_harness/gold_examples_adversariales.jsonl",
+  "adaptador_lora": "D:\\Clase-topicos-IA\\Dupla\\proyecto\\M1\\saved_models\\clinical_bert-distemist-lora",
+  "gold_set": "D:\\Clase-topicos-IA\\Dupla\\proyecto\\M2\\eval_harness\\gold_examples_adversariales.jsonl",
   "n_ejemplos_evaluados": 10,
   "metrics": {
     "precision": 0.5714285714285714,
