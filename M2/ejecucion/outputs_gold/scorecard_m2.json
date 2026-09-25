@@ -1,41 +1,54 @@
 {
   "proyecto": "M2 -- Evaluacion Clinical BERT (DisTEMIST)",
-  "n_ejemplos": 20,
+  "n_ejemplos": 59,
   "metricas_globales": {
     "exact_match": {
-      "precision": 0.7222222222222222,
-      "recall": 0.731457800511509,
-      "f1": 0.7268106734434563,
-      "tp": 286,
-      "fp": 110,
-      "fn": 105
+      "precision": 0.7037037037037037,
+      "recall": 0.7278731836195509,
+      "f1": 0.7155844155844157,
+      "tp": 551,
+      "fp": 232,
+      "fn": 206
     },
     "similitud_semantica": {
-      "precision": 0.9217171717171717,
-      "recall": 0.9335038363171355,
-      "f1": 0.9275730622617535,
-      "soft_f1": 0.8765042938452967,
-      "umbral": 0.51
+      "precision": 0.8786717752234994,
+      "recall": 0.9088507265521797,
+      "f1": 0.8935064935064936,
+      "soft_f1": 0.8583178435053145,
+      "umbral": 0.55
     },
     "llm_judge": {
-      "score_juez_mean": 3.73125,
-      "score_juez_std": 0.41808421148703623,
-      "f1_exacto_mean": 0.7289019988061941
+      "score_juez_mean": 3.8686440677966103,
+      "score_juez_std": 0.6094725181977775,
+      "f1_exacto_mean": 0.7175333467248063,
+      "aciertos_dominio": 35,
+      "total_dominio": 59,
+      "tasa_aciertos_dominio": 0.5932203389830508
     }
+  },
+  "dimension_dominio": {
+    "definicion": "acierto = el juez responde 'si' al criterio del caso (S06, Dimension 3)",
+    "aciertos": 35,
+    "total": 59,
+    "tasa": 0.5932203389830508
   },
   "mitigacion_sesgos_juez": {
     "posicion": {
-      "delta_mean": 0.4027777777777778,
-      "delta_max": 1.25,
-      "delta_median": 0.25,
-      "pct_delta_mayor_a_1": 0.05555555555555555,
-      "mitigacion": "promedio de score_normal y score_inverted"
+      "protocolo": "pairwise A/B con intercambio de orden (S06, Lab B)",
+      "n_pares": 59,
+      "n_gana_gold": 59,
+      "n_gana_pred": 0,
+      "n_empates": 0,
+      "tasa_sesgo_posicion": 0.0,
+      "veredicto": "estable: el juez casi no se contradice con el orden",
+      "mitigacion": "veredicto robusto: solo se declara ganador si coincide en ambos ordenes; si no -> empate. El score final es pointwise y NO se promedia con este test.",
+      "nota": "pares omitidos cuando pred == gold (sin senal de orden)"
     },
     "longitud": {
-      "pares_evaluados": 5,
-      "pares_calidad_gana": 5,
+      "pares_evaluados": 6,
+      "pares_calidad_gana": 6,
       "pct_calidad_gana": 1.0,
-      "mitigacion": "pares de validacion con asimetria de longitud controlada"
+      "mitigacion": "pares controlados de respuesta corta correcta vs. respuesta larga parcialmente correcta"
     },
     "auto_preferencia": {
       "output_anonimizado": true,
@@ -47,16 +60,17 @@
     }
   },
   "distribucion_debilidad": {
-    "caso mixto": 9,
-    "funcionamiento correcto": 11
+    "caso mixto": 28,
+    "funcionamiento correcto": 31
   },
   "detalle_por_doc": [
     {
       "doc_id": "ex_0",
       "n_gold": 28,
       "f1_exacto": 0.6538,
-      "f1_semantico": 0.9231,
-      "score_juez": 3.0,
+      "f1_semantico": 0.8846,
+      "score_juez": 3.25,
+      "cumple_criterio": false,
       "debilidad": "caso mixto"
     },
     {
@@ -64,95 +78,17 @@
       "n_gold": 25,
       "f1_exacto": 0.7059,
       "f1_semantico": 0.9412,
-      "score_juez": 3.5,
-      "debilidad": "funcionamiento correcto"
-    },
-    {
-      "doc_id": "ex_10",
-      "n_gold": 19,
-      "f1_exacto": 0.6154,
-      "f1_semantico": 0.8718,
-      "score_juez": 3.75,
-      "debilidad": "caso mixto"
-    },
-    {
-      "doc_id": "ex_11",
-      "n_gold": 19,
-      "f1_exacto": 0.5263,
-      "f1_semantico": 0.9474,
-      "score_juez": 3.375,
-      "debilidad": "caso mixto"
-    },
-    {
-      "doc_id": "ex_12",
-      "n_gold": 19,
-      "f1_exacto": 0.7895,
-      "f1_semantico": 1.0,
-      "score_juez": 4.125,
-      "debilidad": "funcionamiento correcto"
-    },
-    {
-      "doc_id": "ex_13",
-      "n_gold": 18,
-      "f1_exacto": 0.8649,
-      "f1_semantico": 0.9189,
-      "score_juez": 4.375,
-      "debilidad": "funcionamiento correcto"
-    },
-    {
-      "doc_id": "ex_14",
-      "n_gold": 17,
-      "f1_exacto": 0.6667,
-      "f1_semantico": 0.9091,
-      "score_juez": 3.625,
-      "debilidad": "caso mixto"
-    },
-    {
-      "doc_id": "ex_15",
-      "n_gold": 17,
-      "f1_exacto": 0.6667,
-      "f1_semantico": 0.8889,
-      "score_juez": 3.125,
-      "debilidad": "caso mixto"
-    },
-    {
-      "doc_id": "ex_16",
-      "n_gold": 16,
-      "f1_exacto": 0.7879,
-      "f1_semantico": 0.9091,
-      "score_juez": 3.625,
-      "debilidad": "funcionamiento correcto"
-    },
-    {
-      "doc_id": "ex_17",
-      "n_gold": 15,
-      "f1_exacto": 0.6429,
-      "f1_semantico": 0.9286,
-      "score_juez": 3.125,
-      "debilidad": "caso mixto"
-    },
-    {
-      "doc_id": "ex_18",
-      "n_gold": 15,
-      "f1_exacto": 0.7143,
-      "f1_semantico": 0.9286,
-      "score_juez": 3.875,
-      "debilidad": "funcionamiento correcto"
-    },
-    {
-      "doc_id": "ex_19",
-      "n_gold": 15,
-      "f1_exacto": 0.8571,
-      "f1_semantico": 0.9286,
-      "score_juez": 4.5,
+      "score_juez": 4.0,
+      "cumple_criterio": true,
       "debilidad": "funcionamiento correcto"
     },
     {
       "doc_id": "ex_2",
       "n_gold": 24,
       "f1_exacto": 0.68,
-      "f1_semantico": 0.96,
-      "score_juez": 3.875,
+      "f1_semantico": 0.92,
+      "score_juez": 3.5,
+      "cumple_criterio": true,
       "debilidad": "caso mixto"
     },
     {
@@ -161,22 +97,25 @@
       "f1_exacto": 0.6939,
       "f1_semantico": 0.898,
       "score_juez": 3.5,
+      "cumple_criterio": true,
       "debilidad": "caso mixto"
     },
     {
       "doc_id": "ex_4",
       "n_gold": 22,
       "f1_exacto": 0.8085,
-      "f1_semantico": 0.9362,
-      "score_juez": 4.25,
+      "f1_semantico": 0.8936,
+      "score_juez": 4.0,
+      "cumple_criterio": true,
       "debilidad": "funcionamiento correcto"
     },
     {
       "doc_id": "ex_5",
       "n_gold": 21,
       "f1_exacto": 0.7273,
-      "f1_semantico": 0.9545,
-      "score_juez": 3.625,
+      "f1_semantico": 0.9091,
+      "score_juez": 4.25,
+      "cumple_criterio": true,
       "debilidad": "funcionamiento correcto"
     },
     {
@@ -185,6 +124,7 @@
       "f1_exacto": 0.9268,
       "f1_semantico": 0.9756,
       "score_juez": 4.25,
+      "cumple_criterio": true,
       "debilidad": "funcionamiento correcto"
     },
     {
@@ -192,7 +132,8 @@
       "n_gold": 20,
       "f1_exacto": 0.65,
       "f1_semantico": 0.9,
-      "score_juez": 3.625,
+      "score_juez": 3.5,
+      "cumple_criterio": true,
       "debilidad": "caso mixto"
     },
     {
@@ -200,7 +141,8 @@
       "n_gold": 19,
       "f1_exacto": 0.8108,
       "f1_semantico": 0.9189,
-      "score_juez": 3.625,
+      "score_juez": 4.25,
+      "cumple_criterio": true,
       "debilidad": "funcionamiento correcto"
     },
     {
@@ -208,8 +150,450 @@
       "n_gold": 19,
       "f1_exacto": 0.7895,
       "f1_semantico": 0.8947,
-      "score_juez": 3.875,
+      "score_juez": 3.25,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_10",
+      "n_gold": 19,
+      "f1_exacto": 0.6154,
+      "f1_semantico": 0.8718,
+      "score_juez": 3.25,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_11",
+      "n_gold": 19,
+      "f1_exacto": 0.5263,
+      "f1_semantico": 0.8947,
+      "score_juez": 3.5,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_12",
+      "n_gold": 19,
+      "f1_exacto": 0.7895,
+      "f1_semantico": 1.0,
+      "score_juez": 4.0,
+      "cumple_criterio": true,
       "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_13",
+      "n_gold": 18,
+      "f1_exacto": 0.8649,
+      "f1_semantico": 0.9189,
+      "score_juez": 4.25,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_14",
+      "n_gold": 17,
+      "f1_exacto": 0.6667,
+      "f1_semantico": 0.8485,
+      "score_juez": 3.5,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_15",
+      "n_gold": 17,
+      "f1_exacto": 0.6667,
+      "f1_semantico": 0.8889,
+      "score_juez": 3.25,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_16",
+      "n_gold": 16,
+      "f1_exacto": 0.7879,
+      "f1_semantico": 0.9091,
+      "score_juez": 3.5,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_17",
+      "n_gold": 15,
+      "f1_exacto": 0.6429,
+      "f1_semantico": 0.8571,
+      "score_juez": 3.75,
+      "cumple_criterio": true,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_18",
+      "n_gold": 15,
+      "f1_exacto": 0.7143,
+      "f1_semantico": 0.9286,
+      "score_juez": 4.0,
+      "cumple_criterio": false,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_19",
+      "n_gold": 15,
+      "f1_exacto": 0.8571,
+      "f1_semantico": 0.9286,
+      "score_juez": 4.5,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_20",
+      "n_gold": 15,
+      "f1_exacto": 0.6061,
+      "f1_semantico": 0.8485,
+      "score_juez": 2.5,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_21",
+      "n_gold": 14,
+      "f1_exacto": 0.7143,
+      "f1_semantico": 0.9286,
+      "score_juez": 3.0,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_22",
+      "n_gold": 14,
+      "f1_exacto": 0.963,
+      "f1_semantico": 0.963,
+      "score_juez": 4.75,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_23",
+      "n_gold": 13,
+      "f1_exacto": 0.6429,
+      "f1_semantico": 0.9286,
+      "score_juez": 4.5,
+      "cumple_criterio": true,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_24",
+      "n_gold": 13,
+      "f1_exacto": 0.6875,
+      "f1_semantico": 0.8125,
+      "score_juez": 3.75,
+      "cumple_criterio": true,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_25",
+      "n_gold": 13,
+      "f1_exacto": 0.7333,
+      "f1_semantico": 0.8667,
+      "score_juez": 4.5,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_26",
+      "n_gold": 13,
+      "f1_exacto": 0.64,
+      "f1_semantico": 0.8,
+      "score_juez": 3.25,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_27",
+      "n_gold": 13,
+      "f1_exacto": 0.72,
+      "f1_semantico": 0.96,
+      "score_juez": 4.5,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_28",
+      "n_gold": 13,
+      "f1_exacto": 0.5,
+      "f1_semantico": 0.75,
+      "score_juez": 2.25,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_29",
+      "n_gold": 12,
+      "f1_exacto": 0.6923,
+      "f1_semantico": 0.6923,
+      "score_juez": 3.5,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_30",
+      "n_gold": 12,
+      "f1_exacto": 0.5714,
+      "f1_semantico": 0.7857,
+      "score_juez": 3.25,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_31",
+      "n_gold": 11,
+      "f1_exacto": 0.5455,
+      "f1_semantico": 0.9091,
+      "score_juez": 3.25,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_32",
+      "n_gold": 11,
+      "f1_exacto": 0.7273,
+      "f1_semantico": 1.0,
+      "score_juez": 4.5,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_33",
+      "n_gold": 11,
+      "f1_exacto": 0.7826,
+      "f1_semantico": 0.9565,
+      "score_juez": 3.75,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_34",
+      "n_gold": 10,
+      "f1_exacto": 0.7778,
+      "f1_semantico": 0.8889,
+      "score_juez": 4.25,
+      "cumple_criterio": false,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_35",
+      "n_gold": 10,
+      "f1_exacto": 0.7778,
+      "f1_semantico": 0.8889,
+      "score_juez": 4.25,
+      "cumple_criterio": false,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_36",
+      "n_gold": 9,
+      "f1_exacto": 0.6667,
+      "f1_semantico": 1.0,
+      "score_juez": 4.0,
+      "cumple_criterio": true,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_37",
+      "n_gold": 5,
+      "f1_exacto": 0.8,
+      "f1_semantico": 1.0,
+      "score_juez": 4.75,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_38",
+      "n_gold": 9,
+      "f1_exacto": 0.8889,
+      "f1_semantico": 1.0,
+      "score_juez": 4.75,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_39",
+      "n_gold": 9,
+      "f1_exacto": 0.8,
+      "f1_semantico": 0.8,
+      "score_juez": 4.5,
+      "cumple_criterio": false,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_40",
+      "n_gold": 8,
+      "f1_exacto": 0.75,
+      "f1_semantico": 0.75,
+      "score_juez": 3.5,
+      "cumple_criterio": false,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_41",
+      "n_gold": 8,
+      "f1_exacto": 0.8235,
+      "f1_semantico": 0.9412,
+      "score_juez": 3.5,
+      "cumple_criterio": false,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_42",
+      "n_gold": 6,
+      "f1_exacto": 0.6667,
+      "f1_semantico": 1.0,
+      "score_juez": 4.75,
+      "cumple_criterio": true,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_43",
+      "n_gold": 9,
+      "f1_exacto": 0.7368,
+      "f1_semantico": 0.8421,
+      "score_juez": 4.25,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_44",
+      "n_gold": 7,
+      "f1_exacto": 0.5882,
+      "f1_semantico": 0.8235,
+      "score_juez": 3.5,
+      "cumple_criterio": true,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_45",
+      "n_gold": 9,
+      "f1_exacto": 0.8235,
+      "f1_semantico": 0.9412,
+      "score_juez": 4.0,
+      "cumple_criterio": false,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_46",
+      "n_gold": 7,
+      "f1_exacto": 0.5333,
+      "f1_semantico": 0.9333,
+      "score_juez": 4.0,
+      "cumple_criterio": true,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_47",
+      "n_gold": 7,
+      "f1_exacto": 0.8,
+      "f1_semantico": 0.9333,
+      "score_juez": 4.25,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_48",
+      "n_gold": 6,
+      "f1_exacto": 0.8571,
+      "f1_semantico": 0.8571,
+      "score_juez": 4.25,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_49",
+      "n_gold": 7,
+      "f1_exacto": 0.5714,
+      "f1_semantico": 0.8571,
+      "score_juez": 3.25,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_50",
+      "n_gold": 8,
+      "f1_exacto": 0.9333,
+      "f1_semantico": 0.9333,
+      "score_juez": 4.75,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_51",
+      "n_gold": 6,
+      "f1_exacto": 0.8571,
+      "f1_semantico": 0.8571,
+      "score_juez": 4.0,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_52",
+      "n_gold": 6,
+      "f1_exacto": 0.7692,
+      "f1_semantico": 0.9231,
+      "score_juez": 4.0,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_53",
+      "n_gold": 7,
+      "f1_exacto": 0.8571,
+      "f1_semantico": 1.0,
+      "score_juez": 4.75,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_54",
+      "n_gold": 7,
+      "f1_exacto": 0.6667,
+      "f1_semantico": 0.6667,
+      "score_juez": 3.5,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_55",
+      "n_gold": 6,
+      "f1_exacto": 0.7692,
+      "f1_semantico": 0.7692,
+      "score_juez": 4.25,
+      "cumple_criterio": true,
+      "debilidad": "funcionamiento correcto"
+    },
+    {
+      "doc_id": "ex_56",
+      "n_gold": 9,
+      "f1_exacto": 0.3158,
+      "f1_semantico": 0.7368,
+      "score_juez": 2.25,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_57",
+      "n_gold": 8,
+      "f1_exacto": 0.5333,
+      "f1_semantico": 0.9333,
+      "score_juez": 4.5,
+      "cumple_criterio": true,
+      "debilidad": "caso mixto"
+    },
+    {
+      "doc_id": "ex_58",
+      "n_gold": 5,
+      "f1_exacto": 0.6667,
+      "f1_semantico": 0.8889,
+      "score_juez": 4.0,
+      "cumple_criterio": false,
+      "debilidad": "caso mixto"
     }
   ]
 }

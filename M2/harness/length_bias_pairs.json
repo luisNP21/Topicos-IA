@@ -1,39 +1,54 @@
 [
   {
-    "tipo": "A", "descripcion": "Correcta corta vs. Incorrecta larga",
+    "tipo": "A",
+    "descripcion": "Correcta corta y precisa vs. larga parcialmente correcta (pocos aciertos + FP)",
+    "criterio": "La respuesta debe identificar las menciones de enfermedad del texto sin agregar terminos que no sean enfermedades ni menciones alucinadas.",
     "gold": ["neumonía", "sepsis"],
-    "pred_correcta": ["neumonía"],
-    "pred_incorrecta": ["hiperglucemia", "dislipidemia", "hipotiroidismo",
-                         "artritis reumatoide", "fibromialgia",
-                         "esclerosis múltiple", "enfermedad de crohn", "psoriasis"]
+    "pred_correcta": ["neumonía", "sepsis"],
+    "pred_incorrecta": ["neumonía", "dislipidemia", "hipotiroidismo", "artritis reumatoide",
+                         "fibromialgia", "esclerosis múltiple", "enfermedad de crohn", "psoriasis"]
   },
   {
-    "tipo": "A", "descripcion": "Correcta corta vs. Incorrecta larga",
-    "gold": ["infarto agudo de miocardio", "insuficiencia cardiaca", "fibrilación auricular"],
-    "pred_correcta": ["infarto agudo de miocardio"],
-    "pred_incorrecta": ["diabetes mellitus tipo 2", "hipertensión arterial",
-                         "anemia ferropénica", "neuropatía diabética",
-                         "retinopatía diabética", "enfermedad renal crónica", "osteoporosis"]
+    "tipo": "A",
+    "descripcion": "Correcta corta y precisa vs. larga parcialmente correcta (pocos aciertos + FP)",
+    "criterio": "La respuesta debe identificar las menciones de enfermedad del texto sin agregar terminos que no sean enfermedades ni menciones alucinadas.",
+    "gold": ["infarto de miocardio"],
+    "pred_correcta": ["infarto de miocardio"],
+    "pred_incorrecta": ["infarto de miocardio", "gastritis crónica", "úlcera péptica",
+                         "reflujo gastroesofágico", "colelitiasis", "pancreatitis aguda",
+                         "apendicitis", "diverticulitis", "colitis ulcerosa"]
   },
   {
-    "tipo": "B", "descripcion": "Correcta larga vs. Incorrecta corta",
-    "gold": ["neumonía", "sepsis", "insuficiencia respiratoria aguda"],
-    "pred_correcta": ["neumonía", "sepsis", "insuficiencia respiratoria aguda"],
-    "pred_incorrecta": ["fibromialgia"]
+    "tipo": "A",
+    "descripcion": "Correcta corta y precisa vs. larga parcialmente correcta (pocos aciertos + FP)",
+    "criterio": "La respuesta debe identificar las menciones de enfermedad del texto sin agregar terminos que no sean enfermedades ni menciones alucinadas.",
+    "gold": ["carcinoma de células renales"],
+    "pred_correcta": ["carcinoma de células renales"],
+    "pred_incorrecta": ["carcinoma de células renales", "cefalea tensional", "migraña",
+                         "vértigo posicional", "neuralgia del trigémino", "parálisis facial"]
   },
   {
-    "tipo": "B", "descripcion": "Correcta larga vs. Incorrecta corta",
-    "gold": ["carcinoma ductal infiltrante", "metástasis hepática",
-             "anemia", "trombocitopenia", "neutropenia febril"],
-    "pred_correcta": ["carcinoma ductal infiltrante", "metástasis hepática",
-                       "anemia", "trombocitopenia"],
-    "pred_incorrecta": ["psoriasis"]
+    "tipo": "B",
+    "descripcion": "Correcta larga y completa vs. incorrecta corta (recall parcial)",
+    "criterio": "La respuesta debe identificar las menciones de enfermedad del texto sin agregar terminos que no sean enfermedades ni menciones alucinadas.",
+    "gold": ["diabetes mellitus tipo 2", "hipertensión arterial", "dislipidemia", "obesidad"],
+    "pred_correcta": ["diabetes mellitus tipo 2", "hipertensión arterial", "dislipidemia", "obesidad"],
+    "pred_incorrecta": ["diabetes mellitus tipo 2"]
   },
   {
-    "tipo": "A", "descripcion": "Correcta vacía vs. Incorrecta larga (FP puros)",
-    "gold": [],
-    "pred_correcta": [],
-    "pred_incorrecta": ["artritis", "hipertensión", "diabetes",
-                         "anemia", "fibromialgia", "neuropatía"]
+    "tipo": "B",
+    "descripcion": "Correcta larga y completa vs. incorrecta corta (recall parcial)",
+    "criterio": "La respuesta debe identificar las menciones de enfermedad del texto sin agregar terminos que no sean enfermedades ni menciones alucinadas.",
+    "gold": ["neumonía adquirida en la comunidad", "derrame pleural", "insuficiencia respiratoria"],
+    "pred_correcta": ["neumonía adquirida en la comunidad", "derrame pleural", "insuficiencia respiratoria"],
+    "pred_incorrecta": ["neumonía adquirida en la comunidad"]
+  },
+  {
+    "tipo": "B",
+    "descripcion": "Correcta larga y completa vs. incorrecta corta (recall parcial)",
+    "criterio": "La respuesta debe identificar las menciones de enfermedad del texto sin agregar terminos que no sean enfermedades ni menciones alucinadas.",
+    "gold": ["carcinoma ductal infiltrante", "metástasis hepática", "anemia", "trombocitopenia", "neutropenia febril"],
+    "pred_correcta": ["carcinoma ductal infiltrante", "metástasis hepática", "anemia", "trombocitopenia", "neutropenia febril"],
+    "pred_incorrecta": ["carcinoma ductal infiltrante"]
   }
 ]

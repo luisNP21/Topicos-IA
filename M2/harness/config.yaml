@@ -11,7 +11,7 @@ paquetes_requeridos:
   - torchao
 
 rutas:
-  gold_set: "M2/eval_harness/gold_examples_adversariales.jsonl"
+  gold_set: "M2/eval_harness/gold_examples.jsonl"
   outputs_dir: "M2/outputs"
   model_dir: "M1/saved_models/clinical_bert-distemist-lora"
 
@@ -41,10 +41,30 @@ dimension1b_similitud_semantica:
     seed: 42
 
 dimension3_llm_judge:
-  judge_model: "openai/gpt-oss-120b"
+  # Metodologia alineada con S06:
+  #   - Score final = juez pointwise (una sola llamada por documento).
+  #   - Dimension de dominio binaria (cumple_criterio) leida del campo `criterio`.
+  #   - Sesgo de posicion = protocolo pairwise A/B con intercambio de orden.
+  #   - Sesgo de longitud = respuesta larga PARCIALMENTE correcta vs. corta correcta.
+  #
+  # Modelo juez: qwen/qwen3.8-27b (Groq).
+  # Se cambio desde openai/gpt-oss-120b porque ese es un modelo de razonamiento que
+  # consume ~1000-1300 tokens internos por llamada; con el cupo gratuito de Groq
+  # (200.000 tokens/dia) no alcanzaba para los 59 documentos x 3 llamadas. Qwen3.8-27b
+  # resuelve la misma tarea con ~100 tokens por llamada y discrimina correctamente
+  # (verificado: buena=5/5, vacia=1/5, con FP=ausencia_ruido 1/5).
+  judge_model: "qwen/qwen3.8-27b"
   judge_provider: "groq"
   judge_temperature: 0.0
-  judge_max_tokens: 1500
+  # Limite de la cuenta gratuita para qwen3.8-27b: 1000 tokens de salida por minuto
+  # (OTPM) y el max_tokens solicitado cuenta contra ese cupo antes de generar. Se
+  # usa 600 para quedar holgadamente por debajo (la respuesta real usa ~100-200
+  # tokens); con valores mayores la API rechaza la peticion con 429 OTPM.
+  judge_max_tokens: 600
+  # Pausa en segundos entre llamadas al juez. Groq limita por minuto (TPM/OTPM/RPM)
+  # y una rafaga sin pausa los agota (429 en cascada). 3s mantiene el ritmo por
+  # debajo del cupo gratuito para qwen3.8-27b.
+  judge_pausa_entre_llamadas: 3.0
   fallar_si_modelo_no_disponible: true
   pares_longitud_path: "length_bias_pairs.json"
 

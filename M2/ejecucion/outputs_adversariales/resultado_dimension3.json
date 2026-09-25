@@ -2,28 +2,42 @@
   "dimension": "llm_as_judge",
   "rol": "agustin",
   "modelo_evaluado": "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es",
-  "modelo_juez": "openai/gpt-oss-120b",
+  "modelo_juez": "qwen/qwen3.8-27b",
   "judge_provider": "groq",
-  "predicciones_origen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/outputs/resultado_dimension1.json",
+  "predicciones_origen": "D:\\Clase-topicos-IA\\Dupla\\proyecto\\M2\\outputs\\resultado_dimension1.json",
+  "gold_set": "D:\\Clase-topicos-IA\\Dupla\\proyecto\\M2\\eval_harness\\gold_examples_adversariales.jsonl",
   "n_ejemplos_evaluados": 10,
   "seed": 42,
   "metrics": {
-    "score_juez_mean": 3.975,
-    "score_juez_std": 0.7163759100112485,
-    "f1_exacto_mean": 0.35333333333333333
+    "score_juez_mean": 3.95,
+    "score_juez_std": 0.8563488385776753,
+    "f1_exacto_mean": 0.35333333333333333,
+    "aciertos_dominio": 3,
+    "total_dominio": 10,
+    "tasa_aciertos_dominio": 0.3
+  },
+  "dimension_dominio": {
+    "definicion": "acierto = el juez responde 'si' al criterio del caso (S06, Dimension 3)",
+    "aciertos": 3,
+    "total": 10,
+    "tasa": 0.3
   },
   "sesgo_posicion": {
-    "delta_mean": 0.55,
-    "delta_max": 1.0,
-    "delta_median": 0.5,
-    "pct_delta_mayor_a_1": 0.0,
-    "mitigacion": "promedio de score_normal y score_inverted"
+    "protocolo": "pairwise A/B con intercambio de orden (S06, Lab B)",
+    "n_pares": 10,
+    "n_gana_gold": 2,
+    "n_gana_pred": 3,
+    "n_empates": 5,
+    "tasa_sesgo_posicion": 0.5,
+    "veredicto": "sesgo moderado de posicion: conviene reportar el empate como no confiable",
+    "mitigacion": "veredicto robusto: solo se declara ganador si coincide en ambos ordenes; si no -> empate. El score final es pointwise y NO se promedia con este test.",
+    "nota": "pares omitidos cuando pred == gold (sin senal de orden)"
   },
   "sesgo_longitud": {
-    "pares_evaluados": 5,
-    "pares_calidad_gana": 5,
+    "pares_evaluados": 6,
+    "pares_calidad_gana": 6,
     "pct_calidad_gana": 1.0,
-    "mitigacion": "pares de validacion con asimetria de longitud controlada"
+    "mitigacion": "pares controlados de respuesta corta correcta vs. respuesta larga parcialmente correcta"
   },
   "sesgo_autopreferencia": {
     "output_anonimizado": true,
@@ -34,8 +48,9 @@
     "terminos_encontrados": []
   },
   "distribucion_patrones": {
-    "E — caso mixto": 7,
-    "A — boundary error (comprensión OK, span malo)": 2,
+    "E — caso mixto": 5,
+    "A — boundary error (comprensión OK, span malo)": 3,
+    "C — fallo completo": 1,
     "D — referencia positiva": 1
   },
   "resultados_por_doc": {
@@ -46,10 +61,11 @@
         "muerto"
       ],
       "pred": [],
-      "score_juez": 2.5,
-      "delta_posicion": 1.0,
+      "score_juez": 2.0,
+      "cumple_criterio": false,
+      "veredicto_posicion": "pred",
       "f1_exacto": 0.0,
-      "patron": "E — caso mixto"
+      "patron": "C — fallo completo"
     },
     "ex_1": {
       "gold": [
@@ -58,8 +74,9 @@
       "pred": [
         "fractura de muñeca localizada en el pie"
       ],
-      "score_juez": 3.75,
-      "delta_posicion": 0.5,
+      "score_juez": 3.5,
+      "cumple_criterio": true,
+      "veredicto_posicion": "empate",
       "f1_exacto": 0.0,
       "patron": "A — boundary error (comprensión OK, span malo)"
     },
@@ -72,7 +89,8 @@
         "gripa"
       ],
       "score_juez": 4.5,
-      "delta_posicion": 0.0,
+      "cumple_criterio": false,
+      "veredicto_posicion": "empate",
       "f1_exacto": 0.6666666666666666,
       "patron": "E — caso mixto"
     },
@@ -87,8 +105,9 @@
         "insuficiencia renal cronica agudizada",
         "neumonia bilateral"
       ],
-      "score_juez": 4.625,
-      "delta_posicion": 0.25,
+      "score_juez": 4.75,
+      "cumple_criterio": true,
+      "veredicto_posicion": "pred",
       "f1_exacto": 0.6666666666666666,
       "patron": "E — caso mixto"
     },
@@ -102,8 +121,9 @@
         "colicos menstruales",
         "dismenorrea"
       ],
-      "score_juez": 4.625,
-      "delta_posicion": 0.25,
+      "score_juez": 4.5,
+      "cumple_criterio": false,
+      "veredicto_posicion": "empate",
       "f1_exacto": 0.4,
       "patron": "E — caso mixto"
     },
@@ -117,7 +137,8 @@
         "apendicitis complicada"
       ],
       "score_juez": 3.5,
-      "delta_posicion": 1.0,
+      "cumple_criterio": false,
+      "veredicto_posicion": "gold",
       "f1_exacto": 0.5,
       "patron": "E — caso mixto"
     },
@@ -128,8 +149,9 @@
       "pred": [
         "shock hipovolemico secundario a sangrado digestivo alto"
       ],
-      "score_juez": 4.25,
-      "delta_posicion": 0.5,
+      "score_juez": 4.75,
+      "cumple_criterio": true,
+      "veredicto_posicion": "empate",
       "f1_exacto": 0.0,
       "patron": "A — boundary error (comprensión OK, span malo)"
     },
@@ -143,8 +165,9 @@
         "ascitis",
         "cirrosis hepatica bilateral"
       ],
-      "score_juez": 4.75,
-      "delta_posicion": 0.5,
+      "score_juez": 4.5,
+      "cumple_criterio": false,
+      "veredicto_posicion": "empate",
       "f1_exacto": 0.8,
       "patron": "D — referencia positiva"
     },
@@ -157,8 +180,9 @@
       "pred": [
         "prostatitis aguda"
       ],
-      "score_juez": 3.875,
-      "delta_posicion": 0.75,
+      "score_juez": 4.0,
+      "cumple_criterio": false,
+      "veredicto_posicion": "pred",
       "f1_exacto": 0.5,
       "patron": "E — caso mixto"
     },
@@ -171,10 +195,11 @@
       "pred": [
         "neumonia adquirida"
       ],
-      "score_juez": 3.375,
-      "delta_posicion": 0.75,
+      "score_juez": 3.5,
+      "cumple_criterio": false,
+      "veredicto_posicion": "gold",
       "f1_exacto": 0.0,
-      "patron": "E — caso mixto"
+      "patron": "A — boundary error (comprensión OK, span malo)"
     }
   }
 }

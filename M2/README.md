@@ -1,8 +1,10 @@
 # M2 — Evaluacion del modelo de reconocimiento de entidades clinicas
 
 Sistema que evalua el modelo Clinical BERT + LoRA (entrenado en M1) sobre el gold set de M2
-en tres dimensiones independientes — coincidencia exacta de spans, similitud semantica y un
-juez basado en LLM — y las combina en un scorecard con diagnostico de debilidad. Existe en
+en dimensiones independientes — coincidencia exacta de spans, similitud semantica y un
+juez basado en LLM que **ademas emite un veredicto binario de dominio** (`cumple_criterio`,
+la "dimension de aciertos de dominio" de S06) — y las combina en un scorecard con
+diagnostico de debilidad. Existe en
 dos formas equivalentes: **cuatro notebooks** (exploratorios, uno por dimension mas el
 harness integrado) y **un script de linea de comandos** (`run_harness.py`, produccion,
 reproducible con un solo comando). Ambas formas leen y escriben en la misma carpeta del
@@ -134,7 +136,7 @@ GROQ_API_KEY=gsk_...
 | `dimension1b_similitud_semantica.modelo_embeddings` | `paraphrase-multilingual-MiniLM-L12-v2` | |
 | `dimension1b...calibracion_umbral` | 4000 pares negativos, seed 42 | |
 | `dimension3_llm_judge.judge_model` | `openai/gpt-oss-120b` (via Groq) | temperatura 0.0 |
-| `dimension3_llm_judge.pares_longitud_path` | `length_bias_pairs.json` | 5 pares: 2 tipo A, 2 tipo B, 1 de FP puros |
+| `dimension3_llm_judge.pares_longitud_path` | `length_bias_pairs.json` | pares: corta correcta vs. larga **parcialmente correcta** |
 | `scorecard.umbrales_debilidad` | f1_bajo=0.2, f1_alto=0.7, score_juez_bajo=2.5, score_juez_alto=3.5 | define las 4 categorias de `diagnosticar_debilidad` |
 
 ### Uso
@@ -197,12 +199,40 @@ Todo en `{PROJECT_ROOT}/M2/outputs/`:
   boundary, variantes de formato y, en menor medida, sinonimia. Clasifica cada acierto
   nuevo en categorias (exacto, puntuacion/formato, boundary, solapamiento parcial,
   sinonimia) y mide ambiguedad entre entidades gold del mismo documento.
-- **LLM-as-judge:** un modelo de lenguaje (via Groq) califica la respuesta completa del
-  sistema contra una rubrica, con verificacion explicita de que el score no cambia solo por
-  el orden en que se presentan las respuestas (sesgo de posicion) ni por su longitud
-  (sesgo de longitud, con pares controlados en `length_bias_pairs.json`), y con el riesgo
-  de auto-preferencia documentado (no testeable directamente si el juez comparte familia
-  con el modelo evaluado).
+- **LLM-as-judge:** un modelo de lenguaje (via Groq) califica la prediccion completa del
+  sistema contra una rubrica 1-5 anclada y **lee el campo `criterio` del gold set** para
+  emitir un veredicto binario de dominio (`cumple_criterio`: si/no), tal como pide S06
+  (Dimensión 3). El sesgo de posicion se mide con el **protocolo pairwise A/B de S06 (Lab B)**:
+  se comparan dos respuestas anonimas A/B y se intercambian de orden; solo se declara ganador
+  si el veredicto coincide en ambos ordenes, si no -> empate. El test es **diagnostico y no
+  se promedia con el score final** (el score del juez es el pointwise). El sesgo de longitud
+  se mide con pares controlados de respuesta corta correcta vs. respuesta larga
+  **parcialmente correcta** (no ruido sin relacion con el gold). La auto-preferencia queda
+  documentada (no testeable directamente si el juez comparte familia con el modelo evaluado).
+
+## Correccion tras el feedback (LLM-as-judge)
+
+La entrega anterior se aparto de lo visto en S06 en tres puntos; esta version los corrige:
+
+1. **Sesgo de posicion.** Antes se intercambiaban `gold` y `pred` dentro de la rubrica
+   pointwise y se promediaban ambos scores. Eso medía la asimetria de la rubrica, no el orden,
+   y contaminaba el score final. Ahora se usa el protocolo pairwise A/B de S06 (`comparar_robusto`)
+   y el score final es el pointwise, sin promedio.
+2. **Sesgo de longitud.** Antes la respuesta "incorrecta larga" era ruido sin relacion con el
+   gold. Ahora es una respuesta **larga parcialmente correcta** (algunos aciertos + FP).
+3. **Dimensión de dominio.** Antes el campo `criterio` no se leia y no existia la dimension
+   si/no. Ahora el juez lo lee y emite `cumple_criterio`, que alimenta la dimension de
+   "aciertos de dominio" del harness (S06).
+
+> Los resultados versionados en `M2/ejecucion/outputs_*` provienen de la corrida anterior;
+> deben **regenerarse** corriendo el harness para reflejar la metodologia corregida.
+
+> **Pendiente de otra dimension (no LLM-as-judge):** los ejemplos adversariales actuales
+> tienen un `esperado` con terminos que no son entidades ENFERMEDAD (`mocos`, `muerto`,
+> `fiebre`) y prueban algo que un NER no hace por diseno. Segun el feedback, los
+> adversariales utiles aqui son negaciones, siglas, abreviaturas de nota real y textos sin
+> enfermedades. Esa correccion corresponde al dueno del eval set, no a la dimension del
+> juez.
 - **Scorecard integrador:** cruza las tres dimensiones por documento y aplica una regla de
   diagnostico (`diagnosticar_debilidad`) que interpreta el patron: si el exact-match es
   bajo pero la similitud semantica es alta, la debilidad es de boundary, no de comprension;

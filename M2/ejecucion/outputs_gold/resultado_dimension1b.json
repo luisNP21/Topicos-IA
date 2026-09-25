@@ -2,43 +2,43 @@
   "dimension": "metrica_clasica_matching_semantico",
   "rol": "pau",
   "modelo": "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es",
-  "predicciones_origen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/outputs/resultado_dimension1.json",
-  "gold_set": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/eval_harness/gold_examples_20.jsonl",
-  "n_ejemplos_evaluados": 20,
+  "predicciones_origen": "D:\\Clase-topicos-IA\\Dupla\\proyecto\\M2\\outputs\\resultado_dimension1.json",
+  "gold_set": "D:\\Clase-topicos-IA\\Dupla\\proyecto\\M2\\eval_harness\\gold_examples.jsonl",
+  "n_ejemplos_evaluados": 59,
   "configuracion": {
     "modelo_embeddings": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
     "funcion_similitud": "emb",
     "algoritmo_asignacion": "hungaro",
     "restriccion": "uno a uno",
-    "umbral": 0.51,
+    "umbral": 0.55,
     "criterio_umbral": "indice de Youden sobre positivos boundary vs negativos cross-document",
-    "umbral_tpr_positivos": 0.8905,
-    "umbral_fpr_negativos": 0.0536
+    "umbral_tpr_positivos": 0.8503,
+    "umbral_fpr_negativos": 0.0373
   },
   "metrics": {
-    "precision": 0.9217171717171717,
-    "recall": 0.9335038363171355,
-    "f1": 0.9275730622617535,
-    "tp": 365,
-    "fp": 31,
-    "fn": 26,
-    "soft_precision": 0.8709708071417279,
-    "soft_recall": 0.8821085412483995,
-    "soft_f1": 0.8765042938452967
+    "precision": 0.8786717752234994,
+    "recall": 0.9088507265521797,
+    "f1": 0.8935064935064936,
+    "tp": 688,
+    "fp": 95,
+    "fn": 69,
+    "soft_precision": 0.84406735568211,
+    "soft_recall": 0.8730577800516408,
+    "soft_f1": 0.8583178435053145
   },
   "metrics_exact_match_referencia": {
-    "precision": 0.7222222222222222,
-    "recall": 0.731457800511509,
-    "f1": 0.7268106734434563,
-    "tp": 286,
-    "fp": 110,
-    "fn": 105
+    "precision": 0.7037037037037037,
+    "recall": 0.7278731836195509,
+    "f1": 0.7155844155844157,
+    "tp": 551,
+    "fp": 232,
+    "fn": 206
   },
   "aciertos_por_categoria": {
-    "exacto": 275,
-    "boundary (uno contiene al otro)": 64,
-    "solapamiento parcial de palabras": 7,
-    "sinonimo/parafrasis (sin solapamiento lexico)": 19
+    "exacto": 542,
+    "boundary (uno contiene al otro)": 115,
+    "solapamiento parcial de palabras": 9,
+    "sinonimo/parafrasis (sin solapamiento lexico)": 22
   },
   "aciertos_nuevos": [
     {
@@ -86,22 +86,6 @@
       "pred": "ganglio linfático",
       "gold": "orificio fistuloso",
       "sim": 0.6766,
-      "exacto": false,
-      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
-    },
-    {
-      "doc_id": "ex_0",
-      "pred": "lesión",
-      "gold": "brucelosis",
-      "sim": 0.532,
-      "exacto": false,
-      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
-    },
-    {
-      "doc_id": "ex_0",
-      "pred": "pene afectaba a",
-      "gold": "lesión",
-      "sim": 0.5264,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
@@ -195,6 +179,14 @@
     },
     {
       "doc_id": "ex_11",
+      "pred": "lesión",
+      "gold": "lesiones",
+      "sim": 0.9246,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_11",
       "pred": "neoformaciones epiteliales malignas",
       "gold": "neoformaciones epiteliales malignas con estructuras glandulares",
       "sim": 0.9139,
@@ -243,19 +235,11 @@
     },
     {
       "doc_id": "ex_11",
-      "pred": "nódulos",
-      "gold": "mo",
-      "sim": 0.531,
+      "pred": "lesiones",
+      "gold": "cordón espermático derecho palpamos otra lesión",
+      "sim": 0.5562,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
-    },
-    {
-      "doc_id": "ex_11",
-      "pred": "lesión",
-      "gold": "cordón espermático derecho palpamos otra lesión",
-      "sim": 0.5192,
-      "exacto": false,
-      "categoria": "boundary (uno contiene al otro)"
     },
     {
       "doc_id": "ex_12",
@@ -338,14 +322,6 @@
       "categoria": "boundary (uno contiene al otro)"
     },
     {
-      "doc_id": "ex_14",
-      "pred": "cálculos",
-      "gold": "arbol piélico presenta contenido purulento y se identifican cálculos",
-      "sim": 0.5325,
-      "exacto": false,
-      "categoria": "boundary (uno contiene al otro)"
-    },
-    {
       "doc_id": "ex_15",
       "pred": "trombocitosis",
       "gold": "trombocitosis reactiva",
@@ -418,22 +394,6 @@
       "categoria": "boundary (uno contiene al otro)"
     },
     {
-      "doc_id": "ex_17",
-      "pred": "hernia de hiato",
-      "gold": "masa suprarrenal",
-      "sim": 0.5335,
-      "exacto": false,
-      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
-    },
-    {
-      "doc_id": "ex_17",
-      "pred": "invasión capsular",
-      "gold": "hernia de hiato",
-      "sim": 0.5162,
-      "exacto": false,
-      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
-    },
-    {
       "doc_id": "ex_18",
       "pred": "tumor de células germinales mixto",
       "gold": "tumor de células germinales mixto de 2 cm formado por carcinoma embrionario y focos de teratoma",
@@ -491,9 +451,25 @@
     },
     {
       "doc_id": "ex_2",
+      "pred": "dilataciones ureterales bilaterales",
+      "gold": "uretero-hidronefrosis bilateral",
+      "sim": 0.826,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_2",
       "pred": "rubéola inmune",
       "gold": "rubéola",
       "sim": 0.6421,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_2",
+      "pred": "uretero-hidronefrosis bilateral",
+      "gold": "hidronefrosis bilateral",
+      "sim": 0.5914,
       "exacto": false,
       "categoria": "boundary (uno contiene al otro)"
     },
@@ -514,26 +490,210 @@
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
-      "doc_id": "ex_2",
-      "pred": "cuadro de",
-      "gold": "vejiga trabeculada",
-      "sim": 0.5428,
+      "doc_id": "ex_20",
+      "pred": "traumatismo cráneo-encefálico leve en región frontal",
+      "gold": "traumatismo cráneo-encefálico leve en región frontal derecha",
+      "sim": 0.9761,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_20",
+      "pred": "crisis",
+      "gold": "episodios convulsivos de crisis tónico-clónicas",
+      "sim": 0.6047,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_20",
+      "pred": "alteraciones electrolíticas",
+      "gold": "alteraciones electrolíticas secundarias a pérdidas por ileostomía y tratamiento diurético",
+      "sim": 0.5966,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_20",
+      "pred": "alteraciones hidroelectrolíticas",
+      "gold": "déficit electrolíticos",
+      "sim": 0.5736,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
-      "doc_id": "ex_2",
-      "pred": "vejiga trabeculada",
-      "gold": "patología heredo-familiar",
-      "sim": 0.5194,
+      "doc_id": "ex_20",
+      "pred": "alteraciones",
+      "gold": "alteraciones hidroelectrolíticas",
+      "sim": 0.5576,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_21",
+      "pred": "vía accesoria auriculo-ventricular",
+      "gold": "vía accesoria auriculo-ventricular (av) de conducción bidireccional",
+      "sim": 0.8387,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_21",
+      "pred": "arritmias",
+      "gold": "vía anómala",
+      "sim": 0.7226,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
-      "doc_id": "ex_2",
-      "pred": "dilataciones ureterales bilaterales",
-      "gold": "hidronefrosis bilateral",
-      "sim": 0.5173,
+      "doc_id": "ex_21",
+      "pred": "vía",
+      "gold": "vía anteroseptal derecha",
+      "sim": 0.609,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_21",
+      "pred": "taquicardia",
+      "gold": "arritmias",
+      "sim": 0.5683,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_23",
+      "pred": "pérdida de visión por el ojo",
+      "gold": "pérdida de visión",
+      "sim": 0.9495,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_23",
+      "pred": "fractura lineal del techo de la órbita derecha que se extendía al ala menor del esfenoides",
+      "gold": "fractura lineal del techo de la órbita",
+      "sim": 0.9124,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_23",
+      "pred": "tce frontal derecho",
+      "gold": "tce frontal derecho con pérdida de conciencia",
+      "sim": 0.7319,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_23",
+      "pred": "traumatismo frontal",
+      "gold": "lesión directa del no",
+      "sim": 0.6674,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_24",
+      "pred": "síndrome",
+      "gold": "síndrome miccional crónico",
+      "sim": 0.892,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_24",
+      "pred": "urolitiasis remota",
+      "gold": "urolitiasis",
+      "sim": 0.8262,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_25",
+      "pred": "paresia de iv par craneal",
+      "gold": "paresia de iv par craneal derecho",
+      "sim": 0.9148,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_25",
+      "pred": "neoplasia oculta",
+      "gold": "neoplasia",
+      "sim": 0.8764,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_26",
+      "pred": "irc progresiva secundaria a glomerulonefritis tipo iga con esclerosis focal y segmentaria asociada",
+      "gold": "glomerulonefritis tipo iga con esclerosis focal y segmentaria",
+      "sim": 0.9419,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_26",
+      "pred": "cardiopatía isquémica por enfermedad coronaria",
+      "gold": "cardiopatía isquémica",
+      "sim": 0.9053,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_27",
+      "pred": "ulcus duodenal con",
+      "gold": "ulcus duodenal",
+      "sim": 0.9669,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_27",
+      "pred": "gammapatía monoclonal",
+      "gold": "gammapatía monoclonal con igm",
+      "sim": 0.8959,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_27",
+      "pred": "linfoma no-hodking b primario renal tipo malt",
+      "gold": "infoma no-hodking b primario renal tipo malt",
+      "sim": 0.8856,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_28",
+      "pred": "herida por arma de fuego de proyectil único",
+      "gold": "herida por arma de fuego de proyectil único, que penetra por un orificio natural, concretamente el orificio nasal",
+      "sim": 0.7505,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_28",
+      "pred": "disparo por arma de fuego en la orofaringe",
+      "gold": "proyectil de arma de fuego deformado, que ha interesado la médula",
+      "sim": 0.6969,
+      "exacto": false,
+      "categoria": "solapamiento parcial de palabras"
+    },
+    {
+      "doc_id": "ex_28",
+      "pred": "disparo a larga distancia",
+      "gold": "disparo por arma de fuego en la orofaringe",
+      "sim": 0.6607,
+      "exacto": false,
+      "categoria": "solapamiento parcial de palabras"
+    },
+    {
+      "doc_id": "ex_28",
+      "pred": "herida en",
+      "gold": "perfora el paladar duro",
+      "sim": 0.5669,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
@@ -542,6 +702,14 @@
       "pred": "anemia progresiva",
       "gold": "anemia",
       "sim": 0.935,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_3",
+      "pred": "neumonía por adenovirus",
+      "gold": "neumonía por adenovirus con síndrome de distrés respiratorio agudo",
+      "sim": 0.9229,
       "exacto": false,
       "categoria": "boundary (uno contiene al otro)"
     },
@@ -564,18 +732,178 @@
     {
       "doc_id": "ex_3",
       "pred": "síndrome de distrés respiratorio agudo secundario",
-      "gold": "neumonía por adenovirus con síndrome de distrés respiratorio agudo",
-      "sim": 0.6334,
+      "gold": "neumonía extrahospitalaria grave",
+      "sim": 0.5984,
       "exacto": false,
-      "categoria": "solapamiento parcial de palabras"
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
       "doc_id": "ex_3",
-      "pred": "neumonía por adenovirus",
+      "pred": "neumonía extrahospitalaria grave",
       "gold": "gripe a y b",
-      "sim": 0.5281,
+      "sim": 0.5781,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_30",
+      "pred": "insuficiencia respiratoria aguda",
+      "gold": "insuficiencia respiratoria aguda en el seno de una sepsis de origen respiratorio",
+      "sim": 0.9002,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_30",
+      "pred": "adenocarcinoma de colon",
+      "gold": "adenocarcinoma de colon estadio iv con múltiples metástasis hepáticas",
+      "sim": 0.7919,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_30",
+      "pred": "vvz",
+      "gold": "heces melénicas",
+      "sim": 0.7477,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_31",
+      "pred": "neoplasia combinada",
+      "gold": "neoplasia",
+      "sim": 0.9023,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_31",
+      "pred": "hidrocele complicado",
+      "gold": "hidrocele",
+      "sim": 0.8807,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_31",
+      "pred": "infiltración por adenocarcinoma mucinoso",
+      "gold": "adenocarcinoma mucinoso",
+      "sim": 0.8539,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_31",
+      "pred": "adenocarcinoma mucinoso y carcinoide de células caliciformes",
+      "gold": "adenocarcinoma mucinoso y carcinoide de células caliciformes, t4n2m1) que infiltraba la pared apendicular y el meso",
+      "sim": 0.7653,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_32",
+      "pred": "hemorragia subretiniana a lo largo de la arcada vascular",
+      "gold": "hemorragia subretiniana",
+      "sim": 0.8911,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_32",
+      "pred": "edema quístico",
+      "gold": "edema quístico difuso en polo posterior",
+      "sim": 0.6622,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_32",
+      "pred": "edema medular",
+      "gold": "leve edema medular",
+      "sim": 0.6428,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_33",
+      "pred": "metástasis ganglionares a distancia y suprarrenales",
+      "gold": "progresión tumoral con metástasis ganglionares a distancia y suprarrenales",
+      "sim": 0.7477,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_33",
+      "pred": "progresión tumoral",
+      "gold": "tumor estenosante de colon sigmoide con metástasis en ganglios regionales e hígado",
+      "sim": 0.5545,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_34",
+      "pred": "úlcera profunda",
+      "gold": "tercio distal esofágico una úlcera profunda",
+      "sim": 0.9002,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_35",
+      "pred": "neoformaciones",
+      "gold": "vejiga de poca capacidad con neoformación",
+      "sim": 0.751,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_36",
+      "pred": "absceso en el músculo psoas derecho",
+      "gold": "absceso en el músculo psoas",
+      "sim": 0.9666,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_36",
+      "pred": "infestación por pediculosis",
+      "gold": "enfermedades infecciosas",
+      "sim": 0.6922,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_36",
+      "pred": "patología quirúrgica aguda",
+      "gold": "pediculosis",
+      "sim": 0.5849,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_37",
+      "pred": "fractura de la corona y raíz complicada",
+      "gold": "fractura de la corona y raíz",
+      "sim": 0.9793,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_38",
+      "pred": "bullas aéreas de gran tamaño en el lóbulo superior izquierdo",
+      "gold": "bullas aéreas de gran tamaño en el lóbulo superior",
+      "sim": 0.9642,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_4",
+      "pred": "alteraciones de la arteria renal principal o aorta",
+      "gold": "macro/ microaneurismas o alteraciones de la arteria renal principal o aorta",
+      "sim": 0.8766,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
     },
     {
       "doc_id": "ex_4",
@@ -586,52 +914,108 @@
       "categoria": "boundary (uno contiene al otro)"
     },
     {
-      "doc_id": "ex_4",
-      "pred": "isquemia miocárdica aguda",
-      "gold": "isquemia",
-      "sim": 0.7987,
+      "doc_id": "ex_41",
+      "pred": "recidiva local sangrante",
+      "gold": "glande, que deformaba meato, con áreas ulceradas",
+      "sim": 0.6109,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_42",
+      "pred": "fístula arterio-cavernosa en la porción proximal del cuerpo cavernoso derecho",
+      "gold": "fístula arterio-cavernosa en la porción proximal del cuerpo cavernoso",
+      "sim": 0.9883,
       "exacto": false,
       "categoria": "boundary (uno contiene al otro)"
     },
     {
-      "doc_id": "ex_4",
-      "pred": "aneurisma de arteria renal",
-      "gold": "macro/ microaneurismas o alteraciones de la arteria renal principal o aorta",
-      "sim": 0.7044,
+      "doc_id": "ex_42",
+      "pred": "fístula arteriocavernosa en el lado",
+      "gold": "fístula arteriocavernosa",
+      "sim": 0.949,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_43",
+      "pred": "anemización progresiva",
+      "gold": "anemización",
+      "sim": 0.7676,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_44",
+      "pred": "artritis reumatoide",
+      "gold": "artritis reumatoide (ar) seropositiva, erosiva y nodular",
+      "sim": 0.9219,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_44",
+      "pred": "artritis séptica de tobillo",
+      "gold": "artritis séptica de tobillo derecho con cultivo de líquido sinovial positivo para staphylococcus aureus",
+      "sim": 0.7093,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_45",
+      "pred": "pancreatitis crónica sobre páncreas divisum",
+      "gold": "pancreatitis aguda de repetición",
+      "sim": 0.8123,
       "exacto": false,
       "categoria": "solapamiento parcial de palabras"
     },
     {
-      "doc_id": "ex_4",
-      "pred": "enfermedad protrombótica y vascular",
-      "gold": "enfermedad sistémica",
-      "sim": 0.5914,
+      "doc_id": "ex_46",
+      "pred": "hidrocele a tensión en hemiescroto derecho",
+      "gold": "hidrocele a tensión en hemiescroto",
+      "sim": 0.9518,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_46",
+      "pred": "hidrocele izquierdo",
+      "gold": "hidrocele leve",
+      "sim": 0.9109,
       "exacto": false,
       "categoria": "solapamiento parcial de palabras"
     },
     {
-      "doc_id": "ex_4",
-      "pred": "alteraciones de la arteria renal principal o aorta",
-      "gold": "enfermedad protrombótica y vascular",
-      "sim": 0.58,
+      "doc_id": "ex_46",
+      "pred": "hidrocele leve el lado",
+      "gold": "hidrocele",
+      "sim": 0.8066,
       "exacto": false,
-      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+      "categoria": "boundary (uno contiene al otro)"
     },
     {
-      "doc_id": "ex_4",
-      "pred": "enfermedad sistémica",
-      "gold": "isquemia miocárdica aguda",
-      "sim": 0.5672,
+      "doc_id": "ex_47",
+      "pred": "enfermedad de parkinson incipiente",
+      "gold": "enfermedad de parkinson",
+      "sim": 0.9571,
       "exacto": false,
-      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+      "categoria": "boundary (uno contiene al otro)"
     },
     {
-      "doc_id": "ex_4",
-      "pred": "déficit funcional de la unidad renal",
-      "gold": "aneurisma de arteria renal",
-      "sim": 0.5309,
+      "doc_id": "ex_49",
+      "pred": "lesiones parenquimatosas de",
+      "gold": "lesiones",
+      "sim": 0.9078,
       "exacto": false,
-      "categoria": "solapamiento parcial de palabras"
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_49",
+      "pred": "glomerulonefritis membranoproliferativa secundaria al vhc sobre el injerto renal",
+      "gold": "glomerulonefritis membranoproliferativa secundaria al vhc",
+      "sim": 0.8317,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
     },
     {
       "doc_id": "ex_5",
@@ -659,14 +1043,6 @@
     },
     {
       "doc_id": "ex_5",
-      "pred": "quiste esplénico",
-      "gold": "infiltraba esófago",
-      "sim": 0.7451,
-      "exacto": false,
-      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
-    },
-    {
-      "doc_id": "ex_5",
       "pred": "disfagia moderada a sólidos",
       "gold": "disfagia moderada",
       "sim": 0.591,
@@ -674,12 +1050,84 @@
       "categoria": "boundary (uno contiene al otro)"
     },
     {
-      "doc_id": "ex_5",
-      "pred": "lesión",
-      "gold": "quiste esplénico",
-      "sim": 0.5237,
+      "doc_id": "ex_52",
+      "pred": "hemotórax izquierdo masivo",
+      "gold": "hemotórax",
+      "sim": 0.8661,
       "exacto": false,
-      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_53",
+      "pred": "desprendimiento y rotura de la membrana de descemet y del endotelio",
+      "gold": "desprendimiento y rotura de la membrana de descemet",
+      "sim": 0.8803,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_56",
+      "pred": "pérdida de audición conductiva del 60% en el oído",
+      "gold": "pérdida de audición conductiva del 60% en el oído izquierdo",
+      "sim": 0.9702,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_56",
+      "pred": "herida de entrada",
+      "gold": "herida intraoral",
+      "sim": 0.8292,
+      "exacto": false,
+      "categoria": "solapamiento parcial de palabras"
+    },
+    {
+      "doc_id": "ex_56",
+      "pred": "trastorno",
+      "gold": "trastorno neurológico",
+      "sim": 0.7975,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_56",
+      "pred": "coágulos de sangre en el canal auditivo izquierdo",
+      "gold": "salida de líquido cefalorraquídeo por la herida de entrada ni por el conducto auditivo externo",
+      "sim": 0.6789,
+      "exacto": false,
+      "categoria": "solapamiento parcial de palabras"
+    },
+    {
+      "doc_id": "ex_57",
+      "pred": "ausencia de glándula parótida izquierda",
+      "gold": "ausencia de glándula parótida",
+      "sim": 0.9125,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_57",
+      "pred": "desplazamiento anterior de los cóndilos mandibulares",
+      "gold": "desplazamiento anterior de los cóndilos mandibulares por displasia severa de la articulación témporomandibular",
+      "sim": 0.8445,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_57",
+      "pred": "absceso facial izquierdo",
+      "gold": "absceso facial izquierdo de origen dentario",
+      "sim": 0.8369,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
+    },
+    {
+      "doc_id": "ex_58",
+      "pred": "cóndilo bífido",
+      "gold": "cóndilo bífido izquierdo anteroposterior",
+      "sim": 0.5904,
+      "exacto": false,
+      "categoria": "boundary (uno contiene al otro)"
     },
     {
       "doc_id": "ex_6",
@@ -772,22 +1220,6 @@
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
-      "doc_id": "ex_0",
-      "pred": "lesión",
-      "gold": "brucelosis",
-      "sim": 0.532,
-      "exacto": false,
-      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
-    },
-    {
-      "doc_id": "ex_0",
-      "pred": "pene afectaba a",
-      "gold": "lesión",
-      "sim": 0.5264,
-      "exacto": false,
-      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
-    },
-    {
       "doc_id": "ex_10",
       "pred": "globo vesical",
       "gold": "letàlides",
@@ -797,9 +1229,17 @@
     },
     {
       "doc_id": "ex_11",
-      "pred": "nódulos",
-      "gold": "mo",
-      "sim": 0.531,
+      "pred": "lesión",
+      "gold": "lesiones",
+      "sim": 0.9246,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_11",
+      "pred": "lesiones",
+      "gold": "cordón espermático derecho palpamos otra lesión",
+      "sim": 0.5562,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
@@ -808,22 +1248,6 @@
       "pred": "esclerosis y calcificación de toda la membrana peritoneal",
       "gold": "peritonitis",
       "sim": 0.6049,
-      "exacto": false,
-      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
-    },
-    {
-      "doc_id": "ex_17",
-      "pred": "hernia de hiato",
-      "gold": "masa suprarrenal",
-      "sim": 0.5335,
-      "exacto": false,
-      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
-    },
-    {
-      "doc_id": "ex_17",
-      "pred": "invasión capsular",
-      "gold": "hernia de hiato",
-      "sim": 0.5162,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
@@ -845,6 +1269,14 @@
     },
     {
       "doc_id": "ex_2",
+      "pred": "dilataciones ureterales bilaterales",
+      "gold": "uretero-hidronefrosis bilateral",
+      "sim": 0.826,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_2",
       "pred": "alteraciones vertebrales",
       "gold": "apéndices auriculares bilaterales",
       "sim": 0.5575,
@@ -852,75 +1284,127 @@
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
-      "doc_id": "ex_2",
-      "pred": "cuadro de",
-      "gold": "vejiga trabeculada",
-      "sim": 0.5428,
+      "doc_id": "ex_20",
+      "pred": "alteraciones hidroelectrolíticas",
+      "gold": "déficit electrolíticos",
+      "sim": 0.5736,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
-      "doc_id": "ex_2",
-      "pred": "vejiga trabeculada",
-      "gold": "patología heredo-familiar",
-      "sim": 0.5194,
+      "doc_id": "ex_21",
+      "pred": "arritmias",
+      "gold": "vía anómala",
+      "sim": 0.7226,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
-      "doc_id": "ex_2",
-      "pred": "dilataciones ureterales bilaterales",
-      "gold": "hidronefrosis bilateral",
-      "sim": 0.5173,
+      "doc_id": "ex_21",
+      "pred": "taquicardia",
+      "gold": "arritmias",
+      "sim": 0.5683,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_23",
+      "pred": "traumatismo frontal",
+      "gold": "lesión directa del no",
+      "sim": 0.6674,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_28",
+      "pred": "herida en",
+      "gold": "perfora el paladar duro",
+      "sim": 0.5669,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
       "doc_id": "ex_3",
-      "pred": "neumonía por adenovirus",
+      "pred": "síndrome de distrés respiratorio agudo secundario",
+      "gold": "neumonía extrahospitalaria grave",
+      "sim": 0.5984,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_3",
+      "pred": "neumonía extrahospitalaria grave",
       "gold": "gripe a y b",
-      "sim": 0.5281,
+      "sim": 0.5781,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
-      "doc_id": "ex_4",
-      "pred": "alteraciones de la arteria renal principal o aorta",
-      "gold": "enfermedad protrombótica y vascular",
-      "sim": 0.58,
+      "doc_id": "ex_30",
+      "pred": "vvz",
+      "gold": "heces melénicas",
+      "sim": 0.7477,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
-      "doc_id": "ex_4",
-      "pred": "enfermedad sistémica",
-      "gold": "isquemia miocárdica aguda",
-      "sim": 0.5672,
+      "doc_id": "ex_33",
+      "pred": "progresión tumoral",
+      "gold": "tumor estenosante de colon sigmoide con metástasis en ganglios regionales e hígado",
+      "sim": 0.5545,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
-      "doc_id": "ex_5",
-      "pred": "quiste esplénico",
-      "gold": "infiltraba esófago",
-      "sim": 0.7451,
+      "doc_id": "ex_35",
+      "pred": "neoformaciones",
+      "gold": "vejiga de poca capacidad con neoformación",
+      "sim": 0.751,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     },
     {
-      "doc_id": "ex_5",
-      "pred": "lesión",
-      "gold": "quiste esplénico",
-      "sim": 0.5237,
+      "doc_id": "ex_36",
+      "pred": "infestación por pediculosis",
+      "gold": "enfermedades infecciosas",
+      "sim": 0.6922,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_36",
+      "pred": "patología quirúrgica aguda",
+      "gold": "pediculosis",
+      "sim": 0.5849,
+      "exacto": false,
+      "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
+    },
+    {
+      "doc_id": "ex_41",
+      "pred": "recidiva local sangrante",
+      "gold": "glande, que deformaba meato, con áreas ulceradas",
+      "sim": 0.6109,
       "exacto": false,
       "categoria": "sinonimo/parafrasis (sin solapamiento lexico)"
     }
   ],
   "ambiguedad_gold": {
-    "pares_ambiguos": 422,
-    "pares_totales": 3743,
-    "fraccion": 0.1127,
+    "pares_ambiguos": 537,
+    "pares_totales": 5434,
+    "fraccion": 0.0988,
     "ejemplos": [
+      {
+        "doc_id": "ex_27",
+        "gold_a": "gammapatía monoclonal con igm",
+        "gold_b": "gammapatía monoclonal igm",
+        "sim": 0.9901
+      },
+      {
+        "doc_id": "ex_20",
+        "gold_a": "insuficiencia renal",
+        "gold_b": "insuficiencia renal aguda",
+        "sim": 0.9895
+      },
       {
         "doc_id": "ex_11",
         "gold_a": "carcinoma de colon",
@@ -940,10 +1424,28 @@
         "sim": 0.9714
       },
       {
+        "doc_id": "ex_45",
+        "gold_a": "pancreatitis aguda",
+        "gold_b": "pancreatitis crónica",
+        "sim": 0.9705
+      },
+      {
         "doc_id": "ex_6",
         "gold_a": "liposarcoma bien diferenciado",
         "gold_b": "liposarcoma bien diferenciado (lipoma-like",
         "sim": 0.9611
+      },
+      {
+        "doc_id": "ex_45",
+        "gold_a": "pancreatitis aguda",
+        "gold_b": "pancreatitis aguda moderada-severa",
+        "sim": 0.9602
+      },
+      {
+        "doc_id": "ex_40",
+        "gold_a": "carcinoma de células acinares",
+        "gold_b": "carcinoma de células acinares de bajo grado",
+        "sim": 0.944
       },
       {
         "doc_id": "ex_1",
@@ -956,6 +1458,12 @@
         "gold_a": "espondilitis",
         "gold_b": "espondilodiscitis",
         "sim": 0.9421
+      },
+      {
+        "doc_id": "ex_37",
+        "gold_a": "fractura",
+        "gold_b": "fracturas",
+        "sim": 0.9407
       },
       {
         "doc_id": "ex_16",
@@ -976,6 +1484,30 @@
         "sim": 0.9366
       },
       {
+        "doc_id": "ex_45",
+        "gold_a": "pancreatitis aguda moderada-severa",
+        "gold_b": "pancreatitis crónica",
+        "sim": 0.9365
+      },
+      {
+        "doc_id": "ex_55",
+        "gold_a": "lipoma",
+        "gold_b": "lipoma paratesticular",
+        "sim": 0.9314
+      },
+      {
+        "doc_id": "ex_49",
+        "gold_a": "hipoplasia renal",
+        "gold_b": "irc secundaria a hipoplasia renal",
+        "sim": 0.9303
+      },
+      {
+        "doc_id": "ex_46",
+        "gold_a": "hidrocele",
+        "gold_b": "hidrocele leve",
+        "sim": 0.9269
+      },
+      {
         "doc_id": "ex_0",
         "gold_a": "tumor",
         "gold_b": "tumor benigno",
@@ -994,6 +1526,18 @@
         "sim": 0.9176
       },
       {
+        "doc_id": "ex_47",
+        "gold_a": "infecciones asociadas a catéter",
+        "gold_b": "infección",
+        "sim": 0.915
+      },
+      {
+        "doc_id": "ex_30",
+        "gold_a": "insuficiencia respiratoria aguda en el seno de una sepsis de origen respiratorio",
+        "gold_b": "sepsis de origen respiratorio",
+        "sim": 0.9094
+      },
+      {
         "doc_id": "ex_17",
         "gold_a": "feocromocitoma",
         "gold_b": "feocromocitoma maligno",
@@ -1004,6 +1548,12 @@
         "gold_a": "dilatación de la uretra posterior",
         "gold_b": "dilatación ureteral bilateral",
         "sim": 0.9087
+      },
+      {
+        "doc_id": "ex_36",
+        "gold_a": "lesiones cutáneas, una en el glúteo y otra en el cuero cabelludo",
+        "gold_b": "lesión nodular, inflamada, ambas en cuero cabelludo",
+        "sim": 0.9083
       },
       {
         "doc_id": "ex_5",
@@ -1024,10 +1574,22 @@
         "sim": 0.8929
       },
       {
+        "doc_id": "ex_32",
+        "gold_a": "hemorragia subretiniana",
+        "gold_b": "hemorragia vítrea",
+        "sim": 0.8919
+      },
+      {
         "doc_id": "ex_11",
         "gold_a": "adenocarcinoma",
         "gold_b": "metástasis de un adenocarcinoma",
         "sim": 0.8839
+      },
+      {
+        "doc_id": "ex_22",
+        "gold_a": "adenopatía interlobular",
+        "gold_b": "adenopatía subcarínica",
+        "sim": 0.8834
       },
       {
         "doc_id": "ex_6",
@@ -1042,10 +1604,22 @@
         "sim": 0.8826
       },
       {
+        "doc_id": "ex_21",
+        "gold_a": "preexcitación",
+        "gold_b": "preexcitación permanente",
+        "sim": 0.8811
+      },
+      {
         "doc_id": "ex_5",
         "gold_a": "adenopatías",
         "gold_b": "adenopatías celiacas",
         "sim": 0.8806
+      },
+      {
+        "doc_id": "ex_40",
+        "gold_a": "carcinoma",
+        "gold_b": "carcinoma de células acinares",
+        "sim": 0.88
       },
       {
         "doc_id": "ex_0",
@@ -1078,6 +1652,18 @@
         "sim": 0.8755
       },
       {
+        "doc_id": "ex_24",
+        "gold_a": "urolitiasis",
+        "gold_b": "uropatía obstructiva",
+        "sim": 0.8739
+      },
+      {
+        "doc_id": "ex_45",
+        "gold_a": "pancreatitis aguda",
+        "gold_b": "pancreatitis aguda de repetición",
+        "sim": 0.8739
+      },
+      {
         "doc_id": "ex_10",
         "gold_a": "adenopatías",
         "gold_b": "adenopatías inguinales",
@@ -1090,174 +1676,30 @@
         "sim": 0.8734
       },
       {
+        "doc_id": "ex_33",
+        "gold_a": "tumor estenosante de colon sigmoide",
+        "gold_b": "tumor estenosante de colon sigmoide con metástasis en ganglios regionales e hígado",
+        "sim": 0.8728
+      },
+      {
         "doc_id": "ex_11",
         "gold_a": "adenocarcinoma de colon moderadamente diferenciado",
         "gold_b": "carcinoma de colon",
         "sim": 0.8727
       },
       {
-        "doc_id": "ex_0",
-        "gold_a": "metástasis tumorales",
-        "gold_b": "tumor",
-        "sim": 0.8682
-      },
-      {
-        "doc_id": "ex_10",
-        "gold_a": "adenopatía inguinal",
-        "gold_b": "adenopatías inguinales",
-        "sim": 0.8635
-      },
-      {
-        "doc_id": "ex_4",
-        "gold_a": "dilatación del tracto urinario",
-        "gold_b": "litiasis urinaria",
-        "sim": 0.8619
-      },
-      {
-        "doc_id": "ex_0",
-        "gold_a": "lesión tumoral",
-        "gold_b": "tumor benigno",
-        "sim": 0.8613
-      },
-      {
-        "doc_id": "ex_1",
-        "gold_a": "broncoaspiración",
-        "gold_b": "neumonía bilo-bar por broncoaspiración",
-        "sim": 0.8599
-      },
-      {
-        "doc_id": "ex_10",
-        "gold_a": "herida inguinal",
-        "gold_b": "hernia inguinal",
-        "sim": 0.8583
-      },
-      {
-        "doc_id": "ex_4",
-        "gold_a": "arritmia cardíaca",
-        "gold_b": "patología del aparato valvular cardiaco",
-        "sim": 0.8581
-      },
-      {
-        "doc_id": "ex_2",
-        "gold_a": "dilataciones ureterales bilaterales no obstructivos",
-        "gold_b": "dilatación de la uretra posterior",
-        "sim": 0.8579
-      },
-      {
-        "doc_id": "ex_7",
-        "gold_a": "hipo-fosfatemia severa",
-        "gold_b": "hipofosfatemia",
-        "sim": 0.8552
-      },
-      {
-        "doc_id": "ex_0",
-        "gold_a": "metástasis tumorales",
-        "gold_b": "tumor benigno",
-        "sim": 0.853
-      },
-      {
-        "doc_id": "ex_13",
-        "gold_a": "abscesos en músculos paravertebrales y psoas",
-        "gold_b": "abscesos epidurales, psoas y musculatura dorso-lumbar",
-        "sim": 0.8516
-      },
-      {
-        "doc_id": "ex_19",
-        "gold_a": "hemorragia intraventricular",
-        "gold_b": "hidrocefalia grave secundaria a hemorragia intraventricular",
-        "sim": 0.8494
-      },
-      {
-        "doc_id": "ex_18",
-        "gold_a": "infiltración vascular ni linfática",
-        "gold_b": "invasión vascular ni linfática",
-        "sim": 0.8432
-      },
-      {
-        "doc_id": "ex_3",
-        "gold_a": "insuficiencia respiratoria",
-        "gold_b": "síndrome de distrés respiratorio agudo",
-        "sim": 0.8394
-      },
-      {
-        "doc_id": "ex_0",
-        "gold_a": "carcinoma verrugoso de buscke-lowenstein",
-        "gold_b": "metástasis de carcinoma",
-        "sim": 0.8377
-      },
-      {
-        "doc_id": "ex_0",
-        "gold_a": "masa tumoral",
-        "gold_b": "metástasis tumorales",
-        "sim": 0.8374
-      },
-      {
-        "doc_id": "ex_14",
-        "gold_a": "adenocarcinoma",
-        "gold_b": "adenocarcinoma de tipo intestinal",
-        "sim": 0.8358
-      },
-      {
-        "doc_id": "ex_0",
-        "gold_a": "masa tumoral",
-        "gold_b": "tumor",
-        "sim": 0.8338
-      },
-      {
-        "doc_id": "ex_6",
-        "gold_a": "adenopatías inguinales",
-        "gold_b": "adenopatías locoregionales",
-        "sim": 0.8317
-      },
-      {
-        "doc_id": "ex_10",
-        "gold_a": "adenopatía de carcinoma escamoso moderadamente diferenciado",
-        "gold_b": "carcinoma escamoso",
-        "sim": 0.8265
-      },
-      {
-        "doc_id": "ex_12",
-        "gold_a": "peritonitis por echerichia coli",
-        "gold_b": "peritonitis, causada por dos gérmenes (staphilococcus epidermidis y pseudomona aeruginosa",
-        "sim": 0.826
+        "doc_id": "ex_33",
+        "gold_a": "neoplasia",
+        "gold_b": "neoplasia de encía",
+        "sim": 0.8726
       }
     ]
   },
   "detalle_emparejamientos": {
     "ex_0": [
       {
-        "pred": "infiltración metastásica",
-        "gold": "infiltración metastásica",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "lesión penoescrotal",
         "gold": "lesión penoescrotal",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "sarcoma infectado",
-        "gold": "sarcoma infectado",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "adenopatías",
-        "gold": "adenopatías",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "adenopatías bilaterales en las cadenas iliacas interna y externa y en las cadenas inguinales",
-        "gold": "adenopatías bilaterales en las cadenas iliacas interna y externa y en las cadenas inguinales",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "adenopatías bilaterales ilíacas e inguinales",
-        "gold": "adenopatías bilaterales ilíacas e inguinales",
         "sim": 1.0,
         "exacto": true
       },
@@ -1268,26 +1710,32 @@
         "exacto": true
       },
       {
+        "pred": "ulceración en el surco balanoprepucial",
+        "gold": "ulceración en el surco balanoprepucial",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "adenopatías",
+        "gold": "adenopatías",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "adenopatías bilaterales ilíacas e inguinales",
+        "gold": "adenopatías bilaterales ilíacas e inguinales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "infiltración metastásica",
+        "gold": "infiltración metastásica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "lesión tumoral",
         "gold": "lesión tumoral",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "linfogranuloma venéreo",
-        "gold": "linfogranuloma venéreo",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "masa tumoral",
-        "gold": "masa tumoral",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "metástasis tumorales",
-        "gold": "metástasis tumorales",
         "sim": 1.0,
         "exacto": true
       },
@@ -1304,20 +1752,50 @@
         "exacto": true
       },
       {
-        "pred": "ulceración en el surco balanoprepucial",
-        "gold": "ulceración en el surco balanoprepucial",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "lesiones óseas en las ramas isquio-ileo-pubianas",
         "gold": "lesiones óseas en las ramas isquio-ileo-pubianas",
         "sim": 1.0,
         "exacto": true
       },
       {
+        "pred": "adenopatías bilaterales en las cadenas iliacas interna y externa y en las cadenas inguinales",
+        "gold": "adenopatías bilaterales en las cadenas iliacas interna y externa y en las cadenas inguinales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "linfogranuloma venéreo",
+        "gold": "linfogranuloma venéreo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "masa tumoral",
+        "gold": "masa tumoral",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "metástasis de carcinoma",
         "gold": "metástasis de carcinoma",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "metástasis tumorales",
+        "gold": "metástasis tumorales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "sarcoma infectado",
+        "gold": "sarcoma infectado",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión",
+        "gold": "lesión",
         "sim": 1.0,
         "exacto": true
       },
@@ -1356,18 +1834,6 @@
         "gold": "orificio fistuloso",
         "sim": 0.6766,
         "exacto": false
-      },
-      {
-        "pred": "lesión",
-        "gold": "brucelosis",
-        "sim": 0.532,
-        "exacto": false
-      },
-      {
-        "pred": "pene afectaba a",
-        "gold": "lesión",
-        "sim": 0.5264,
-        "exacto": false
       }
     ],
     "ex_1": [
@@ -1378,8 +1844,32 @@
         "exacto": true
       },
       {
-        "pred": "carcinoma epidermoide orofaríngeo",
-        "gold": "carcinoma epidermoide orofaríngeo",
+        "pred": "diabetes mellitus",
+        "gold": "diabetes mellitus",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fallo renal agudo",
+        "gold": "fallo renal agudo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "síndrome guillen-barré",
+        "gold": "síndrome guillen-barré",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "alcalosis respiratoria",
+        "gold": "alcalosis respiratoria",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "bacteriemia por catéter",
+        "gold": "bacteriemia por catéter",
         "sim": 1.0,
         "exacto": true
       },
@@ -1414,32 +1904,14 @@
         "exacto": true
       },
       {
-        "pred": "alcalosis respiratoria",
-        "gold": "alcalosis respiratoria",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "bacteriemia asociada a streptococcus epidermidis meticilin-resistente",
         "gold": "bacteriemia asociada a streptococcus epidermidis meticilin-resistente",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "bacteriemia por catéter",
-        "gold": "bacteriemia por catéter",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "diabetes mellitus",
-        "gold": "diabetes mellitus",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "endocarditis",
-        "gold": "endocarditis",
+        "pred": "carcinoma epidermoide orofaríngeo",
+        "gold": "carcinoma epidermoide orofaríngeo",
         "sim": 1.0,
         "exacto": true
       },
@@ -1456,26 +1928,20 @@
         "exacto": true
       },
       {
-        "pred": "síndrome guillen-barré",
-        "gold": "síndrome guillen-barré",
+        "pred": "siadh paraneoplásico",
+        "gold": "siadh paraneoplásico",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "fallo renal agudo",
-        "gold": "fallo renal agudo",
+        "pred": "endocarditis",
+        "gold": "endocarditis",
         "sim": 1.0,
         "exacto": true
       },
       {
         "pred": "hipertensión arterial",
         "gold": "hipertensión arterial",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "siadh paraneoplásico",
-        "gold": "siadh paraneoplásico",
         "sim": 1.0,
         "exacto": true
       },
@@ -1518,50 +1984,14 @@
     ],
     "ex_10": [
       {
-        "pred": "adenopatías",
-        "gold": "adenopatías",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "carcinoma escamoso",
-        "gold": "carcinoma escamoso",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "colección de 3 cm entre uretra y cuerpos cavernosos",
-        "gold": "colección de 3 cm entre uretra y cuerpos cavernosos",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "herida inguinal",
-        "gold": "herida inguinal",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "hernia inguinal",
         "gold": "hernia inguinal",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "itu febril",
-        "gold": "itu febril",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "lesiones cutáneas",
-        "gold": "lesiones cutáneas",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "metástasis",
-        "gold": "metástasis",
+        "pred": "carcinoma escamoso",
+        "gold": "carcinoma escamoso",
         "sim": 1.0,
         "exacto": true
       },
@@ -1578,14 +2008,50 @@
         "exacto": true
       },
       {
+        "pred": "adenopatías",
+        "gold": "adenopatías",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "adenopatías inguinales",
         "gold": "adenopatías inguinales",
         "sim": 1.0,
         "exacto": true
       },
       {
+        "pred": "colección de 3 cm entre uretra y cuerpos cavernosos",
+        "gold": "colección de 3 cm entre uretra y cuerpos cavernosos",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "itu febril",
+        "gold": "itu febril",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesiones cutáneas",
+        "gold": "lesiones cutáneas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "lesión pulmonar",
         "gold": "lesión pulmonar",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "metástasis",
+        "gold": "metástasis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "herida inguinal",
+        "gold": "herida inguinal",
         "sim": 1.0,
         "exacto": true
       },
@@ -1622,12 +2088,6 @@
     ],
     "ex_11": [
       {
-        "pred": "absceso en la pared abdominal",
-        "gold": "absceso en la pared abdominal",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "adenocarcinoma",
         "gold": "adenocarcinoma",
         "sim": 1.0,
@@ -1640,26 +2100,20 @@
         "exacto": true
       },
       {
+        "pred": "carcinoma de colon",
+        "gold": "carcinoma de colon",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "carcinoma de colon descendente",
         "gold": "carcinoma de colon descendente",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "lesiones",
-        "gold": "lesiones",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "síndrome depresivo",
-        "gold": "síndrome depresivo",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "lesiones crónicas fibrocicatriciales en tórax",
-        "gold": "lesiones crónicas fibrocicatriciales en tórax",
+        "pred": "implantes mesentéricos, hepáticos",
+        "gold": "implantes mesentéricos, hepáticos",
         "sim": 1.0,
         "exacto": true
       },
@@ -1670,16 +2124,28 @@
         "exacto": true
       },
       {
-        "pred": "carcinoma de colon",
-        "gold": "carcinoma de colon",
+        "pred": "lesiones crónicas fibrocicatriciales en tórax",
+        "gold": "lesiones crónicas fibrocicatriciales en tórax",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "implantes mesentéricos, hepáticos",
-        "gold": "implantes mesentéricos, hepáticos",
+        "pred": "absceso en la pared abdominal",
+        "gold": "absceso en la pared abdominal",
         "sim": 1.0,
         "exacto": true
+      },
+      {
+        "pred": "síndrome depresivo",
+        "gold": "síndrome depresivo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión",
+        "gold": "lesiones",
+        "sim": 0.9246,
+        "exacto": false
       },
       {
         "pred": "neoformaciones epiteliales malignas",
@@ -1718,34 +2184,22 @@
         "exacto": false
       },
       {
-        "pred": "nódulos",
-        "gold": "mo",
-        "sim": 0.531,
-        "exacto": false
-      },
-      {
-        "pred": "lesión",
+        "pred": "lesiones",
         "gold": "cordón espermático derecho palpamos otra lesión",
-        "sim": 0.5192,
+        "sim": 0.5562,
         "exacto": false
       }
     ],
     "ex_12": [
       {
-        "pred": "hiperparatiroidismo grave",
-        "gold": "hiperparatiroidismo grave",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "infección de túnel por el estafilococo",
-        "gold": "infección de túnel por el estafilococo",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "obesidad",
         "gold": "obesidad",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "calcificación peritoneal",
+        "gold": "calcificación peritoneal",
         "sim": 1.0,
         "exacto": true
       },
@@ -1762,26 +2216,8 @@
         "exacto": true
       },
       {
-        "pred": "síndrome de laurence-moon-biell",
-        "gold": "síndrome de laurence-moon-biell",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "trombosis venosa",
-        "gold": "trombosis venosa",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "calcificación peritoneal",
-        "gold": "calcificación peritoneal",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "insuficiencia renal",
-        "gold": "insuficiencia renal",
+        "pred": "infección de túnel por el estafilococo",
+        "gold": "infección de túnel por el estafilococo",
         "sim": 1.0,
         "exacto": true
       },
@@ -1792,8 +2228,32 @@
         "exacto": true
       },
       {
+        "pred": "síndrome de laurence-moon-biell",
+        "gold": "síndrome de laurence-moon-biell",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "eventración peritoneal en el orificio del catéter",
         "gold": "eventración peritoneal en el orificio del catéter",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "insuficiencia renal",
+        "gold": "insuficiencia renal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "peritonitis por echerichia coli",
+        "gold": "peritonitis por echerichia coli",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hiperparatiroidismo grave",
+        "gold": "hiperparatiroidismo grave",
         "sim": 1.0,
         "exacto": true
       },
@@ -1804,8 +2264,8 @@
         "exacto": true
       },
       {
-        "pred": "peritonitis por echerichia coli",
-        "gold": "peritonitis por echerichia coli",
+        "pred": "trombosis venosa",
+        "gold": "trombosis venosa",
         "sim": 1.0,
         "exacto": true
       },
@@ -1848,14 +2308,38 @@
     ],
     "ex_13": [
       {
-        "pred": "artritis séptica poliarticular",
-        "gold": "artritis séptica poliarticular",
+        "pred": "hiperbilirrubinemia",
+        "gold": "hiperbilirrubinemia",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "cólicos nefríticos de repetición",
+        "gold": "cólicos nefríticos de repetición",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "parada cardiorrespiratoria",
+        "gold": "parada cardiorrespiratoria",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "proceso inflamatorio-infeccioso",
+        "gold": "proceso inflamatorio-infeccioso",
         "sim": 1.0,
         "exacto": true
       },
       {
         "pred": "fibrilación auricular con respuesta ventricular rápida",
         "gold": "fibrilación auricular con respuesta ventricular rápida",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hipertensión arterial",
+        "gold": "hipertensión arterial",
         "sim": 1.0,
         "exacto": true
       },
@@ -1878,50 +2362,8 @@
         "exacto": true
       },
       {
-        "pred": "diabetes mellitus tipo 2",
-        "gold": "diabetes mellitus tipo 2",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "espondilitis",
-        "gold": "espondilitis",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "infección de partes blandas",
-        "gold": "infección de partes blandas",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "parada cardiorrespiratoria",
-        "gold": "parada cardiorrespiratoria",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "proceso inflamatorio-infeccioso",
-        "gold": "proceso inflamatorio-infeccioso",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "rotura disco l4-l5",
-        "gold": "rotura disco l4-l5",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "cólicos nefríticos de repetición",
-        "gold": "cólicos nefríticos de repetición",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "hiperbilirrubinemia",
-        "gold": "hiperbilirrubinemia",
+        "pred": "artritis séptica poliarticular",
+        "gold": "artritis séptica poliarticular",
         "sim": 1.0,
         "exacto": true
       },
@@ -1932,14 +2374,32 @@
         "exacto": true
       },
       {
+        "pred": "infección de partes blandas",
+        "gold": "infección de partes blandas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "espondilitis",
+        "gold": "espondilitis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "espondilodiscitis",
         "gold": "espondilodiscitis",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "hipertensión arterial",
-        "gold": "hipertensión arterial",
+        "pred": "rotura disco l4-l5",
+        "gold": "rotura disco l4-l5",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "diabetes mellitus tipo 2",
+        "gold": "diabetes mellitus tipo 2",
         "sim": 1.0,
         "exacto": true
       },
@@ -1952,32 +2412,14 @@
     ],
     "ex_14": [
       {
+        "pred": "metaplasia glandular del epitelio urotelial",
+        "gold": "metaplasia glandular del epitelio urotelial",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "adenocarcinoma",
         "gold": "adenocarcinoma",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "atrofia marcada del parénquima renal",
-        "gold": "atrofia marcada del parénquima renal",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "dilatación del árbol pielo-calicial",
-        "gold": "dilatación del árbol pielo-calicial",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "enfermedades de tipo urológico",
-        "gold": "enfermedades de tipo urológico",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "fibrilación auricular",
-        "gold": "fibrilación auricular",
         "sim": 1.0,
         "exacto": true
       },
@@ -1988,20 +2430,20 @@
         "exacto": true
       },
       {
-        "pred": "metaplasia glandular del epitelio urotelial",
-        "gold": "metaplasia glandular del epitelio urotelial",
+        "pred": "dilatación del árbol pielo-calicial",
+        "gold": "dilatación del árbol pielo-calicial",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "neoplasia invade el tejido conjuntivo subepitelial",
-        "gold": "neoplasia invade el tejido conjuntivo subepitelial",
+        "pred": "fibrilación auricular",
+        "gold": "fibrilación auricular",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "adenocarcinoma de tipo intestinal",
-        "gold": "adenocarcinoma de tipo intestinal",
+        "pred": "anemia normocítica normocrómica",
+        "gold": "anemia normocítica normocrómica",
         "sim": 1.0,
         "exacto": true
       },
@@ -2012,8 +2454,26 @@
         "exacto": true
       },
       {
-        "pred": "anemia normocítica normocrómica",
-        "gold": "anemia normocítica normocrómica",
+        "pred": "adenocarcinoma de tipo intestinal",
+        "gold": "adenocarcinoma de tipo intestinal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neoplasia invade el tejido conjuntivo subepitelial",
+        "gold": "neoplasia invade el tejido conjuntivo subepitelial",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "atrofia marcada del parénquima renal",
+        "gold": "atrofia marcada del parénquima renal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "enfermedades de tipo urológico",
+        "gold": "enfermedades de tipo urológico",
         "sim": 1.0,
         "exacto": true
       },
@@ -2034,24 +2494,18 @@
         "gold": "hematuria microscópica",
         "sim": 0.8343,
         "exacto": false
-      },
-      {
-        "pred": "cálculos",
-        "gold": "arbol piélico presenta contenido purulento y se identifican cálculos",
-        "sim": 0.5325,
-        "exacto": false
       }
     ],
     "ex_15": [
       {
-        "pred": "obstrucción nasal",
-        "gold": "obstrucción nasal",
+        "pred": "linfoma nk extraganglionar tipo nasal",
+        "gold": "linfoma nk extraganglionar tipo nasal",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "fractura del brazo",
-        "gold": "fractura del brazo",
+        "pred": "obstrucción nasal",
+        "gold": "obstrucción nasal",
         "sim": 1.0,
         "exacto": true
       },
@@ -2068,14 +2522,20 @@
         "exacto": true
       },
       {
-        "pred": "lesión intranasal",
-        "gold": "lesión intranasal",
+        "pred": "mononucleosis infecciosa",
+        "gold": "mononucleosis infecciosa",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "linfoma nk extraganglionar tipo nasal",
-        "gold": "linfoma nk extraganglionar tipo nasal",
+        "pred": "alergias medicamentosas",
+        "gold": "alergias medicamentosas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fractura del brazo",
+        "gold": "fractura del brazo",
         "sim": 1.0,
         "exacto": true
       },
@@ -2086,14 +2546,8 @@
         "exacto": true
       },
       {
-        "pred": "mononucleosis infecciosa",
-        "gold": "mononucleosis infecciosa",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "obesidad mórbida",
-        "gold": "obesidad mórbida",
+        "pred": "quiste paralateronasal",
+        "gold": "quiste paralateronasal",
         "sim": 1.0,
         "exacto": true
       },
@@ -2104,14 +2558,14 @@
         "exacto": true
       },
       {
-        "pred": "quiste paralateronasal",
-        "gold": "quiste paralateronasal",
+        "pred": "obesidad mórbida",
+        "gold": "obesidad mórbida",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "alergias medicamentosas",
-        "gold": "alergias medicamentosas",
+        "pred": "lesión intranasal",
+        "gold": "lesión intranasal",
         "sim": 1.0,
         "exacto": true
       },
@@ -2142,8 +2596,20 @@
     ],
     "ex_16": [
       {
-        "pred": "orificio fistuloso en glúteo",
-        "gold": "orificio fistuloso en glúteo",
+        "pred": "adenopatías en cadena mesentérica, iliacas e inguinales",
+        "gold": "adenopatías en cadena mesentérica, iliacas e inguinales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fracaso renal",
+        "gold": "fracaso renal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión perirrectal",
+        "gold": "lesión perirrectal",
         "sim": 1.0,
         "exacto": true
       },
@@ -2154,20 +2620,38 @@
         "exacto": true
       },
       {
-        "pred": "adenopatías en cadena mesentérica, iliacas e inguinales",
-        "gold": "adenopatías en cadena mesentérica, iliacas e inguinales",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "anemia",
         "gold": "anemia",
         "sim": 1.0,
         "exacto": true
       },
       {
+        "pred": "neoplasia",
+        "gold": "neoplasia",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "deshidratación",
         "gold": "deshidratación",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "insuficiencia renal",
+        "gold": "insuficiencia renal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "plasmocitoma plasmoblástico con predominio de cadenas ligeras tipo lamda que infiltraba íleon terminal y ciego, raíz del mesenterio, ganglios linfáticos abdominales y médula ósea",
+        "gold": "plasmocitoma plasmoblástico con predominio de cadenas ligeras tipo lamda que infiltraba íleon terminal y ciego, raíz del mesenterio, ganglios linfáticos abdominales y médula ósea",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "sepsis",
+        "gold": "sepsis",
         "sim": 1.0,
         "exacto": true
       },
@@ -2184,38 +2668,8 @@
         "exacto": true
       },
       {
-        "pred": "lesión perirrectal",
-        "gold": "lesión perirrectal",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "plasmocitoma plasmoblástico con predominio de cadenas ligeras tipo lamda que infiltraba íleon terminal y ciego, raíz del mesenterio, ganglios linfáticos abdominales y médula ósea",
-        "gold": "plasmocitoma plasmoblástico con predominio de cadenas ligeras tipo lamda que infiltraba íleon terminal y ciego, raíz del mesenterio, ganglios linfáticos abdominales y médula ósea",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "insuficiencia renal",
-        "gold": "insuficiencia renal",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "sepsis",
-        "gold": "sepsis",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "fracaso renal",
-        "gold": "fracaso renal",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "neoplasia",
-        "gold": "neoplasia",
+        "pred": "orificio fistuloso en glúteo",
+        "gold": "orificio fistuloso en glúteo",
         "sim": 1.0,
         "exacto": true
       },
@@ -2240,18 +2694,6 @@
         "exacto": true
       },
       {
-        "pred": "feocromocitoma",
-        "gold": "feocromocitoma",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "feocromocitoma maligno",
-        "gold": "feocromocitoma maligno",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "fumador",
         "gold": "fumador",
         "sim": 1.0,
@@ -2264,12 +2706,6 @@
         "exacto": true
       },
       {
-        "pred": "carcinoma suprarrenal",
-        "gold": "carcinoma suprarrenal",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "cólico renal",
         "gold": "cólico renal",
         "sim": 1.0,
@@ -2278,6 +2714,30 @@
       {
         "pred": "diabético",
         "gold": "diabético",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "feocromocitoma",
+        "gold": "feocromocitoma",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "carcinoma suprarrenal",
+        "gold": "carcinoma suprarrenal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hernia de hiato",
+        "gold": "hernia de hiato",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "feocromocitoma maligno",
+        "gold": "feocromocitoma maligno",
         "sim": 1.0,
         "exacto": true
       },
@@ -2298,45 +2758,9 @@
         "gold": "asma bronquial",
         "sim": 0.9466,
         "exacto": false
-      },
-      {
-        "pred": "hernia de hiato",
-        "gold": "masa suprarrenal",
-        "sim": 0.5335,
-        "exacto": false
-      },
-      {
-        "pred": "invasión capsular",
-        "gold": "hernia de hiato",
-        "sim": 0.5162,
-        "exacto": false
       }
     ],
     "ex_18": [
-      {
-        "pred": "orquiepididimitis",
-        "gold": "orquiepididimitis",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "tumor testicular",
-        "gold": "tumor testicular",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "alérgico a las sulfamidas",
-        "gold": "alérgico a las sulfamidas",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "infiltración vascular ni linfática",
-        "gold": "infiltración vascular ni linfática",
-        "sim": 1.0,
-        "exacto": true
-      },
       {
         "pred": "invasión vascular ni linfática",
         "gold": "invasión vascular ni linfática",
@@ -2344,8 +2768,8 @@
         "exacto": true
       },
       {
-        "pred": "teratoma",
-        "gold": "teratoma",
+        "pred": "orquiepididimitis",
+        "gold": "orquiepididimitis",
         "sim": 1.0,
         "exacto": true
       },
@@ -2356,8 +2780,20 @@
         "exacto": true
       },
       {
-        "pred": "neoplasia intratubular de células germinales",
-        "gold": "neoplasia intratubular de células germinales",
+        "pred": "neoplasia",
+        "gold": "neoplasia",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "alérgico a las sulfamidas",
+        "gold": "alérgico a las sulfamidas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "teratoma",
+        "gold": "teratoma",
         "sim": 1.0,
         "exacto": true
       },
@@ -2368,8 +2804,20 @@
         "exacto": true
       },
       {
-        "pred": "neoplasia",
-        "gold": "neoplasia",
+        "pred": "neoplasia intratubular de células germinales",
+        "gold": "neoplasia intratubular de células germinales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "tumor testicular",
+        "gold": "tumor testicular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "infiltración vascular ni linfática",
+        "gold": "infiltración vascular ni linfática",
         "sim": 1.0,
         "exacto": true
       },
@@ -2394,8 +2842,8 @@
     ],
     "ex_19": [
       {
-        "pred": "hidrocefalia fetal bilateral",
-        "gold": "hidrocefalia fetal bilateral",
+        "pred": "embarazo molar",
+        "gold": "embarazo molar",
         "sim": 1.0,
         "exacto": true
       },
@@ -2406,32 +2854,8 @@
         "exacto": true
       },
       {
-        "pred": "macrocefalia con fontanela anterior a tensión",
-        "gold": "macrocefalia con fontanela anterior a tensión",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "oligoamnios",
-        "gold": "oligoamnios",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "tombocitopenia grave",
-        "gold": "tombocitopenia grave",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "crisis convulsivas",
         "gold": "crisis convulsivas",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "embarazo molar",
-        "gold": "embarazo molar",
         "sim": 1.0,
         "exacto": true
       },
@@ -2442,26 +2866,50 @@
         "exacto": true
       },
       {
-        "pred": "hematomas en hombro y glúteo",
-        "gold": "hematomas en hombro y glúteo",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "meningitis",
         "gold": "meningitis",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "tfna",
-        "gold": "tfna",
+        "pred": "tombocitopenia grave",
+        "gold": "tombocitopenia grave",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hidrocefalia fetal bilateral",
+        "gold": "hidrocefalia fetal bilateral",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "macrocefalia con fontanela anterior a tensión",
+        "gold": "macrocefalia con fontanela anterior a tensión",
         "sim": 1.0,
         "exacto": true
       },
       {
         "pred": "ventriculitis",
         "gold": "ventriculitis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hematomas en hombro y glúteo",
+        "gold": "hematomas en hombro y glúteo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "oligoamnios",
+        "gold": "oligoamnios",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "tfna",
+        "gold": "tfna",
         "sim": 1.0,
         "exacto": true
       },
@@ -2474,14 +2922,20 @@
     ],
     "ex_2": [
       {
-        "pred": "coloboma localizado en el ojo",
-        "gold": "coloboma localizado en el ojo",
+        "pred": "bronquiolitis",
+        "gold": "bronquiolitis",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "bronquiolitis",
-        "gold": "bronquiolitis",
+        "pred": "dilatación de la uretra posterior",
+        "gold": "dilatación de la uretra posterior",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "dilatación ureteral bilateral",
+        "gold": "dilatación ureteral bilateral",
         "sim": 1.0,
         "exacto": true
       },
@@ -2492,20 +2946,20 @@
         "exacto": true
       },
       {
-        "pred": "válvulas de la uretra posterior",
-        "gold": "válvulas de la uretra posterior",
+        "pred": "reflujo vésico-ureteral",
+        "gold": "reflujo vésico-ureteral",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "coloboma localizado en el ojo",
+        "gold": "coloboma localizado en el ojo",
         "sim": 1.0,
         "exacto": true
       },
       {
         "pred": "baja implantación del pabellón auditivo",
         "gold": "baja implantación del pabellón auditivo",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "dilatación de la uretra posterior",
-        "gold": "dilatación de la uretra posterior",
         "sim": 1.0,
         "exacto": true
       },
@@ -2522,20 +2976,8 @@
         "exacto": true
       },
       {
-        "pred": "reflujo vésico-ureteral",
-        "gold": "reflujo vésico-ureteral",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "uretero-hidronefrosis bilateral",
-        "gold": "uretero-hidronefrosis bilateral",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "dilatación ureteral bilateral",
-        "gold": "dilatación ureteral bilateral",
+        "pred": "válvulas de la uretra posterior",
+        "gold": "válvulas de la uretra posterior",
         "sim": 1.0,
         "exacto": true
       },
@@ -2548,6 +2990,12 @@
       {
         "pred": "urosepsis",
         "gold": "urosepsis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "vejiga trabeculada",
+        "gold": "vejiga trabeculada",
         "sim": 1.0,
         "exacto": true
       },
@@ -2582,9 +3030,21 @@
         "exacto": false
       },
       {
+        "pred": "dilataciones ureterales bilaterales",
+        "gold": "uretero-hidronefrosis bilateral",
+        "sim": 0.826,
+        "exacto": false
+      },
+      {
         "pred": "rubéola inmune",
         "gold": "rubéola",
         "sim": 0.6421,
+        "exacto": false
+      },
+      {
+        "pred": "uretero-hidronefrosis bilateral",
+        "gold": "hidronefrosis bilateral",
+        "sim": 0.5914,
         "exacto": false
       },
       {
@@ -2598,30 +3058,746 @@
         "gold": "apéndices auriculares bilaterales",
         "sim": 0.5575,
         "exacto": false
+      }
+    ],
+    "ex_20": [
+      {
+        "pred": "adenocarcinoma estenosante de sigma",
+        "gold": "adenocarcinoma estenosante de sigma",
+        "sim": 1.0,
+        "exacto": true
       },
       {
-        "pred": "cuadro de",
-        "gold": "vejiga trabeculada",
-        "sim": 0.5428,
+        "pred": "peritonitis fecaloidea",
+        "gold": "peritonitis fecaloidea",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "acidosis metabólica hiperlactacidémica",
+        "gold": "acidosis metabólica hiperlactacidémica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hemorragia subaracnoidea mínima en región suprasilviana izquierda",
+        "gold": "hemorragia subaracnoidea mínima en región suprasilviana izquierda",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hepatopatía crónica etílica",
+        "gold": "hepatopatía crónica etílica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "deshidratación",
+        "gold": "deshidratación",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "etilismo",
+        "gold": "etilismo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "insuficiencia renal",
+        "gold": "insuficiencia renal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "insuficiencia renal aguda",
+        "gold": "insuficiencia renal aguda",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "traumatismo cráneo-encefálico leve en región frontal",
+        "gold": "traumatismo cráneo-encefálico leve en región frontal derecha",
+        "sim": 0.9761,
         "exacto": false
       },
       {
-        "pred": "vejiga trabeculada",
-        "gold": "patología heredo-familiar",
-        "sim": 0.5194,
+        "pred": "crisis",
+        "gold": "episodios convulsivos de crisis tónico-clónicas",
+        "sim": 0.6047,
         "exacto": false
       },
       {
-        "pred": "dilataciones ureterales bilaterales",
-        "gold": "hidronefrosis bilateral",
-        "sim": 0.5173,
+        "pred": "alteraciones electrolíticas",
+        "gold": "alteraciones electrolíticas secundarias a pérdidas por ileostomía y tratamiento diurético",
+        "sim": 0.5966,
         "exacto": false
+      },
+      {
+        "pred": "alteraciones hidroelectrolíticas",
+        "gold": "déficit electrolíticos",
+        "sim": 0.5736,
+        "exacto": false
+      },
+      {
+        "pred": "alteraciones",
+        "gold": "alteraciones hidroelectrolíticas",
+        "sim": 0.5576,
+        "exacto": false
+      }
+    ],
+    "ex_21": [
+      {
+        "pred": "brd",
+        "gold": "brd",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "arritmia",
+        "gold": "arritmia",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "taquicardia ortodrómica",
+        "gold": "taquicardia ortodrómica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "cardiopatía estructural",
+        "gold": "cardiopatía estructural",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "preexcitación permanente",
+        "gold": "preexcitación permanente",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "taquicardias",
+        "gold": "taquicardias",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "bloqueo de rama derecha",
+        "gold": "bloqueo de rama derecha",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "preexcitación",
+        "gold": "preexcitación",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "wpw",
+        "gold": "wpw",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "vía accesoria auriculo-ventricular",
+        "gold": "vía accesoria auriculo-ventricular (av) de conducción bidireccional",
+        "sim": 0.8387,
+        "exacto": false
+      },
+      {
+        "pred": "arritmias",
+        "gold": "vía anómala",
+        "sim": 0.7226,
+        "exacto": false
+      },
+      {
+        "pred": "vía",
+        "gold": "vía anteroseptal derecha",
+        "sim": 0.609,
+        "exacto": false
+      },
+      {
+        "pred": "taquicardia",
+        "gold": "arritmias",
+        "sim": 0.5683,
+        "exacto": false
+      }
+    ],
+    "ex_22": [
+      {
+        "pred": "diverticulosis colónica severa",
+        "gold": "diverticulosis colónica severa",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "granuloma calcificado en el lóbulo medio pulmonar",
+        "gold": "granuloma calcificado en el lóbulo medio pulmonar",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "insuficiencia mitral, tricuspídea y aórtica",
+        "gold": "insuficiencia mitral, tricuspídea y aórtica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "adenopatía interlobular",
+        "gold": "adenopatía interlobular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "cuadro depresivo",
+        "gold": "cuadro depresivo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "déficit de vitamina d",
+        "gold": "déficit de vitamina d",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "flúter auricular",
+        "gold": "flúter auricular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neumonía multi-lobular bilateral adquirida en la comunidad",
+        "gold": "neumonía multi-lobular bilateral adquirida en la comunidad",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "adenopatía subcarínica",
+        "gold": "adenopatía subcarínica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hipertensión arterial y pulmonar",
+        "gold": "hipertensión arterial y pulmonar",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "depresión",
+        "gold": "depresión",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "patología pulmonar bilateral",
+        "gold": "patología pulmonar bilateral",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "aplastamientos vertebrales d8-d10",
+        "gold": "aplastamientos vertebrales d8-d10",
+        "sim": 1.0,
+        "exacto": true
+      }
+    ],
+    "ex_23": [
+      {
+        "pred": "dpar",
+        "gold": "dpar",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "artrosis",
+        "gold": "artrosis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "not",
+        "gold": "not",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "defecto pupilar aferente relativo",
+        "gold": "defecto pupilar aferente relativo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "herida inciso-contusa infraciliar",
+        "gold": "herida inciso-contusa infraciliar",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neuropatía óptica traumática",
+        "gold": "neuropatía óptica traumática",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "traumatismo frontal cerrado",
+        "gold": "traumatismo frontal cerrado",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "diabetes mellitus tipo 2",
+        "gold": "diabetes mellitus tipo 2",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hematoma difuso fronto-orbitario",
+        "gold": "hematoma difuso fronto-orbitario",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "pérdida de visión por el ojo",
+        "gold": "pérdida de visión",
+        "sim": 0.9495,
+        "exacto": false
+      },
+      {
+        "pred": "fractura lineal del techo de la órbita derecha que se extendía al ala menor del esfenoides",
+        "gold": "fractura lineal del techo de la órbita",
+        "sim": 0.9124,
+        "exacto": false
+      },
+      {
+        "pred": "tce frontal derecho",
+        "gold": "tce frontal derecho con pérdida de conciencia",
+        "sim": 0.7319,
+        "exacto": false
+      },
+      {
+        "pred": "traumatismo frontal",
+        "gold": "lesión directa del no",
+        "sim": 0.6674,
+        "exacto": false
+      }
+    ],
+    "ex_24": [
+      {
+        "pred": "hipertrofia del detrusor",
+        "gold": "hipertrofia del detrusor",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hipertrofia prostática",
+        "gold": "hipertrofia prostática",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "disfunción vesical crónica",
+        "gold": "disfunción vesical crónica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hipertrofia benigna de próstata",
+        "gold": "hipertrofia benigna de próstata",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "coágulos intravesicales",
+        "gold": "coágulos intravesicales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "espasmos vesicales por hiperactividad del detrusor",
+        "gold": "espasmos vesicales por hiperactividad del detrusor",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "uropatía obstructiva",
+        "gold": "uropatía obstructiva",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "vejiga de lucha",
+        "gold": "vejiga de lucha",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "protusiones discales lumbares",
+        "gold": "protusiones discales lumbares",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "retención aguda de orina",
+        "gold": "retención aguda de orina",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hematuria macroscópica",
+        "gold": "hematuria macroscópica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "síndrome",
+        "gold": "síndrome miccional crónico",
+        "sim": 0.892,
+        "exacto": false
+      },
+      {
+        "pred": "urolitiasis remota",
+        "gold": "urolitiasis",
+        "sim": 0.8262,
+        "exacto": false
+      }
+    ],
+    "ex_25": [
+      {
+        "pred": "carcinoma de mama ductal infiltrante",
+        "gold": "carcinoma de mama ductal infiltrante",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesiones nodulares de 15 mm localizadas detrás de la cabeza pancreática",
+        "gold": "lesiones nodulares de 15 mm localizadas detrás de la cabeza pancreática",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "adenopatías mesentéricas de etiología maligna",
+        "gold": "adenopatías mesentéricas de etiología maligna",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "ataxia truncal",
+        "gold": "ataxia truncal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "diplopía binocular horizontal",
+        "gold": "diplopía binocular horizontal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "metástasis de adenocarcinoma mal diferenciado",
+        "gold": "metástasis de adenocarcinoma mal diferenciado",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "metástasis de carcinoma de mama",
+        "gold": "metástasis de carcinoma de mama",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "alergia a contraste iodado",
+        "gold": "alergia a contraste iodado",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "nistagmo con componente rápido rotatorio en todas las direcciones de la mirada",
+        "gold": "nistagmo con componente rápido rotatorio en todas las direcciones de la mirada",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "patología tumoral",
+        "gold": "patología tumoral",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "dcp",
+        "gold": "dcp",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "paresia de iv par craneal",
+        "gold": "paresia de iv par craneal derecho",
+        "sim": 0.9148,
+        "exacto": false
+      },
+      {
+        "pred": "neoplasia oculta",
+        "gold": "neoplasia",
+        "sim": 0.8764,
+        "exacto": false
+      }
+    ],
+    "ex_26": [
+      {
+        "pred": "tsp",
+        "gold": "tsp",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "criptorquídia bilateral",
+        "gold": "criptorquídia bilateral",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "dislipemia tipo ii",
+        "gold": "dislipemia tipo ii",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesiones a nivel cerebral o espinal",
+        "gold": "lesiones a nivel cerebral o espinal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "litiasis vesical",
+        "gold": "litiasis vesical",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hipertensión arterial",
+        "gold": "hipertensión arterial",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "paraparesia espástica tropical",
+        "gold": "paraparesia espástica tropical",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "vejiga hiperrefléxica",
+        "gold": "vejiga hiperrefléxica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "irc progresiva secundaria a glomerulonefritis tipo iga con esclerosis focal y segmentaria asociada",
+        "gold": "glomerulonefritis tipo iga con esclerosis focal y segmentaria",
+        "sim": 0.9419,
+        "exacto": false
+      },
+      {
+        "pred": "cardiopatía isquémica por enfermedad coronaria",
+        "gold": "cardiopatía isquémica",
+        "sim": 0.9053,
+        "exacto": false
+      }
+    ],
+    "ex_27": [
+      {
+        "pred": "estenosis pilórica",
+        "gold": "estenosis pilórica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hta",
+        "gold": "hta",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "mieloma igm",
+        "gold": "mieloma igm",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "tumor linfoide asociado a las mucosas",
+        "gold": "tumor linfoide asociado a las mucosas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "epoc",
+        "gold": "epoc",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "gammapatía monoclonal igm",
+        "gold": "gammapatía monoclonal igm",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "insuficiencia renal crónica secundaria a nefroangioesclerosis",
+        "gold": "insuficiencia renal crónica secundaria a nefroangioesclerosis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesiones inflamatorias",
+        "gold": "lesiones inflamatorias",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesiones líticas",
+        "gold": "lesiones líticas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "ulcus duodenal con",
+        "gold": "ulcus duodenal",
+        "sim": 0.9669,
+        "exacto": false
+      },
+      {
+        "pred": "gammapatía monoclonal",
+        "gold": "gammapatía monoclonal con igm",
+        "sim": 0.8959,
+        "exacto": false
+      },
+      {
+        "pred": "linfoma no-hodking b primario renal tipo malt",
+        "gold": "infoma no-hodking b primario renal tipo malt",
+        "sim": 0.8856,
+        "exacto": false
+      }
+    ],
+    "ex_28": [
+      {
+        "pred": "parada cardiorrespiratoria",
+        "gold": "parada cardiorrespiratoria",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hematoma retrofaríngeo",
+        "gold": "hematoma retrofaríngeo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesiones",
+        "gold": "lesiones",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "cuerpo extraño de densidad metálica alojado en el canal raquídeo a nivel de c2",
+        "gold": "cuerpo extraño de densidad metálica alojado en el canal raquídeo a nivel de c2",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "excoriación en la base lingual",
+        "gold": "excoriación en la base lingual",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "herida por arma de fuego de proyectil único",
+        "gold": "herida por arma de fuego de proyectil único, que penetra por un orificio natural, concretamente el orificio nasal",
+        "sim": 0.7505,
+        "exacto": false
+      },
+      {
+        "pred": "disparo por arma de fuego en la orofaringe",
+        "gold": "proyectil de arma de fuego deformado, que ha interesado la médula",
+        "sim": 0.6969,
+        "exacto": false
+      },
+      {
+        "pred": "disparo a larga distancia",
+        "gold": "disparo por arma de fuego en la orofaringe",
+        "sim": 0.6607,
+        "exacto": false
+      },
+      {
+        "pred": "herida en",
+        "gold": "perfora el paladar duro",
+        "sim": 0.5669,
+        "exacto": false
+      }
+    ],
+    "ex_29": [
+      {
+        "pred": "neuromielitis óptica",
+        "gold": "neuromielitis óptica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "enfermedad de devic",
+        "gold": "enfermedad de devic",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fracturas",
+        "gold": "fracturas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neuritis óptica",
+        "gold": "neuritis óptica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "esclerosis múltiple",
+        "gold": "esclerosis múltiple",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión de tres o más segmentos medulares (d1 a d6",
+        "gold": "lesión de tres o más segmentos medulares (d1 a d6",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "mielitis transversa",
+        "gold": "mielitis transversa",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "parálisis y espasticidad de mmii",
+        "gold": "parálisis y espasticidad de mmii",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión expansiva a nivel medular desde d1 a d6",
+        "gold": "lesión expansiva a nivel medular desde d1 a d6",
+        "sim": 1.0,
+        "exacto": true
       }
     ],
     "ex_3": [
       {
-        "pred": "neumonía organizativa",
-        "gold": "neumonía organizativa",
+        "pred": "síndrome renopulmonar autoinmune",
+        "gold": "síndrome renopulmonar autoinmune",
         "sim": 1.0,
         "exacto": true
       },
@@ -2632,20 +3808,8 @@
         "exacto": true
       },
       {
-        "pred": "nefrotoxicidad",
-        "gold": "nefrotoxicidad",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "neumotórax bilateral",
-        "gold": "neumotórax bilateral",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "fibrosis en el parénquima pulmonar",
-        "gold": "fibrosis en el parénquima pulmonar",
+        "pred": "vasculitis",
+        "gold": "vasculitis",
         "sim": 1.0,
         "exacto": true
       },
@@ -2662,6 +3826,42 @@
         "exacto": true
       },
       {
+        "pred": "insuficiencia respiratoria",
+        "gold": "insuficiencia respiratoria",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "nefrotoxicidad",
+        "gold": "nefrotoxicidad",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neumonía organizativa",
+        "gold": "neumonía organizativa",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "síndrome de distrés respiratorio agudo",
+        "gold": "síndrome de distrés respiratorio agudo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fibrosis en el parénquima pulmonar",
+        "gold": "fibrosis en el parénquima pulmonar",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "insuficiencia renal grave",
+        "gold": "insuficiencia renal grave",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "ir aguda",
         "gold": "ir aguda",
         "sim": 1.0,
@@ -2670,6 +3870,12 @@
       {
         "pred": "ir progresiva",
         "gold": "ir progresiva",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neumotórax bilateral",
+        "gold": "neumotórax bilateral",
         "sim": 1.0,
         "exacto": true
       },
@@ -2686,45 +3892,15 @@
         "exacto": true
       },
       {
-        "pred": "síndrome de distrés respiratorio agudo",
-        "gold": "síndrome de distrés respiratorio agudo",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "síndrome renopulmonar autoinmune",
-        "gold": "síndrome renopulmonar autoinmune",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "vasculitis",
-        "gold": "vasculitis",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "insuficiencia renal grave",
-        "gold": "insuficiencia renal grave",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "insuficiencia respiratoria",
-        "gold": "insuficiencia respiratoria",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "neumonía extrahospitalaria grave",
-        "gold": "neumonía extrahospitalaria grave",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "anemia progresiva",
         "gold": "anemia",
         "sim": 0.935,
+        "exacto": false
+      },
+      {
+        "pred": "neumonía por adenovirus",
+        "gold": "neumonía por adenovirus con síndrome de distrés respiratorio agudo",
+        "sim": 0.9229,
         "exacto": false
       },
       {
@@ -2741,21 +3917,569 @@
       },
       {
         "pred": "síndrome de distrés respiratorio agudo secundario",
-        "gold": "neumonía por adenovirus con síndrome de distrés respiratorio agudo",
-        "sim": 0.6334,
+        "gold": "neumonía extrahospitalaria grave",
+        "sim": 0.5984,
         "exacto": false
       },
       {
-        "pred": "neumonía por adenovirus",
+        "pred": "neumonía extrahospitalaria grave",
         "gold": "gripe a y b",
-        "sim": 0.5281,
+        "sim": 0.5781,
         "exacto": false
+      }
+    ],
+    "ex_30": [
+      {
+        "pred": "hipercolesterolémica",
+        "gold": "hipercolesterolémica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hipertensa",
+        "gold": "hipertensa",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "sepsis de origen respiratorio",
+        "gold": "sepsis de origen respiratorio",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "alopecia",
+        "gold": "alopecia",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesiones herpéticas del costado",
+        "gold": "lesiones herpéticas del costado",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesiones bullosas dolorosas, de distribución metameral, ulceradas y supurativas",
+        "gold": "lesiones bullosas dolorosas, de distribución metameral, ulceradas y supurativas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesiones bucales",
+        "gold": "lesiones bucales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "disfagia",
+        "gold": "disfagia",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "insuficiencia respiratoria aguda",
+        "gold": "insuficiencia respiratoria aguda en el seno de una sepsis de origen respiratorio",
+        "sim": 0.9002,
+        "exacto": false
+      },
+      {
+        "pred": "adenocarcinoma de colon",
+        "gold": "adenocarcinoma de colon estadio iv con múltiples metástasis hepáticas",
+        "sim": 0.7919,
+        "exacto": false
+      },
+      {
+        "pred": "vvz",
+        "gold": "heces melénicas",
+        "sim": 0.7477,
+        "exacto": false
+      }
+    ],
+    "ex_31": [
+      {
+        "pred": "progresión hepática, pancreática y adenopática regional",
+        "gold": "progresión hepática, pancreática y adenopática regional",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "piocele",
+        "gold": "piocele",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "cuadros suboclusivos",
+        "gold": "cuadros suboclusivos",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "implantes peritoneales",
+        "gold": "implantes peritoneales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neoplasia de la vaginal testicular",
+        "gold": "neoplasia de la vaginal testicular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hematocele",
+        "gold": "hematocele",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neoplasia combinada",
+        "gold": "neoplasia",
+        "sim": 0.9023,
+        "exacto": false
+      },
+      {
+        "pred": "hidrocele complicado",
+        "gold": "hidrocele",
+        "sim": 0.8807,
+        "exacto": false
+      },
+      {
+        "pred": "infiltración por adenocarcinoma mucinoso",
+        "gold": "adenocarcinoma mucinoso",
+        "sim": 0.8539,
+        "exacto": false
+      },
+      {
+        "pred": "adenocarcinoma mucinoso y carcinoide de células caliciformes",
+        "gold": "adenocarcinoma mucinoso y carcinoide de células caliciformes, t4n2m1) que infiltraba la pared apendicular y el meso",
+        "sim": 0.7653,
+        "exacto": false
+      }
+    ],
+    "ex_32": [
+      {
+        "pred": "enfermedad de vhl",
+        "gold": "enfermedad de vhl",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "edema macular",
+        "gold": "edema macular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hemorragia vítrea",
+        "gold": "hemorragia vítrea",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hipernefroma bilateral",
+        "gold": "hipernefroma bilateral",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hv",
+        "gold": "hv",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "tumor neuroendocrino pancreático",
+        "gold": "tumor neuroendocrino pancreático",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hemangioblastomas en protuberancia y médula espinal",
+        "gold": "hemangioblastomas en protuberancia y médula espinal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión",
+        "gold": "lesión",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hemorragia subretiniana a lo largo de la arcada vascular",
+        "gold": "hemorragia subretiniana",
+        "sim": 0.8911,
+        "exacto": false
+      },
+      {
+        "pred": "edema quístico",
+        "gold": "edema quístico difuso en polo posterior",
+        "sim": 0.6622,
+        "exacto": false
+      },
+      {
+        "pred": "edema medular",
+        "gold": "leve edema medular",
+        "sim": 0.6428,
+        "exacto": false
+      }
+    ],
+    "ex_33": [
+      {
+        "pred": "adenocarcinoma metastásico",
+        "gold": "adenocarcinoma metastásico",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "adenocarcinoma intestinal",
+        "gold": "adenocarcinoma intestinal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión sólida en hemimandíbula",
+        "gold": "lesión sólida en hemimandíbula",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "metástasis en ganglios regionales e hígado",
+        "gold": "metástasis en ganglios regionales e hígado",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "metástasis gingival",
+        "gold": "metástasis gingival",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "tumor estenosante de colon sigmoide",
+        "gold": "tumor estenosante de colon sigmoide",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "linfadenopatía",
+        "gold": "linfadenopatía",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neoplasia",
+        "gold": "neoplasia",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neoplasia de encía",
+        "gold": "neoplasia de encía",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "metástasis ganglionares a distancia y suprarrenales",
+        "gold": "progresión tumoral con metástasis ganglionares a distancia y suprarrenales",
+        "sim": 0.7477,
+        "exacto": false
+      },
+      {
+        "pred": "progresión tumoral",
+        "gold": "tumor estenosante de colon sigmoide con metástasis en ganglios regionales e hígado",
+        "sim": 0.5545,
+        "exacto": false
+      }
+    ],
+    "ex_34": [
+      {
+        "pred": "hipertensión arterial",
+        "gold": "hipertensión arterial",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "alergias medicamentosas",
+        "gold": "alergias medicamentosas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "diabetes mellitus tipo 2",
+        "gold": "diabetes mellitus tipo 2",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "enfermedad de alzheimer",
+        "gold": "enfermedad de alzheimer",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fibrilación auricular crónica",
+        "gold": "fibrilación auricular crónica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión",
+        "gold": "lesión",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hernia de hiato",
+        "gold": "hernia de hiato",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "úlcera profunda",
+        "gold": "tercio distal esofágico una úlcera profunda",
+        "sim": 0.9002,
+        "exacto": false
+      }
+    ],
+    "ex_35": [
+      {
+        "pred": "neurofibromatosis difusa de la pared vesical",
+        "gold": "neurofibromatosis difusa de la pared vesical",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hipertensión arterial",
+        "gold": "hipertensión arterial",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neurofibromatosis",
+        "gold": "neurofibromatosis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "adenomegalias mesentéricas ni retroperitoneales",
+        "gold": "adenomegalias mesentéricas ni retroperitoneales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fumadora",
+        "gold": "fumadora",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hipotiroidismo",
+        "gold": "hipotiroidismo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "infecciones urinarias de repetición",
+        "gold": "infecciones urinarias de repetición",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neoformaciones",
+        "gold": "vejiga de poca capacidad con neoformación",
+        "sim": 0.751,
+        "exacto": false
+      }
+    ],
+    "ex_36": [
+      {
+        "pred": "absceso de psoas",
+        "gold": "absceso de psoas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "osteomielitis del cuerpo vertebral l4",
+        "gold": "osteomielitis del cuerpo vertebral l4",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesiones cutáneas, una en el glúteo y otra en el cuero cabelludo",
+        "gold": "lesiones cutáneas, una en el glúteo y otra en el cuero cabelludo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión nodular, inflamada, ambas en cuero cabelludo",
+        "gold": "lesión nodular, inflamada, ambas en cuero cabelludo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "sinovitis de cadera",
+        "gold": "sinovitis de cadera",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "absceso del cuero cabelludo",
+        "gold": "absceso del cuero cabelludo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "absceso en el músculo psoas derecho",
+        "gold": "absceso en el músculo psoas",
+        "sim": 0.9666,
+        "exacto": false
+      },
+      {
+        "pred": "infestación por pediculosis",
+        "gold": "enfermedades infecciosas",
+        "sim": 0.6922,
+        "exacto": false
+      },
+      {
+        "pred": "patología quirúrgica aguda",
+        "gold": "pediculosis",
+        "sim": 0.5849,
+        "exacto": false
+      }
+    ],
+    "ex_37": [
+      {
+        "pred": "fractura del incisivo central superior",
+        "gold": "fractura del incisivo central superior",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fracturas",
+        "gold": "fracturas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fractura",
+        "gold": "fractura",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fractura complicada de la corona-raíz",
+        "gold": "fractura complicada de la corona-raíz",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fractura de la corona y raíz complicada",
+        "gold": "fractura de la corona y raíz",
+        "sim": 0.9793,
+        "exacto": false
+      }
+    ],
+    "ex_38": [
+      {
+        "pred": "fpi",
+        "gold": "fpi",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "enfisema cervical",
+        "gold": "enfisema cervical",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neumomediastino anterior",
+        "gold": "neumomediastino anterior",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "ulcus duodenal",
+        "gold": "ulcus duodenal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "enfisema subcutáneo",
+        "gold": "enfisema subcutáneo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fibrosis pulmonar bilateral",
+        "gold": "fibrosis pulmonar bilateral",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neumotórax",
+        "gold": "neumotórax",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neumomediastino",
+        "gold": "neumomediastino",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "bullas aéreas de gran tamaño en el lóbulo superior izquierdo",
+        "gold": "bullas aéreas de gran tamaño en el lóbulo superior",
+        "sim": 0.9642,
+        "exacto": false
+      }
+    ],
+    "ex_39": [
+      {
+        "pred": "accidente isquémico transitorio",
+        "gold": "accidente isquémico transitorio",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hemorragia digestiva alta por aspirina",
+        "gold": "hemorragia digestiva alta por aspirina",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hta",
+        "gold": "hta",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "rotura no traumática de un feocromocitoma",
+        "gold": "rotura no traumática de un feocromocitoma",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "crisis hipertensiva",
+        "gold": "crisis hipertensiva",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hematoma",
+        "gold": "hematoma",
+        "sim": 1.0,
+        "exacto": true
       }
     ],
     "ex_4": [
       {
-        "pred": "arritmia cardíaca",
-        "gold": "arritmia cardíaca",
+        "pred": "dilatación aórtica",
+        "gold": "dilatación aórtica",
         "sim": 1.0,
         "exacto": true
       },
@@ -2766,8 +4490,8 @@
         "exacto": true
       },
       {
-        "pred": "dilatación aórtica",
-        "gold": "dilatación aórtica",
+        "pred": "episodios embólicos",
+        "gold": "episodios embólicos",
         "sim": 1.0,
         "exacto": true
       },
@@ -2784,20 +4508,20 @@
         "exacto": true
       },
       {
+        "pred": "arritmia cardíaca",
+        "gold": "arritmia cardíaca",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "dilatación del tracto urinario",
         "gold": "dilatación del tracto urinario",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "embolismo",
-        "gold": "embolismo",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "episodios embólicos",
-        "gold": "episodios embólicos",
+        "pred": "enfermedad protrombótica y vascular",
+        "gold": "enfermedad protrombótica y vascular",
         "sim": 1.0,
         "exacto": true
       },
@@ -2808,20 +4532,8 @@
         "exacto": true
       },
       {
-        "pred": "valvulopatía",
-        "gold": "valvulopatía",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "hepatitis b o c",
-        "gold": "hepatitis b o c",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "hipertensión",
-        "gold": "hipertensión",
+        "pred": "isquemia miocárdica aguda",
+        "gold": "isquemia miocárdica aguda",
         "sim": 1.0,
         "exacto": true
       },
@@ -2832,8 +4544,38 @@
         "exacto": true
       },
       {
-        "pred": "vegetaciones valvulares",
-        "gold": "vegetaciones valvulares",
+        "pred": "valvulopatía",
+        "gold": "valvulopatía",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "embolismo",
+        "gold": "embolismo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hipertensión",
+        "gold": "hipertensión",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "aneurisma de arteria renal",
+        "gold": "aneurisma de arteria renal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "enfermedad sistémica",
+        "gold": "enfermedad sistémica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hepatitis b o c",
+        "gold": "hepatitis b o c",
         "sim": 1.0,
         "exacto": true
       },
@@ -2844,55 +4586,459 @@
         "exacto": true
       },
       {
+        "pred": "vegetaciones valvulares",
+        "gold": "vegetaciones valvulares",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "alteraciones de la arteria renal principal o aorta",
+        "gold": "macro/ microaneurismas o alteraciones de la arteria renal principal o aorta",
+        "sim": 0.8766,
+        "exacto": false
+      },
+      {
         "pred": "hematuria",
         "gold": "hematuria macroscópica",
         "sim": 0.8575,
         "exacto": false
+      }
+    ],
+    "ex_40": [
+      {
+        "pred": "carcinoma de células acinares de bajo grado",
+        "gold": "carcinoma de células acinares de bajo grado",
+        "sim": 1.0,
+        "exacto": true
       },
       {
-        "pred": "isquemia miocárdica aguda",
-        "gold": "isquemia",
-        "sim": 0.7987,
+        "pred": "carcinoma",
+        "gold": "carcinoma",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neoplasia",
+        "gold": "neoplasia",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "carcinoma de células acinares",
+        "gold": "carcinoma de células acinares",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión nodular",
+        "gold": "lesión nodular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "tumor de bajo grado",
+        "gold": "tumor de bajo grado",
+        "sim": 1.0,
+        "exacto": true
+      }
+    ],
+    "ex_41": [
+      {
+        "pred": "adenopatías fijas y duras en ambas regiones inguinales",
+        "gold": "adenopatías fijas y duras en ambas regiones inguinales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "alérgico a penicilina",
+        "gold": "alérgico a penicilina",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "endocarditis",
+        "gold": "endocarditis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "adenopatías pulmonares e inguinales",
+        "gold": "adenopatías pulmonares e inguinales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "insuficiencia renal aguda",
+        "gold": "insuficiencia renal aguda",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "sarcoma pleomórfico de pene con diferenciación osteosarcomatosa",
+        "gold": "sarcoma pleomórfico de pene con diferenciación osteosarcomatosa",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neoplasia de pene",
+        "gold": "neoplasia de pene",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "recidiva local sangrante",
+        "gold": "glande, que deformaba meato, con áreas ulceradas",
+        "sim": 0.6109,
+        "exacto": false
+      }
+    ],
+    "ex_42": [
+      {
+        "pred": "lúes",
+        "gold": "lúes",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hepatitis",
+        "gold": "hepatitis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "priapismo arterial de alto flujo",
+        "gold": "priapismo arterial de alto flujo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fístulas",
+        "gold": "fístulas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fístula arterio-cavernosa en la porción proximal del cuerpo cavernoso derecho",
+        "gold": "fístula arterio-cavernosa en la porción proximal del cuerpo cavernoso",
+        "sim": 0.9883,
         "exacto": false
       },
       {
-        "pred": "aneurisma de arteria renal",
-        "gold": "macro/ microaneurismas o alteraciones de la arteria renal principal o aorta",
-        "sim": 0.7044,
+        "pred": "fístula arteriocavernosa en el lado",
+        "gold": "fístula arteriocavernosa",
+        "sim": 0.949,
+        "exacto": false
+      }
+    ],
+    "ex_43": [
+      {
+        "pred": "artritis reumatoide",
+        "gold": "artritis reumatoide",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión",
+        "gold": "lesión",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "patología del tracto urinario superior",
+        "gold": "patología del tracto urinario superior",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "perforación iatrogénica del colon descendente",
+        "gold": "perforación iatrogénica del colon descendente",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "perforación intestinal",
+        "gold": "perforación intestinal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "amiloidosis vesical secundaria",
+        "gold": "amiloidosis vesical secundaria",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "tumor vesical",
+        "gold": "tumor vesical",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "anemización progresiva",
+        "gold": "anemización",
+        "sim": 0.7676,
+        "exacto": false
+      }
+    ],
+    "ex_44": [
+      {
+        "pred": "ar",
+        "gold": "ar",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "perforación ocular",
+        "gold": "perforación ocular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "escleritis",
+        "gold": "escleritis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "leucoma corneal",
+        "gold": "leucoma corneal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "qup",
+        "gold": "qup",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "artritis reumatoide",
+        "gold": "artritis reumatoide (ar) seropositiva, erosiva y nodular",
+        "sim": 0.9219,
         "exacto": false
       },
       {
-        "pred": "enfermedad protrombótica y vascular",
-        "gold": "enfermedad sistémica",
-        "sim": 0.5914,
+        "pred": "artritis séptica de tobillo",
+        "gold": "artritis séptica de tobillo derecho con cultivo de líquido sinovial positivo para staphylococcus aureus",
+        "sim": 0.7093,
+        "exacto": false
+      }
+    ],
+    "ex_45": [
+      {
+        "pred": "páncreas divisum",
+        "gold": "páncreas divisum",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "atrofia del parénquima hepático",
+        "gold": "atrofia del parénquima hepático",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "gist",
+        "gold": "gist",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hiperlipemia",
+        "gold": "hiperlipemia",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "pancreatitis aguda",
+        "gold": "pancreatitis aguda",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "pancreatitis aguda moderada-severa",
+        "gold": "pancreatitis aguda moderada-severa",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "pancreatitis crónica",
+        "gold": "pancreatitis crónica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "pancreatitis crónica sobre páncreas divisum",
+        "gold": "pancreatitis aguda de repetición",
+        "sim": 0.8123,
+        "exacto": false
+      }
+    ],
+    "ex_46": [
+      {
+        "pred": "infarto hemorrágico testicular",
+        "gold": "infarto hemorrágico testicular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "compromiso vascular testicular",
+        "gold": "compromiso vascular testicular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hidrocele bilateral",
+        "gold": "hidrocele bilateral",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "torsión del cordón",
+        "gold": "torsión del cordón",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hidrocele a tensión en hemiescroto derecho",
+        "gold": "hidrocele a tensión en hemiescroto",
+        "sim": 0.9518,
         "exacto": false
       },
       {
-        "pred": "alteraciones de la arteria renal principal o aorta",
-        "gold": "enfermedad protrombótica y vascular",
-        "sim": 0.58,
+        "pred": "hidrocele izquierdo",
+        "gold": "hidrocele leve",
+        "sim": 0.9109,
         "exacto": false
       },
       {
-        "pred": "enfermedad sistémica",
-        "gold": "isquemia miocárdica aguda",
-        "sim": 0.5672,
+        "pred": "hidrocele leve el lado",
+        "gold": "hidrocele",
+        "sim": 0.8066,
+        "exacto": false
+      }
+    ],
+    "ex_47": [
+      {
+        "pred": "isquemia intestinal masiva",
+        "gold": "isquemia intestinal masiva",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "esteatosis hepática leve",
+        "gold": "esteatosis hepática leve",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "infecciones asociadas a catéter",
+        "gold": "infecciones asociadas a catéter",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "infección",
+        "gold": "infección",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "fibrilación auricular crónica",
+        "gold": "fibrilación auricular crónica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neumonía de la comunidad",
+        "gold": "neumonía de la comunidad",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "enfermedad de parkinson incipiente",
+        "gold": "enfermedad de parkinson",
+        "sim": 0.9571,
+        "exacto": false
+      }
+    ],
+    "ex_48": [
+      {
+        "pred": "metamorfopsias",
+        "gold": "metamorfopsias",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "membrana subretiniana",
+        "gold": "membrana subretiniana",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "sífilis",
+        "gold": "sífilis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "tuberculosis",
+        "gold": "tuberculosis",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "nvsr",
+        "gold": "nvsr",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "borreliosis",
+        "gold": "borreliosis",
+        "sim": 1.0,
+        "exacto": true
+      }
+    ],
+    "ex_49": [
+      {
+        "pred": "irc secundaria a hipoplasia renal",
+        "gold": "irc secundaria a hipoplasia renal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "nefropatía crónica del injerto",
+        "gold": "nefropatía crónica del injerto",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hepatitis crónica periportal",
+        "gold": "hepatitis crónica periportal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hepatitis «no-a, no-b»",
+        "gold": "hepatitis «no-a, no-b»",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesiones parenquimatosas de",
+        "gold": "lesiones",
+        "sim": 0.9078,
         "exacto": false
       },
       {
-        "pred": "déficit funcional de la unidad renal",
-        "gold": "aneurisma de arteria renal",
-        "sim": 0.5309,
+        "pred": "glomerulonefritis membranoproliferativa secundaria al vhc sobre el injerto renal",
+        "gold": "glomerulonefritis membranoproliferativa secundaria al vhc",
+        "sim": 0.8317,
         "exacto": false
       }
     ],
     "ex_5": [
-      {
-        "pred": "adenopatías",
-        "gold": "adenopatías",
-        "sim": 1.0,
-        "exacto": true
-      },
       {
         "pred": "carcinoma de célula pequeña tipo “oat-cell” ulcerado e infiltrante",
         "gold": "carcinoma de célula pequeña tipo “oat-cell” ulcerado e infiltrante",
@@ -2906,14 +5052,8 @@
         "exacto": true
       },
       {
-        "pred": "hernia de hiato",
-        "gold": "hernia de hiato",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "invasión pleural",
-        "gold": "invasión pleural",
+        "pred": "fumadora",
+        "gold": "fumadora",
         "sim": 1.0,
         "exacto": true
       },
@@ -2924,14 +5064,14 @@
         "exacto": true
       },
       {
-        "pred": "lesión ocupante de espacio a nivel pulmonar",
-        "gold": "lesión ocupante de espacio a nivel pulmonar",
+        "pred": "neoplasia a nivel del tercio medio esofágico",
+        "gold": "neoplasia a nivel del tercio medio esofágico",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "tumor primario",
-        "gold": "tumor primario",
+        "pred": "adenopatías",
+        "gold": "adenopatías",
         "sim": 1.0,
         "exacto": true
       },
@@ -2942,26 +5082,32 @@
         "exacto": true
       },
       {
+        "pred": "invasión pleural",
+        "gold": "invasión pleural",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión ocupante de espacio a nivel pulmonar",
+        "gold": "lesión ocupante de espacio a nivel pulmonar",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "metástasis hepáticas bilobulares",
         "gold": "metástasis hepáticas bilobulares",
         "sim": 1.0,
         "exacto": true
       },
       {
+        "pred": "quiste esplénico",
+        "gold": "quiste esplénico",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
         "pred": "carcinoma de células pequeñas tipo oat-cell",
         "gold": "carcinoma de células pequeñas tipo oat-cell",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "fumadora",
-        "gold": "fumadora",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "neoplasia a nivel del tercio medio esofágico",
-        "gold": "neoplasia a nivel del tercio medio esofágico",
         "sim": 1.0,
         "exacto": true
       },
@@ -2974,6 +5120,18 @@
       {
         "pred": "polimiomatosis uterina",
         "gold": "polimiomatosis uterina",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hernia de hiato",
+        "gold": "hernia de hiato",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "tumor primario",
+        "gold": "tumor primario",
         "sim": 1.0,
         "exacto": true
       },
@@ -2996,25 +5154,409 @@
         "exacto": false
       },
       {
-        "pred": "quiste esplénico",
-        "gold": "infiltraba esófago",
-        "sim": 0.7451,
-        "exacto": false
-      },
-      {
         "pred": "disfagia moderada a sólidos",
         "gold": "disfagia moderada",
         "sim": 0.591,
         "exacto": false
+      }
+    ],
+    "ex_50": [
+      {
+        "pred": "exantema eritrósico y doloroso en región cervical",
+        "gold": "exantema eritrósico y doloroso en región cervical",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesiones",
+        "gold": "lesiones",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "eritema cutáneo en cuello, axilas, tórax y nalgas",
+        "gold": "eritema cutáneo en cuello, axilas, tórax y nalgas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "eritrodermia",
+        "gold": "eritrodermia",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión costrosa amarillenta en región cervical",
+        "gold": "lesión costrosa amarillenta en región cervical",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "spee",
+        "gold": "spee",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "prúrigo",
+        "gold": "prúrigo",
+        "sim": 1.0,
+        "exacto": true
+      }
+    ],
+    "ex_51": [
+      {
+        "pred": "colecistitis aguda",
+        "gold": "colecistitis aguda",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "colección peri-pancreática",
+        "gold": "colección peri-pancreática",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "pancreatitis aguda",
+        "gold": "pancreatitis aguda",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "absceso parietocólico derecho extraperitoneal",
+        "gold": "absceso parietocólico derecho extraperitoneal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "bilioma",
+        "gold": "bilioma",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "colección retroperitoneal",
+        "gold": "colección retroperitoneal",
+        "sim": 1.0,
+        "exacto": true
+      }
+    ],
+    "ex_52": [
+      {
+        "pred": "colagenopatía atípica",
+        "gold": "colagenopatía atípica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "síndrome de marfan",
+        "gold": "síndrome de marfan",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "síncope",
+        "gold": "síncope",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "aneurisma",
+        "gold": "aneurisma",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "rotura de un aneurisma sacular de la porción terminal del arco aórtico",
+        "gold": "rotura de un aneurisma sacular de la porción terminal del arco aórtico",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hemotórax izquierdo masivo",
+        "gold": "hemotórax",
+        "sim": 0.8661,
+        "exacto": false
+      }
+    ],
+    "ex_53": [
+      {
+        "pred": "edema macular quístico",
+        "gold": "edema macular quístico",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "afáquica",
+        "gold": "afáquica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "edema corneal",
+        "gold": "edema corneal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "bml",
+        "gold": "bml",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "rotura capsular y salida de vítreo",
+        "gold": "rotura capsular y salida de vítreo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "cataratas",
+        "gold": "cataratas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "desprendimiento y rotura de la membrana de descemet y del endotelio",
+        "gold": "desprendimiento y rotura de la membrana de descemet",
+        "sim": 0.8803,
+        "exacto": false
+      }
+    ],
+    "ex_54": [
+      {
+        "pred": "lesión tumoral recidivante en lado izquierdo de base del cuello",
+        "gold": "lesión tumoral recidivante en lado izquierdo de base del cuello",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "cicatriz queloide retráctil en zona lateral izquierda de cuello",
+        "gold": "cicatriz queloide retráctil en zona lateral izquierda de cuello",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neurofibroma",
+        "gold": "neurofibroma",
+        "sim": 1.0,
+        "exacto": true
       },
       {
         "pred": "lesión",
-        "gold": "quiste esplénico",
-        "sim": 0.5237,
+        "gold": "lesión",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "insuficiencia arterial",
+        "gold": "insuficiencia arterial",
+        "sim": 1.0,
+        "exacto": true
+      }
+    ],
+    "ex_55": [
+      {
+        "pred": "lipoma de unos 2 x 1,5 cm en el cordón espermático",
+        "gold": "lipoma de unos 2 x 1,5 cm en el cordón espermático",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lipoma",
+        "gold": "lipoma",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lesión paratesticular",
+        "gold": "lesión paratesticular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "lipoma paratesticular",
+        "gold": "lipoma paratesticular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "recidiva tumoral",
+        "gold": "recidiva tumoral",
+        "sim": 1.0,
+        "exacto": true
+      }
+    ],
+    "ex_56": [
+      {
+        "pred": "herida penetrante a nivel de la región submandibular",
+        "gold": "herida penetrante a nivel de la región submandibular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neumoencéfalo",
+        "gold": "neumoencéfalo",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "herida submandibular",
+        "gold": "herida submandibular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "pérdida de audición conductiva del 60% en el oído",
+        "gold": "pérdida de audición conductiva del 60% en el oído izquierdo",
+        "sim": 0.9702,
+        "exacto": false
+      },
+      {
+        "pred": "herida de entrada",
+        "gold": "herida intraoral",
+        "sim": 0.8292,
+        "exacto": false
+      },
+      {
+        "pred": "trastorno",
+        "gold": "trastorno neurológico",
+        "sim": 0.7975,
+        "exacto": false
+      },
+      {
+        "pred": "coágulos de sangre en el canal auditivo izquierdo",
+        "gold": "salida de líquido cefalorraquídeo por la herida de entrada ni por el conducto auditivo externo",
+        "sim": 0.6789,
+        "exacto": false
+      }
+    ],
+    "ex_57": [
+      {
+        "pred": "deformidad mandibular con fusión de sus pared posterior al maxilar superior y apófisis pterigoidea",
+        "gold": "deformidad mandibular con fusión de sus pared posterior al maxilar superior y apófisis pterigoidea",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "anquilosis máxilo-mandibular",
+        "gold": "anquilosis máxilo-mandibular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "displasia severa de la articulación témporomandibular",
+        "gold": "displasia severa de la articulación témporomandibular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "osteomielitis crónica",
+        "gold": "osteomielitis crónica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "ausencia de glándula parótida izquierda",
+        "gold": "ausencia de glándula parótida",
+        "sim": 0.9125,
+        "exacto": false
+      },
+      {
+        "pred": "desplazamiento anterior de los cóndilos mandibulares",
+        "gold": "desplazamiento anterior de los cóndilos mandibulares por displasia severa de la articulación témporomandibular",
+        "sim": 0.8445,
+        "exacto": false
+      },
+      {
+        "pred": "absceso facial izquierdo",
+        "gold": "absceso facial izquierdo de origen dentario",
+        "sim": 0.8369,
+        "exacto": false
+      }
+    ],
+    "ex_58": [
+      {
+        "pred": "anomalías dentoesqueléticas",
+        "gold": "anomalías dentoesqueléticas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "derrame articular",
+        "gold": "derrame articular",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "duplicación condilar",
+        "gold": "duplicación condilar",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "cóndilo bífido",
+        "gold": "cóndilo bífido izquierdo anteroposterior",
+        "sim": 0.5904,
         "exacto": false
       }
     ],
     "ex_6": [
+      {
+        "pred": "lesión tumoral",
+        "gold": "lesión tumoral",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "liposarcoma desdiferenciado",
+        "gold": "liposarcoma desdiferenciado",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "neoplasia maligna de origen mesenquimal y sarcomatosa",
+        "gold": "neoplasia maligna de origen mesenquimal y sarcomatosa",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "carcinoma papilar del tiroides",
+        "gold": "carcinoma papilar del tiroides",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "respuesta inflamatoria sistémica",
+        "gold": "respuesta inflamatoria sistémica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "adenopatías inguinales",
+        "gold": "adenopatías inguinales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "adenopatías locoregionales",
+        "gold": "adenopatías locoregionales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "condrosarcoma",
+        "gold": "condrosarcoma",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "cáncer de mama",
+        "gold": "cáncer de mama",
+        "sim": 1.0,
+        "exacto": true
+      },
       {
         "pred": "diabetes mellitus 2",
         "gold": "diabetes mellitus 2",
@@ -3034,62 +5576,8 @@
         "exacto": true
       },
       {
-        "pred": "adenopatías locoregionales",
-        "gold": "adenopatías locoregionales",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "carcinoma papilar del tiroides",
-        "gold": "carcinoma papilar del tiroides",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "condrosarcoma",
-        "gold": "condrosarcoma",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "condrosarcoma de alto grado",
-        "gold": "condrosarcoma de alto grado",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "infección del tracto urinario",
         "gold": "infección del tracto urinario",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "lesión tumoral",
-        "gold": "lesión tumoral",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "liposarcoma bien diferenciado",
-        "gold": "liposarcoma bien diferenciado",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "neoplasia maligna de origen mesenquimal y sarcomatosa",
-        "gold": "neoplasia maligna de origen mesenquimal y sarcomatosa",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "recidiva tumoral",
-        "gold": "recidiva tumoral",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "respuesta inflamatoria sistémica",
-        "gold": "respuesta inflamatoria sistémica",
         "sim": 1.0,
         "exacto": true
       },
@@ -3100,8 +5588,8 @@
         "exacto": true
       },
       {
-        "pred": "adenopatías inguinales",
-        "gold": "adenopatías inguinales",
+        "pred": "condrosarcoma de alto grado",
+        "gold": "condrosarcoma de alto grado",
         "sim": 1.0,
         "exacto": true
       },
@@ -3112,20 +5600,20 @@
         "exacto": true
       },
       {
-        "pred": "cáncer de mama",
-        "gold": "cáncer de mama",
+        "pred": "liposarcoma bien diferenciado",
+        "gold": "liposarcoma bien diferenciado",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "recidiva tumoral",
+        "gold": "recidiva tumoral",
         "sim": 1.0,
         "exacto": true
       },
       {
         "pred": "hipertensión arterial",
         "gold": "hipertensión arterial",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "liposarcoma desdiferenciado",
-        "gold": "liposarcoma desdiferenciado",
         "sim": 1.0,
         "exacto": true
       },
@@ -3137,6 +5625,12 @@
       }
     ],
     "ex_7": [
+      {
+        "pred": "etilismo crónico activo",
+        "gold": "etilismo crónico activo",
+        "sim": 1.0,
+        "exacto": true
+      },
       {
         "pred": "acidosis metabólica",
         "gold": "acidosis metabólica",
@@ -3150,14 +5644,20 @@
         "exacto": true
       },
       {
-        "pred": "caa",
-        "gold": "caa",
+        "pred": "alcalosis respiratoria",
+        "gold": "alcalosis respiratoria",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "hipo-fosfatemia severa",
-        "gold": "hipo-fosfatemia severa",
+        "pred": "cetoacidosis alcohólica",
+        "gold": "cetoacidosis alcohólica",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "hipernatremia",
+        "gold": "hipernatremia",
         "sim": 1.0,
         "exacto": true
       },
@@ -3174,32 +5674,20 @@
         "exacto": true
       },
       {
-        "pred": "cetoacidosis alcohólica",
-        "gold": "cetoacidosis alcohólica",
+        "pred": "caa",
+        "gold": "caa",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "déficits electrolíticos",
-        "gold": "déficits electrolíticos",
+        "pred": "hipo-fosfatemia severa",
+        "gold": "hipo-fosfatemia severa",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "etilismo crónico activo",
-        "gold": "etilismo crónico activo",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "hipernatremia",
-        "gold": "hipernatremia",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "alcalosis respiratoria",
-        "gold": "alcalosis respiratoria",
+        "pred": "hipomagnesemia leve",
+        "gold": "hipomagnesemia leve",
         "sim": 1.0,
         "exacto": true
       },
@@ -3210,8 +5698,8 @@
         "exacto": true
       },
       {
-        "pred": "hipomagnesemia leve",
-        "gold": "hipomagnesemia leve",
+        "pred": "déficits electrolíticos",
+        "gold": "déficits electrolíticos",
         "sim": 1.0,
         "exacto": true
       },
@@ -3248,8 +5736,8 @@
     ],
     "ex_8": [
       {
-        "pred": "anemia de trastornos crónicos severa",
-        "gold": "anemia de trastornos crónicos severa",
+        "pred": "úlceras en región sacra",
+        "gold": "úlceras en región sacra",
         "sim": 1.0,
         "exacto": true
       },
@@ -3260,14 +5748,14 @@
         "exacto": true
       },
       {
-        "pred": "úlcera gástrica",
-        "gold": "úlcera gástrica",
+        "pred": "sangrado digestivo",
+        "gold": "sangrado digestivo",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "úlceras en región sacra",
-        "gold": "úlceras en región sacra",
+        "pred": "úlcera gástrica",
+        "gold": "úlcera gástrica",
         "sim": 1.0,
         "exacto": true
       },
@@ -3278,14 +5766,8 @@
         "exacto": true
       },
       {
-        "pred": "cuadros suboclusivos",
-        "gold": "cuadros suboclusivos",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "desnutrición proteico-calórica grave",
-        "gold": "desnutrición proteico-calórica grave",
+        "pred": "desnutrición por síndrome malabsortivo",
+        "gold": "desnutrición por síndrome malabsortivo",
         "sim": 1.0,
         "exacto": true
       },
@@ -3314,26 +5796,32 @@
         "exacto": true
       },
       {
-        "pred": "tbc renal",
-        "gold": "tbc renal",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "sangrado digestivo",
-        "gold": "sangrado digestivo",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
         "pred": "úlceras por presión en región sacra y talones",
         "gold": "úlceras por presión en región sacra y talones",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "desnutrición por síndrome malabsortivo",
-        "gold": "desnutrición por síndrome malabsortivo",
+        "pred": "anemia de trastornos crónicos severa",
+        "gold": "anemia de trastornos crónicos severa",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "cuadros suboclusivos",
+        "gold": "cuadros suboclusivos",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "tbc renal",
+        "gold": "tbc renal",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "desnutrición proteico-calórica grave",
+        "gold": "desnutrición proteico-calórica grave",
         "sim": 1.0,
         "exacto": true
       },
@@ -3352,14 +5840,8 @@
     ],
     "ex_9": [
       {
-        "pred": "mts",
-        "gold": "mts",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "mts en ganglios locorregionales infradiafragmáticos y en parénquima pulmonar",
-        "gold": "mts en ganglios locorregionales infradiafragmáticos y en parénquima pulmonar",
+        "pred": "hepatitis aguda",
+        "gold": "hepatitis aguda",
         "sim": 1.0,
         "exacto": true
       },
@@ -3370,14 +5852,8 @@
         "exacto": true
       },
       {
-        "pred": "fallo multiorgánico",
-        "gold": "fallo multiorgánico",
-        "sim": 1.0,
-        "exacto": true
-      },
-      {
-        "pred": "hepatitis aguda",
-        "gold": "hepatitis aguda",
+        "pred": "infiltración linfática y venular",
+        "gold": "infiltración linfática y venular",
         "sim": 1.0,
         "exacto": true
       },
@@ -3388,20 +5864,20 @@
         "exacto": true
       },
       {
-        "pred": "lesiones hepáticas",
-        "gold": "lesiones hepáticas",
+        "pred": "mts",
+        "gold": "mts",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "tumor primario",
-        "gold": "tumor primario",
+        "pred": "colangiolitis",
+        "gold": "colangiolitis",
         "sim": 1.0,
         "exacto": true
       },
       {
-        "pred": "autolisis pancreática y peripancreática",
-        "gold": "autolisis pancreática y peripancreática",
+        "pred": "fallo multiorgánico",
+        "gold": "fallo multiorgánico",
         "sim": 1.0,
         "exacto": true
       },
@@ -3412,8 +5888,14 @@
         "exacto": true
       },
       {
-        "pred": "infiltración linfática y venular",
-        "gold": "infiltración linfática y venular",
+        "pred": "lesiones hepáticas",
+        "gold": "lesiones hepáticas",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "mts en ganglios locorregionales infradiafragmáticos y en parénquima pulmonar",
+        "gold": "mts en ganglios locorregionales infradiafragmáticos y en parénquima pulmonar",
         "sim": 1.0,
         "exacto": true
       },
@@ -3424,8 +5906,8 @@
         "exacto": true
       },
       {
-        "pred": "colangiolitis",
-        "gold": "colangiolitis",
+        "pred": "autolisis pancreática y peripancreática",
+        "gold": "autolisis pancreática y peripancreática",
         "sim": 1.0,
         "exacto": true
       },
@@ -3438,6 +5920,12 @@
       {
         "pred": "lesiones cerebrales",
         "gold": "lesiones cerebrales",
+        "sim": 1.0,
+        "exacto": true
+      },
+      {
+        "pred": "tumor primario",
+        "gold": "tumor primario",
         "sim": 1.0,
         "exacto": true
       },
@@ -3457,9 +5945,12 @@
   },
   "no_emparejados": {
     "ex_0": {
-      "fp": [],
+      "fp": [
+        "pene afectaba a"
+      ],
       "fn": [
         "afectación de las cadenas ganglionares",
+        "brucelosis",
         "infiltración de la grasa del tejido celular subcutáneo de la pared interna de los muslos ni de la grasa del periné",
         "infiltrar también la fascia del músculo aductor",
         "lúes"
@@ -3487,9 +5978,11 @@
     },
     "ex_11": {
       "fp": [
-        "infiltración"
+        "infiltración",
+        "nódulos"
       ],
       "fn": [
+        "mo",
         "nódulos pulmonares"
       ]
     },
@@ -3508,10 +6001,12 @@
     },
     "ex_14": {
       "fp": [
+        "cálculos",
         "dilatación del árbol pielo-calicial y"
       ],
       "fn": [
         "abcedificación del parénquima renal y del tejido adiposo perirenal",
+        "arbol piélico presenta contenido purulento y se identifican cálculos",
         "cálculos radiopacos localizados en el riñón"
       ]
     },
@@ -3535,9 +6030,12 @@
       ]
     },
     "ex_17": {
-      "fp": [],
+      "fp": [
+        "invasión capsular"
+      ],
       "fn": [
         "alérgico",
+        "masa suprarrenal",
         "tumoración en glándula suprarrenal"
       ]
     },
@@ -3558,9 +6056,107 @@
     "ex_2": {
       "fp": [
         "alteraciones",
-        "alteraciones óseas"
+        "alteraciones óseas",
+        "cuadro de"
+      ],
+      "fn": [
+        "patología heredo-familiar"
+      ]
+    },
+    "ex_20": {
+      "fp": [
+        "acidosis metabólica hiperlactacidémica y",
+        "déficit",
+        "focalidad",
+        "síncope con caída al suelo"
+      ],
+      "fn": [
+        "síncope"
+      ]
+    },
+    "ex_21": {
+      "fp": [
+        "av) de conducción"
+      ],
+      "fn": [
+        "ritmo sinusal preexcitado"
+      ]
+    },
+    "ex_22": {
+      "fp": [],
+      "fn": [
+        "hematoquecia"
+      ]
+    },
+    "ex_23": {
+      "fp": [
+        "lesión directa del no al desplazarse el ala menor del esfenoides en el interior del co",
+        "od"
       ],
       "fn": []
+    },
+    "ex_24": {
+      "fp": [
+        "bloqueo sensitivo a nivel del dermatoma t12",
+        "espasmo vesical",
+        "espasmos vesicales",
+        "hiperactividad del detrusor",
+        "lumbociatalgia",
+        "problemas obstructivos"
+      ],
+      "fn": []
+    },
+    "ex_25": {
+      "fp": [
+        "adenopatías mesentéricas",
+        "dismetria",
+        "lesiones nodulares",
+        "vértigo rotatorio"
+      ],
+      "fn": []
+    },
+    "ex_26": {
+      "fp": [
+        "rechazo agudo",
+        "rechazo del trasplante.desde"
+      ],
+      "fn": [
+        "déficit motor",
+        "enfermedad coronaria",
+        "irc progresiva secundaria a glomerulonefritis tipo iga"
+      ]
+    },
+    "ex_27": {
+      "fp": [],
+      "fn": [
+        "lesión infiltrante que interesa los 2/3 superiores del riñón izquierdo con afectación del espacio pericapsular"
+      ]
+    },
+    "ex_28": {
+      "fp": [
+        "hematoma retrofaríngeo y",
+        "punturas en ambas muñecas y antebrazo izquierdo"
+      ],
+      "fn": [
+        "herida en forma de semiluna con ligera pérdida de sustancia",
+        "lesionando la médula",
+        "médula, seccionándola parcialmente",
+        "orifico nasal derecho, una pequeña excoriación de forma de semilunar con una discreta pérdida de sustancia"
+      ]
+    },
+    "ex_29": {
+      "fp": [
+        "ataxia",
+        "dorsalgia",
+        "enuresis nocturna",
+        "gonalgia bilateral",
+        "lumbalgia"
+      ],
+      "fn": [
+        "atenuación de la percepción de los colores",
+        "pérdida brusca de la agudeza visual",
+        "visión borrosa de cerca"
+      ]
     },
     "ex_3": {
       "fp": [
@@ -3573,20 +6169,226 @@
         "sangrado intraalveolar"
       ]
     },
+    "ex_30": {
+      "fp": [
+        "lesiones",
+        "leucopenia",
+        "neurotoxicidad",
+        "pigmentación cutánea generalizada",
+        "trombopenia"
+      ],
+      "fn": [
+        "metástasis hepáticas"
+      ]
+    },
+    "ex_31": {
+      "fp": [
+        "reacción hurticariforme"
+      ],
+      "fn": [
+        "afectación de 8 de los 29 ganglios"
+      ]
+    },
+    "ex_32": {
+      "fp": [],
+      "fn": []
+    },
+    "ex_33": {
+      "fp": [
+        "irresecable"
+      ],
+      "fn": []
+    },
+    "ex_34": {
+      "fp": [],
+      "fn": [
+        "actinomicosis",
+        "posos de café"
+      ]
+    },
+    "ex_35": {
+      "fp": [],
+      "fn": [
+        "neoformación vascular",
+        "neoformación vesical"
+      ]
+    },
+    "ex_36": {
+      "fp": [],
+      "fn": []
+    },
+    "ex_37": {
+      "fp": [],
+      "fn": []
+    },
+    "ex_38": {
+      "fp": [],
+      "fn": []
+    },
+    "ex_39": {
+      "fp": [],
+      "fn": [
+        "hematoma, de 12 cm de diámetro máximo, en la celda renal izquierda",
+        "imagen pseudoquística en la zona suprarrenal",
+        "líquido libre intraperitoneal"
+      ]
+    },
     "ex_4": {
       "fp": [
+        "déficit funcional de la unidad renal",
         "macro",
         "microaneurismas",
         "proceso isquémico"
       ],
+      "fn": [
+        "isquemia"
+      ]
+    },
+    "ex_40": {
+      "fp": [
+        "lesión",
+        "patología de células acinares de tipo seroso"
+      ],
+      "fn": [
+        "infiltración vascular ni nerviosa",
+        "neoformación microquística"
+      ]
+    },
+    "ex_41": {
+      "fp": [
+        "obstrucción de meato"
+      ],
       "fn": []
+    },
+    "ex_42": {
+      "fp": [],
+      "fn": []
+    },
+    "ex_43": {
+      "fp": [
+        "hematuria",
+        "lesión excrecente"
+      ],
+      "fn": [
+        "diarreico crónico"
+      ]
+    },
+    "ex_44": {
+      "fp": [
+        "ar) seropositiva, erosiva y nodular",
+        "infiltrado corneal",
+        "qup grave"
+      ],
+      "fn": []
+    },
+    "ex_45": {
+      "fp": [],
+      "fn": [
+        "tumoración en cara anterior gástrica"
+      ]
+    },
+    "ex_46": {
+      "fp": [
+        "hidrocele a tensión"
+      ],
+      "fn": []
+    },
+    "ex_47": {
+      "fp": [
+        "salida accidental de catéter"
+      ],
+      "fn": []
+    },
+    "ex_48": {
+      "fp": [
+        "desprendimiento neurosensorial",
+        "microhemorragias"
+      ],
+      "fn": []
+    },
+    "ex_49": {
+      "fp": [
+        "rechazo agudo y crónico"
+      ],
+      "fn": [
+        "hipoplasia renal"
+      ]
     },
     "ex_5": {
       "fp": [
+        "lesión",
         "lesión plana y ulcerada",
         "tumoración esofágica vegetante y ulcerada"
       ],
+      "fn": [
+        "infiltraba esófago"
+      ]
+    },
+    "ex_50": {
+      "fp": [],
+      "fn": [
+        "eritema e inflamación palpebral y conjuntival"
+      ]
+    },
+    "ex_51": {
+      "fp": [
+        "colección",
+        "hepatitis b"
+      ],
       "fn": []
+    },
+    "ex_52": {
+      "fp": [
+        "sumersión accidental"
+      ],
+      "fn": []
+    },
+    "ex_53": {
+      "fp": [],
+      "fn": []
+    },
+    "ex_54": {
+      "fp": [
+        "congestión venosa",
+        "defecto",
+        "neurofibroma solitario"
+      ],
+      "fn": [
+        "compromiso de estructuras vasculares del cuello",
+        "extensión intratorácica"
+      ]
+    },
+    "ex_55": {
+      "fp": [
+        "lps bien diferenciado",
+        "tumor"
+      ],
+      "fn": [
+        "lps bien diferenciado del subtipo lipoma like"
+      ]
+    },
+    "ex_56": {
+      "fp": [
+        "accidente",
+        "déficit",
+        "herida"
+      ],
+      "fn": [
+        "salida de líquido cefalorraquídeo por la herida de entrada",
+        "trayecto intracraneal"
+      ]
+    },
+    "ex_57": {
+      "fp": [],
+      "fn": [
+        "imposibilidad para la apertura bucal"
+      ]
+    },
+    "ex_58": {
+      "fp": [],
+      "fn": [
+        "cóndilo: bifidez anteroposterior"
+      ]
     },
     "ex_6": {
       "fp": [

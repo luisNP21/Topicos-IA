@@ -14,28 +14,41 @@
       "precision": 1.0,
       "recall": 0.5833333333333334,
       "f1": 0.7368421052631579,
-      "soft_f1": 0.6668642602468793,
+      "soft_f1": 0.6668642288760135,
       "umbral": 0.6
     },
     "llm_judge": {
-      "score_juez_mean": 3.975,
-      "score_juez_std": 0.7163759100112485,
-      "f1_exacto_mean": 0.35333333333333333
+      "score_juez_mean": 3.95,
+      "score_juez_std": 0.8563488385776753,
+      "f1_exacto_mean": 0.35333333333333333,
+      "aciertos_dominio": 3,
+      "total_dominio": 10,
+      "tasa_aciertos_dominio": 0.3
     }
+  },
+  "dimension_dominio": {
+    "definicion": "acierto = el juez responde 'si' al criterio del caso (S06, Dimension 3)",
+    "aciertos": 3,
+    "total": 10,
+    "tasa": 0.3
   },
   "mitigacion_sesgos_juez": {
     "posicion": {
-      "delta_mean": 0.55,
-      "delta_max": 1.0,
-      "delta_median": 0.5,
-      "pct_delta_mayor_a_1": 0.0,
-      "mitigacion": "promedio de score_normal y score_inverted"
+      "protocolo": "pairwise A/B con intercambio de orden (S06, Lab B)",
+      "n_pares": 10,
+      "n_gana_gold": 2,
+      "n_gana_pred": 3,
+      "n_empates": 5,
+      "tasa_sesgo_posicion": 0.5,
+      "veredicto": "sesgo moderado de posicion: conviene reportar el empate como no confiable",
+      "mitigacion": "veredicto robusto: solo se declara ganador si coincide en ambos ordenes; si no -> empate. El score final es pointwise y NO se promedia con este test.",
+      "nota": "pares omitidos cuando pred == gold (sin senal de orden)"
     },
     "longitud": {
-      "pares_evaluados": 5,
-      "pares_calidad_gana": 5,
+      "pares_evaluados": 6,
+      "pares_calidad_gana": 6,
       "pct_calidad_gana": 1.0,
-      "mitigacion": "pares de validacion con asimetria de longitud controlada"
+      "mitigacion": "pares controlados de respuesta corta correcta vs. respuesta larga parcialmente correcta"
     },
     "auto_preferencia": {
       "output_anonimizado": true,
@@ -47,8 +60,9 @@
     }
   },
   "distribucion_debilidad": {
-    "caso mixto": 7,
+    "fallo real -- ninguna metrica reconoce acierto": 1,
     "boundary/formato -- el modelo entiende, falla el limite del span": 2,
+    "caso mixto": 6,
     "funcionamiento correcto": 1
   },
   "detalle_por_doc": [
@@ -57,15 +71,17 @@
       "n_gold": 3,
       "f1_exacto": 0.0,
       "f1_semantico": 0.0,
-      "score_juez": 2.5,
-      "debilidad": "caso mixto"
+      "score_juez": 2.0,
+      "cumple_criterio": false,
+      "debilidad": "fallo real -- ninguna metrica reconoce acierto"
     },
     {
       "doc_id": "ex_1",
       "n_gold": 1,
       "f1_exacto": 0.0,
       "f1_semantico": 1.0,
-      "score_juez": 3.75,
+      "score_juez": 3.5,
+      "cumple_criterio": true,
       "debilidad": "boundary/formato -- el modelo entiende, falla el limite del span"
     },
     {
@@ -74,6 +90,7 @@
       "f1_exacto": 0.6667,
       "f1_semantico": 0.6667,
       "score_juez": 4.5,
+      "cumple_criterio": false,
       "debilidad": "caso mixto"
     },
     {
@@ -81,7 +98,8 @@
       "n_gold": 3,
       "f1_exacto": 0.6667,
       "f1_semantico": 1.0,
-      "score_juez": 4.625,
+      "score_juez": 4.75,
+      "cumple_criterio": true,
       "debilidad": "caso mixto"
     },
     {
@@ -89,7 +107,8 @@
       "n_gold": 3,
       "f1_exacto": 0.4,
       "f1_semantico": 0.8,
-      "score_juez": 4.625,
+      "score_juez": 4.5,
+      "cumple_criterio": false,
       "debilidad": "caso mixto"
     },
     {
@@ -98,6 +117,7 @@
       "f1_exacto": 0.5,
       "f1_semantico": 1.0,
       "score_juez": 3.5,
+      "cumple_criterio": false,
       "debilidad": "caso mixto"
     },
     {
@@ -105,7 +125,8 @@
       "n_gold": 1,
       "f1_exacto": 0.0,
       "f1_semantico": 1.0,
-      "score_juez": 4.25,
+      "score_juez": 4.75,
+      "cumple_criterio": true,
       "debilidad": "boundary/formato -- el modelo entiende, falla el limite del span"
     },
     {
@@ -113,7 +134,8 @@
       "n_gold": 3,
       "f1_exacto": 0.8,
       "f1_semantico": 0.8,
-      "score_juez": 4.75,
+      "score_juez": 4.5,
+      "cumple_criterio": false,
       "debilidad": "funcionamiento correcto"
     },
     {
@@ -121,7 +143,8 @@
       "n_gold": 3,
       "f1_exacto": 0.5,
       "f1_semantico": 0.5,
-      "score_juez": 3.875,
+      "score_juez": 4.0,
+      "cumple_criterio": false,
       "debilidad": "caso mixto"
     },
     {
@@ -129,7 +152,8 @@
       "n_gold": 3,
       "f1_exacto": 0.0,
       "f1_semantico": 0.5,
-      "score_juez": 3.375,
+      "score_juez": 3.5,
+      "cumple_criterio": false,
       "debilidad": "caso mixto"
     }
   ]

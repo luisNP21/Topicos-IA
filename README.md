@@ -79,15 +79,16 @@ A continuación se encuentran los scorecard del modelo para el dataset de ejempl
 
 ### Scorecard  M2 - Evaluacion Clinical BERT (DisTEMIST)
 
-**Ejemplos evaluados:** 20 documentos gold tomados de DisTEMIST
+**Ejemplos evaluados:** 59 documentos gold tomados de DisTEMIST
 
  Metricas globales
 
 | Dimension | Precision | Recall | F1 |
 |---|---|---|---|
-| Exact-match | 0.722 | 0.731 | 0.727 |
-| Similitud semantica | 0.922 | 0.934 | 0.928 |
-| LLM-as-judge (score 1-5) | -- | -- | 3.731 |
+| Exact-match | 0.704 | 0.728 | 0.716 |
+| Similitud semantica | 0.879 | 0.909 | 0.894 |
+| LLM-as-judge (score 1-5) | -- | -- | 3.869 |
+| Aciertos de dominio (si/no) | -- | -- | 0.593 |
 
 **Ejemplos evaluados:** 10 documentos adversariales creados por el equipo
 
@@ -97,13 +98,23 @@ Metricas globales
 |---|---|---|---|
 | Exact-match | 0.571 | 0.333 | 0.421 |
 | Similitud semantica | 1.000 | 0.583 | 0.737 |
-| LLM-as-judge (score 1-5) | -- | -- | 3.975 |
+| LLM-as-judge (score 1-5) | -- | -- | 3.950 |
+| Aciertos de dominio (si/no) | -- | -- | 0.300 |
 
 ## Mitigacion de sesgos del juez
 
-- **Posicion:** delta medio = 0.403 (mitigado con promedio de score_normal y score_inverted)
-- **Longitud:** el juez premio calidad en 5/5 pares (100.0%)
-- **Auto-preferencia:** documentado, sin test cross-family disponible (limitacion)
+- **Posicion:** protocolo pairwise A/B con intercambio de orden (S06, Lab B). El test es diagnostico y no se promedia con el score final. Resultado: 0/59 empates en gold (juez estable con documentos reales) y **5/10 empates en adversariales**: ante textos clinicamente incoherentes el veredicto depende del orden, senal de que el juez no es confiable en ese tipo de casos.
+- **Longitud:** el juez premio calidad en 6/6 pares (100.0%), con pares de respuesta corta correcta vs. larga parcialmente correcta.
+- **Auto-preferencia:** documentado, sin test cross-family disponible (limitacion).
+- **Aciertos de dominio (si/no):** dimension de S06; el juez lee el `criterio` de cada caso y decide si la prediccion lo cumple (>= 75% de recall y sin ruido grave). Gold 59.3% vs. adversariales 30.0%.
+
+### Lectura del baseline
+
+El F1 de exact-match es 0.716 en el gold set de 59 documentos y la similitud semantica sube a 0.894: la brecha de 0.178 puntos es error de **boundary/formato**, no de comprension de la entidad clinica; el modelo identifica la enfermedad, falla el limite del span. El juez pointwise lo confirma con 3.869/5 y un 59.3% de aciertos de dominio: en la mayoria de los casos la prediccion es util para el criterio del caso.
+
+En los adversariales el comportamiento cambia de forma informativa: el exact-match cae a 0.421 (recall 0.333), la similitud semantica se mantiene alta en precision (1.000) pero el recall baja a 0.583, y los aciertos de dominio caen a 30.0%. Ademas aparece un sesgo de posicion del 50% que no existe en el gold set. Esto es esperable: los adversariales actuales son textos clinicamente imposibles (un fallecido con sintomas, un recien nacido de 85 anos) y su `esperado` incluye terminos que no son entidades ENFERMEDAD ("muertos", "mocos", "fiebre"), algo que un NER no hace por diseno. Es decir, la caida mide en parte una tarea mal planteada en el eval set, no solo una debilidad del modelo. Los adversariales utiles para NER (negaciones, siglas, abreviaturas de nota real, textos sin enfermedades) estan pendientes de correccion por el dueno del eval set.
+
+**Nota metodologica sobre el cambio de juez.** El modelo juez es `qwen/qwen3.8-27b` (Groq). Se cambio desde `openai/gpt-oss-120b` porque este ultimo consume ~1000-1300 tokens internos de razonamiento por llamada y el cupo gratuito de Groq (200.000 tokens/dia) no alcanzaba para 59 documentos x 3 llamadas. Qwen3.8-27b resuelve la misma tarea con ~100 tokens por llamada. Las dos corridas (gold y adversariales) usan el mismo juez, por lo que el scorecard es internamente comparable.
 
 ---
 

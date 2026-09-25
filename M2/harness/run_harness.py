@@ -114,7 +114,11 @@ def main():
         import metrics_judge
         resultados["judge"] = metrics_judge.run(cfg, project_root)
         log(f"  Score juez = {resultados['judge']['metrics']['score_juez_mean']:.4f}")
-        log(f"  Delta posicion = {resultados['judge']['sesgo_posicion']['delta_mean']:.4f}")
+        log(f"  Aciertos de dominio = "
+            f"{resultados['judge']['metrics']['aciertos_dominio']}/"
+            f"{resultados['judge']['metrics']['total_dominio']}")
+        log(f"  Sesgo de posicion (tasa empate A/B) = "
+            f"{resultados['judge']['sesgo_posicion']['tasa_sesgo_posicion']:.4f}")
 
     # --- Scorecard integrador (Isa) --------------------------------------
     if args.solo in (None, "scorecard"):
