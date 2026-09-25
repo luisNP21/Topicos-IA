@@ -41,6 +41,11 @@ dimension1b_similitud_semantica:
     seed: 42
 
 dimension3_llm_judge:
+  # Metodologia alineada con S06:
+  #   - Score final = juez pointwise (una sola llamada por documento).
+  #   - Dimension de dominio binaria (cumple_criterio) leida del campo `criterio`.
+  #   - Sesgo de posicion = protocolo pairwise A/B con intercambio de orden.
+  #   - Sesgo de longitud = respuesta larga PARCIALMENTE correcta vs. corta correcta.
   judge_model: "openai/gpt-oss-120b"
   judge_provider: "groq"
   judge_temperature: 0.0

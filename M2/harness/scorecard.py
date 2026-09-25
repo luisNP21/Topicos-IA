@@ -74,6 +74,7 @@ def build(cfg: dict, project_root) -> dict:
             "f1_exacto": round(f1_exacto, 4) if f1_exacto is not None else None,
             "f1_semantico": round(f1_semantico, 4) if f1_semantico is not None else None,
             "score_juez": round(score_juez, 4) if score_juez is not None else None,
+            "cumple_criterio": info.get("cumple_criterio"),
             "debilidad": diagnosticar_debilidad(f1_exacto, f1_semantico, score_juez, umbrales),
         })
 
@@ -91,6 +92,7 @@ def build(cfg: dict, project_root) -> dict:
             },
             "llm_judge": dim3["metrics"],
         },
+        "dimension_dominio": dim3.get("dimension_dominio", {}),
         "mitigacion_sesgos_juez": {
             "posicion": dim3["sesgo_posicion"], "longitud": dim3["sesgo_longitud"],
             "auto_preferencia": dim3["sesgo_autopreferencia"],
@@ -123,8 +125,10 @@ def _generar_markdown(scorecard: dict, path):
         f"| Exact-match | {me['exact_match']['precision']:.3f} | {me['exact_match']['recall']:.3f} | {me['exact_match']['f1']:.3f} |",
         f"| Similitud semantica | {me['similitud_semantica']['precision']:.3f} | {me['similitud_semantica']['recall']:.3f} | {me['similitud_semantica']['f1']:.3f} |",
         f"| LLM-as-judge (score 1-5) | -- | -- | {me['llm_judge']['score_juez_mean']:.3f} |",
+        f"| Aciertos de dominio (si/no) | -- | -- | {me['llm_judge'].get('tasa_aciertos_dominio', 0.0):.3f} |",
         "\n## Mitigacion de sesgos del juez\n",
-        f"- **Posicion:** delta medio = {sp['delta_mean']:.3f} (mitigado con {sp['mitigacion']})",
+        f"- **Posicion (pairwise A/B):** empates = {sp.get('n_empates', 0)}/{sp.get('n_pares', 0)} "
+        f"(tasa = {sp.get('tasa_sesgo_posicion', 0.0):.3f}). {sp.get('mitigacion', '')}",
         f"- **Longitud:** el juez premio calidad en {sl['pares_calidad_gana']}/{sl['pares_evaluados']} pares ({sl['pct_calidad_gana']:.1%})",
         "- **Auto-preferencia:** documentado, sin test cross-family disponible (limitacion)",
         "\n## Distribucion de debilidades detectadas\n",

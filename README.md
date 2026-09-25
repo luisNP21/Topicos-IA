@@ -101,9 +101,12 @@ Metricas globales
 
 ## Mitigacion de sesgos del juez
 
-- **Posicion:** delta medio = 0.403 (mitigado con promedio de score_normal y score_inverted)
-- **Longitud:** el juez premio calidad en 5/5 pares (100.0%)
-- **Auto-preferencia:** documentado, sin test cross-family disponible (limitacion)
+- **Posicion:** protocolo pairwise A/B con intercambio de orden (S06, Lab B). El test es diagnostico y no se promedia con el score final.
+- **Longitud:** el juez premio calidad en 5/5 pares (100.0%).
+- **Auto-preferencia:** documentado, sin test cross-family disponible (limitacion).
+- **Aciertos de dominio (si/no):** dimension adicional de S06; el juez lee el `criterio` del caso.
+
+> **Nota de metodologia:** los valores de la corrida anterior (p. ej. `delta medio`) corresponden al metodo que se corrigio; deben **regenerarse** con el harness corregido (ver `M2/README.md`, seccion "Correccion tras el feedback").
 
 ---
 
