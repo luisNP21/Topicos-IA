@@ -1,0 +1,29 @@
+proyecto:
+  nombre: "M3 -- Generacion RAG (Agustin) -- DisTEMIST / guias clinicas"
+  seed_global: 42
+
+# Pieza de Agustín: generacion final + orquestacion de la tool de normalizacion.
+generacion:
+  # true = corre con mocks de Pau (retrieval) y Luis (normalizacion).
+  # false = importa las piezas reales (retrieval.py / normalizacion.py).
+  usar_mocks: true
+  proveedor: "groq"
+  # Mismo modelo que el juez de M2 (main), por coherencia y porque el cupo
+  # gratuito de Groq ya esta validado con el. Es un modelo de generacion, no de
+  # razonamiento: ~100 tokens por llamada.
+  modelo: "qwen/qwen3.8-27b"
+  temperature: 0.0
+  max_tokens: 700
+  # Groq limita por minuto; el espacio preventivo evita la cascada de 429.
+  pausa_entre_llamadas: 3.0
+
+orquestacion:
+  # Criterio de invocacion de la tool: si el score del top-1 del retrieval con
+  # la entidad CRUDA es < umbral, se invoca normalizar_entidad.
+  # OJO: 'umbral' depende de la escala de Fragment.score (ver contratos.py).
+  umbral_score: 0.5
+  k_fragments: 5
+
+rutas:
+  outputs_dir: "M3/outputs"
+  entidades: "M3/generacion/entidades_ejemplo.json"
