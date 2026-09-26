@@ -1,6 +1,6 @@
 import chromadb
 import json
-import Path
+from pathlib import Path
 from datetime import date
 
 

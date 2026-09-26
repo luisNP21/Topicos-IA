@@ -1,4 +1,3 @@
-# config_utils.py — nuevo módulo, sin dependencias de Docling/Chroma/embeddings
 import re
 import yaml
 
