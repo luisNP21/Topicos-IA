@@ -2,28 +2,37 @@ proyecto:
   nombre: "M3 -- Generacion RAG (Agustin) -- DisTEMIST / guias clinicas"
   seed_global: 42
 
-# Pieza de Agustín: generacion final + orquestacion de la tool de normalizacion.
+# Piezas de los companeros: se referencian sus YAML en vez de duplicar su config
+# (como pidio Isabella). Rutas relativas a la raiz del repositorio.
+modulos:
+  retrieval_dir: "M3/retrieval"                      # Pau
+  tool_dir: "M3/tools"                               # Luis
+  retrieval_config: "M3/retrieval/config_retrieval.yaml"
+  tool_config: "M3/tools/config.yaml"
+
+# Pieza de Agustín: generacion final de la respuesta.
 generacion:
-  # true = corre con mocks de Pau (retrieval) y Luis (normalizacion).
-  # false = importa las piezas reales (retrieval.py / normalizacion.py).
-  usar_mocks: true
+  # false = usa las piezas REALES del equipo (retrieval de Pau + tool de Luis).
+  # true  = usa mocks propios; util para correr sin dependencias externas.
+  usar_mocks: false
   proveedor: "groq"
-  # Mismo modelo que el juez de M2 (main), por coherencia y porque el cupo
-  # gratuito de Groq ya esta validado con el. Es un modelo de generacion, no de
-  # razonamiento: ~100 tokens por llamada.
+  # Mismo modelo que el juez de M2 (main), por coherencia y porque su cupo
+  # gratuito ya esta validado. Es un modelo de generacion, no de razonamiento.
   modelo: "qwen/qwen3.8-27b"
   temperature: 0.0
   max_tokens: 700
-  # Groq limita por minuto; el espacio preventivo evita la cascada de 429.
+  # Groq limita por minuto; el espaciado preventivo evita la cascada de 429.
   pausa_entre_llamadas: 3.0
 
-orquestacion:
-  # Criterio de invocacion de la tool: si el score del top-1 del retrieval con
-  # la entidad CRUDA es < umbral, se invoca normalizar_entidad.
-  # OJO: 'umbral' depende de la escala de Fragment.score (ver contratos.py).
-  umbral_score: 0.5
-  k_fragments: 5
+# Solo se usa con usar_mocks: true (o `--mocks`), para correr sin las piezas reales.
+orquestacion_mock:
+  umbral: 0.5
+  umbral_evidencia: 0.15
+  k: 5
 
 rutas:
   outputs_dir: "M3/outputs"
+  # Nombre exacto que consume RAGAS (M3/ragas/evaluacion_ragas.py).
+  archivo_salida: "resultado_generacion.json"
+  # Entidades a generar. Acepta .json (lista) o .jsonl (campo 'consulta').
   entidades: "M3/generacion/entidades_ejemplo.json"

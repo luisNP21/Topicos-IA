@@ -1,8 +1,8 @@
 """
 Pruebas de la pieza de generacion/orquestacion (Agustin / M3).
 
-NO llaman a la API: usan mocks inyectados, que es justamente lo que permite el
-desacople por contratos. Correr con:
+NO llaman a la API: usan mocks inyectados, que es lo que permite el desacople
+por contratos. Correr con:
 
     python test_generacion.py
     # o:  python -m unittest test_generacion -v
@@ -10,31 +10,33 @@ desacople por contratos. Correr con:
 
 from __future__ import annotations
 
+import json
+import tempfile
 import unittest
+from pathlib import Path
 
-from generacion import MENSAJE_SIN_EVIDENCIA, generar_respuesta, recolectar_api_keys
-from orquestacion import resolver_query
+from generacion import MENSAJE_SIN_EVIDENCIA, contextos_para_ragas, generar_respuesta, recolectar_api_keys
+from orquestacion import es_sigla, resolver_query
+from run_generacion import _cargar_entidades, _piezas_reales
 
 
-def _frag(chunk_id: str, score: float, texto: str = "texto") -> dict:
-    return {"chunk_id": chunk_id, "doc_id": "doc1", "texto": texto,
-            "score": score, "score_tipo": "test", "fuente": "Fuente de prueba"}
+def _frag(chunk_id: str, score: float, score_tipo: str = "test", texto: str = "texto") -> dict:
+    return {"chunk_id": chunk_id, "doc_id": "doc1", "texto": texto, "score": score,
+            "score_tipo": score_tipo, "fuente": "Fuente de prueba"}
 
 
 def retrieve_controlado(mapa_scores: dict[str, float]):
-    """Retriever falso: score del top-1 lo decide `mapa_scores[consulta]`."""
+    """Retriever falso: devuelve un fragmento con el score de `mapa_scores[consulta]`."""
     def retrieve(consulta: str, k: int):
         score = mapa_scores.get(consulta, 0.0)
-        if score <= 0:
-            return []
-        return [_frag("c_top", score)]
+        return [_frag("c_top", score)] if score > 0 else []
     return retrieve
 
 
-def normalizador_controlado(exito: bool):
+def normalizador_controlado(exito: bool, termino: str = "ENFERMEDAD CONTROLADA"):
     def normalizar(entidad: str):
         if exito:
-            return {"entidad_original": entidad, "entidad_normalizada": "ENFERMEDAD CONTROLADA",
+            return {"entidad_original": entidad, "entidad_normalizada": termino,
                     "source_terminology": "SNOMED CT", "normalization_failed": False}
         return {"entidad_original": entidad, "entidad_normalizada": entidad,
                 "source_terminology": None, "normalization_failed": True}
@@ -68,13 +70,35 @@ class TestOrquestacion(unittest.TestCase):
         self.assertIn("SIN match", r["tool_reason"])
         self.assertEqual(r["fragments"], [])
 
+    def test_compuerta_evidencia_deja_sin_fragmentos(self):
+        # score por debajo del umbral de evidencia -> no se entrega contexto
+        r = resolver_query("rara", retrieve_fn=retrieve_controlado({"rara": 0.3}),
+                           normalizar_fn=normalizador_controlado(False), umbral=0.9,
+                           k=5, umbral_evidencia=0.5)
+        self.assertEqual(r["fragments"], [])
+        self.assertIn("sin evidencia", r["tool_reason"])
+
+    def test_sigla_fuerza_normalizacion_aunque_el_score_sea_alto(self):
+        retrieve = retrieve_controlado({"EPOC": 0.95, "enfermedad pulmonar obstructiva crónica": 0.9})
+        r = resolver_query("EPOC", retrieve_fn=retrieve,
+                           normalizar_fn=normalizador_controlado(True, "enfermedad pulmonar obstructiva crónica"),
+                           umbral=0.5, k=5, forzar_por_sigla=True)
+        self.assertTrue(es_sigla("EPOC"))
+        self.assertTrue(r["tool_invoked"])
+        self.assertEqual(r["query_final"], "enfermedad pulmonar obstructiva crónica")
+
+    def test_score_rrf_no_es_comparable_con_umbral(self):
+        rrf = lambda consulta, k: [_frag("c", 0.5, score_tipo="rrf")]
+        with self.assertRaises(ValueError):
+            resolver_query("diabetes", retrieve_fn=rrf, normalizar_fn=normalizador_controlado(True),
+                           umbral=0.5, k=5)
+
     def test_fallo_de_retrieval_no_rompe_el_pipeline(self):
         def retrieve_que_falla(consulta, k):
             raise ConnectionError("indice caido")
 
         r = resolver_query("neumonia", retrieve_fn=retrieve_que_falla,
                            normalizar_fn=normalizador_controlado(True), umbral=0.5, k=5)
-        # No hay excepcion: se degrada de forma explicita.
         self.assertTrue(r["tool_invoked"])
         self.assertIn("sin resultados", r["tool_reason"])
 
@@ -97,7 +121,7 @@ class TestGeneracion(unittest.TestCase):
     def test_con_fragmentos_devuelve_fuentes_y_respuesta(self):
         def generar_fn(system, user):
             self.assertIn("Contexto:", user)
-            self.assertIn("c_top", user)   # el chunk_id va en el contexto
+            self.assertIn("c_top", user)
             return "La neumonía se trata con amoxicilina."
 
         r = generar_respuesta("neumonia", [_frag("c_top", 0.9)], generar_fn=generar_fn)
@@ -113,6 +137,84 @@ class TestGeneracion(unittest.TestCase):
         self.assertTrue(r["fallback_used"])
         self.assertEqual(r["sources_used"], [], "si es fallback, no se apoya en ninguna fuente")
 
+    def test_contextos_para_ragas_son_los_textos(self):
+        frags = [_frag("a", 0.9, texto="texto A"), _frag("b", 0.8, texto="texto B")]
+        self.assertEqual(contextos_para_ragas(frags), ["texto A", "texto B"])
+
+
+class TestCargaEntidades(unittest.TestCase):
+
+    def test_json_lista_de_strings(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "e.json"
+            p.write_text(json.dumps(["diabetes", "asma"]), encoding="utf-8")
+            r = _cargar_entidades(p)
+            self.assertEqual([x["entidad"] for x in r], ["diabetes", "asma"])
+            self.assertIsNone(r[0]["ground_truth"])
+
+    def test_jsonl_con_campo_consulta(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "e.jsonl"
+            p.write_text('{"consulta": "hipertension", "respuesta_esperada": "x"}\n', encoding="utf-8")
+            r = _cargar_entidades(p)
+            self.assertEqual(r[0]["entidad"], "hipertension")
+            self.assertEqual(r[0]["ground_truth"], "x")
+
+
+class TestIntegracionPiezasReales(unittest.TestCase):
+    """Verifica el cableado con las piezas del equipo (imports + YAML) con modulos
+    simulados que respetan las firmas reales de Pau y Luis."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        root = Path(self._tmp.name)
+        (root / "M3/retrieval").mkdir(parents=True)
+        (root / "M3/tools").mkdir(parents=True)
+        (root / "M3/retrieval/retrieval.py").write_text(
+            "def retrieve_advanced(consulta, k):\n    return []\n"
+            "def pregunta_intencion(entidad):\n"
+            "    return f'¿Cuál es el tratamiento de {entidad}?'\n", encoding="utf-8")
+        (root / "M3/retrieval/config_retrieval.py").write_text(
+            "def cargar_config(ruta=None):\n    return {'ok': True}\n"
+            "def configurar_pipeline(cfg):\n    return None\n"
+            "def parametros_orquestacion(cfg):\n"
+            "    return {'umbral': 0.7, 'umbral_evidencia': 0.3, 'forzar_por_sigla': True, 'k': 5}\n",
+            encoding="utf-8")
+        (root / "M3/tools/tool_normalizacion.py").write_text(
+            "def normalizar_entidad(entidad, ontologia='SNOMEDCT', api_key=None):\n"
+            "    return {'entidad_original': entidad, 'entidad_normalizada': entidad,\n"
+            "            'source_terminology': None, 'normalization_failed': True}\n",
+            encoding="utf-8")
+        (root / "M3/tools/config.yaml").write_text(
+            "tool_normalizacion:\n  ontologia: SNOMEDCT\n", encoding="utf-8")
+        (root / "M3/retrieval/config_retrieval.yaml").write_text("corpus: mock\n", encoding="utf-8")
+        self.root = root
+
+    def _limpiar_modulos(self):
+        import sys
+        for mod in ("retrieval", "config_retrieval", "tool_normalizacion"):
+            sys.modules.pop(mod, None)
+
+    def test_piezas_reales_se_importan_y_entregan_parametros(self):
+        self._limpiar_modulos()
+        cfg = {"modulos": {
+            "retrieval_dir": "M3/retrieval", "tool_dir": "M3/tools",
+            "retrieval_config": "M3/retrieval/config_retrieval.yaml",
+            "tool_config": "M3/tools/config.yaml"}}
+        try:
+            retrieve_fn, normalizar_fn, params, pregunta_fn = _piezas_reales(cfg, self.root)
+            self.assertEqual(params["umbral"], 0.7)
+            self.assertEqual(params["umbral_evidencia"], 0.3)
+            self.assertTrue(params["forzar_por_sigla"])
+            self.assertIn("tratamiento", pregunta_fn("diabetes"))
+            # el adaptador de la tool fija la ontologia del YAML
+            self.assertTrue(normalizar_fn("x")["normalization_failed"])
+        finally:
+            self._limpiar_modulos()
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
 
 class TestConfigClaves(unittest.TestCase):
 
@@ -122,9 +224,8 @@ class TestConfigClaves(unittest.TestCase):
         try:
             os.environ["GROQ_API_KEY"] = "k1"
             os.environ["GROQ_API_KEY_2"] = "k2"
-            os.environ["GROQ_API_KEY_3"] = "k1"   # duplicada
-            claves = recolectar_api_keys()
-            self.assertEqual(claves, ["k1", "k2"])
+            os.environ["GROQ_API_KEY_3"] = "k1"
+            self.assertEqual(recolectar_api_keys(), ["k1", "k2"])
         finally:
             os.environ.clear()
             os.environ.update(previo)

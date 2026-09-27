@@ -1,17 +1,20 @@
 """
-Entry point de la pieza de generacion RAG  (Agustin / M3).
+Entry point de la generacion RAG  (Agustin / M3).
 
-Mismo patron que M2: `run(cfg, project_root) -> dict`. Con
-`generacion.usar_mocks: true` corre de punta a punta SIN depender de las
-piezas de Pau (retrieval) ni de Luis (normalizacion).
+Integra las piezas REALES del equipo cuando `generacion.usar_mocks: false`:
+  - retrieval avanzado de Paula ....... M3/retrieval/retrieval.py
+  - tool de normalizacion de Luis ..... M3/tools/tool_normalizacion.py
+y escribe `M3/outputs/resultado_generacion.json`, el archivo que consume RAGAS
+(M3/ragas/evaluacion_ragas.py) para faithfulness y answer relevancy.
+
+Los parametros de la orquestacion (umbral, umbral_evidencia, forzar_por_sigla, k)
+NO se duplican aqui: se leen del YAML de Paula (`M3/retrieval/config_retrieval.yaml`),
+como pidio Isabella. La pregunta de generacion es la MISMA que usa el reranker
+(`retrieval.pregunta_intencion`), para que el LLM responda sobre lo que se busco.
 
 Uso:
-    python run_generacion.py --config config.yaml
-
-Requiere .env con (opcional si usar_mocks=true y no se genera con LLM... pero
-la generacion SI llama al LLM, asi que en la practica se necesita):
-    PROJECT_ROOT=/ruta/a/proyecto
-    GROQ_API_KEY=gsk_...
+    python run_generacion.py --config config.yaml            # piezas reales
+    python run_generacion.py --config config.yaml --mocks    # sin dependencias externas
 """
 
 from __future__ import annotations
@@ -23,12 +26,12 @@ import random
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Callable
 
 import yaml
 from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).parent))
-from contratos import NormalizeFn, RetrieveFn  # noqa: E402
 from generacion import GroqGenerator, contextos_para_ragas, generar_respuesta  # noqa: E402
 from orquestacion import resolver_query  # noqa: E402
 
@@ -38,7 +41,7 @@ def _log(msg: str) -> None:
     sys.stdout.flush()
 
 
-def cargar_config(config_path: str) -> dict:
+def cargar_config(config_path: str | Path) -> dict:
     with open(config_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
@@ -48,50 +51,102 @@ def resolver_project_root() -> Path:
     root = os.environ.get("PROJECT_ROOT")
     if root and Path(root).exists():
         return Path(root)
-    # Respaldo: subir desde M3/generacion/ hasta la raiz del repo.
-    return Path(__file__).resolve().parents[2]
+    return Path(__file__).resolve().parents[2]   # M3/generacion -> M3 -> repo
 
 
-def _construir_piezas(cfg: dict) -> tuple[RetrieveFn, NormalizeFn]:
+def _cargar_entidades(ruta: Path) -> list[dict]:
     """
-    Devuelve (retrieve_fn, normalizar_fn). Con usar_mocks=true usa los mocks;
-    de lo contrario intenta importar las piezas reales del equipo y falla con
-    un mensaje claro si todavia no existen.
-    """
-    if cfg["generacion"].get("usar_mocks", True):
-        from mocks import crear_normalizador_mock, crear_retriever_mock
-        _log("Usando MOCKS de retrieval (Pau) y normalizacion (Luis).")
-        return crear_retriever_mock(), crear_normalizador_mock()
+    Acepta .json (lista de strings o de dicts) o .jsonl (una consulta por linea).
 
-    # Cuando Pau y Luis publiquen sus modulos, se importan aqui.
+    Devuelve [{entidad, ground_truth}]. Se admiten los nombres del equipo
+    ('consulta') y los de RAGAS ('question'/'ground_truth').
+    """
+    if ruta.suffix == ".jsonl":
+        registros = [json.loads(l) for l in ruta.read_text(encoding="utf-8").splitlines() if l.strip()]
+    else:
+        registros = json.loads(ruta.read_text(encoding="utf-8"))
+
+    entidades = []
+    for r in registros:
+        if isinstance(r, str):
+            entidades.append({"entidad": r, "ground_truth": None})
+            continue
+        entidad = r.get("consulta") or r.get("entidad") or r.get("question") or ""
+        ground_truth = r.get("ground_truth") or r.get("respuesta_esperada") or r.get("esperado")
+        if entidad:
+            entidades.append({"entidad": entidad, "ground_truth": ground_truth})
+    return entidades
+
+
+def _piezas_mock(cfg: dict) -> tuple[Callable, Callable, dict, Callable]:
+    """Mocks propios: corre sin las piezas del equipo ni dependencias externas."""
+    from mocks import crear_normalizador_mock, crear_retriever_mock
+    o = cfg["orquestacion_mock"]
+    _log("Piezas MOCK (retrieval y normalizacion propias).")
+    return (crear_retriever_mock(), crear_normalizador_mock(),
+            {"umbral": o["umbral"], "umbral_evidencia": o["umbral_evidencia"],
+             "forzar_por_sigla": False, "k": o["k"]},
+            lambda e: f"¿Qué dice la guía clínica sobre «{e}»?")
+
+
+def _piezas_reales(cfg: dict, project_root: Path) -> tuple[Callable, Callable, dict, Callable]:
+    """
+    Piezas del equipo: retrieval (Pau) y normalizacion (Luis).
+    Falla con un mensaje claro si las ramas aun no estan merged o faltan dependencias.
+    """
+    mod = cfg["modulos"]
+    retr_dir = project_root / mod["retrieval_dir"]
+    tool_dir = project_root / mod["tool_dir"]
+    retr_cfg_path = project_root / mod["retrieval_config"]
+    tool_cfg_path = project_root / mod["tool_config"]
+
+    for carpeta in (retr_dir, tool_dir):
+        sys.path.insert(0, str(carpeta))
+    os.environ["M3_RETRIEVAL_CONFIG"] = str(retr_cfg_path)
+
     try:
-        from retrieval import retrieve_advanced          # type: ignore  # pieza de Pau
-        from normalizacion import normalizar_entidad      # type: ignore  # pieza de Luis
-    except ImportError as e:
+        import retrieval
+        from config_retrieval import (cargar_config as cargar_retr, configurar_pipeline,
+                                      parametros_orquestacion)
+        from tool_normalizacion import normalizar_entidad
+    except Exception as e:
         raise RuntimeError(
-            "usar_mocks=false pero no se pudieron importar las piezas reales "
-            f"(retrieval / normalizacion): {e}"
-        )
-    return retrieve_advanced, normalizar_entidad
+            "No se pudieron importar las piezas reales (M3/retrieval y M3/tools). "
+            "Verifica que las ramas de Paula y Luis esten integradas y que las "
+            f"dependencias del retrieval (chromadb, rank_bm25, corpus_utils) esten instaladas: {e}"
+        ) from e
+
+    tool_cfg = yaml.safe_load(tool_cfg_path.read_text(encoding="utf-8"))
+    ontologia = tool_cfg["tool_normalizacion"]["ontologia"]
+
+    retrieval_cfg = cargar_retr(str(retr_cfg_path))
+    configurar_pipeline(retrieval_cfg)           # construye el indice (Chroma) y fija el modo
+    params = parametros_orquestacion(retrieval_cfg)
+    _log(f"Piezas REALES: retrieval ({mod['retrieval_config']}) + tool ({ontologia}).")
+
+    return (
+        retrieval.retrieve_advanced,
+        lambda entidad: normalizar_entidad(entidad, ontologia=ontologia),
+        params,
+        retrieval.pregunta_intencion,
+    )
 
 
 def run(cfg: dict, project_root: Path) -> dict:
-    fijar_seeds = cfg["proyecto"].get("seed_global", 42)
-    random.seed(fijar_seeds)
-
+    random.seed(cfg["proyecto"].get("seed_global", 42))
     gen_cfg = cfg["generacion"]
-    orq_cfg = cfg["orquestacion"]
     rutas = cfg["rutas"]
 
     outputs_dir = project_root / rutas["outputs_dir"]
     outputs_dir.mkdir(parents=True, exist_ok=True)
 
-    entidades_path = project_root / rutas["entidades"]
-    with open(entidades_path, "r", encoding="utf-8") as f:
-        entidades = json.load(f)
-    _log(f"Entidades de prueba: {len(entidades)} (desde {entidades_path})")
+    entidades = _cargar_entidades(project_root / rutas["entidades"])
+    _log(f"Entidades: {len(entidades)} (desde {rutas['entidades']})")
 
-    retrieve_fn, normalizar_fn = _construir_piezas(cfg)
+    if cfg.get("_forzar_mocks") or gen_cfg.get("usar_mocks", False):
+        retrieve_fn, normalizar_fn, params, pregunta_fn = _piezas_mock(cfg)
+    else:
+        retrieve_fn, normalizar_fn, params, pregunta_fn = _piezas_reales(cfg, project_root)
 
     generar_fn = GroqGenerator(
         model=gen_cfg["modelo"], temperature=gen_cfg["temperature"],
@@ -99,19 +154,25 @@ def run(cfg: dict, project_root: Path) -> dict:
         pausa_entre_llamadas=gen_cfg.get("pausa_entre_llamadas", 3.0),
     )
 
-    umbral = orq_cfg["umbral_score"]
-    k = orq_cfg["k_fragments"]
+    _log(f"Generando sobre {len(entidades)} entidades (umbral={params['umbral']}, "
+         f"umbral_evidencia={params.get('umbral_evidencia')}, k={params['k']}, "
+         f"modelo={gen_cfg['modelo']})...")
 
     resultados = []
-    _log(f"Corriendo generacion sobre {len(entidades)} entidades "
-         f"(umbral={umbral}, k={k}, modelo={gen_cfg['modelo']})...")
-    for i, entidad in enumerate(entidades, 1):
-        q = resolver_query(entidad, retrieve_fn=retrieve_fn, normalizar_fn=normalizar_fn,
-                           umbral=umbral, k=k)
-        resp = generar_respuesta(q["query_final"], q["fragments"], generar_fn=generar_fn)
+    for i, item in enumerate(entidades, 1):
+        entidad = item["entidad"]
+        q = resolver_query(
+            entidad, retrieve_fn=retrieve_fn, normalizar_fn=normalizar_fn,
+            umbral=params["umbral"], k=params["k"],
+            umbral_evidencia=params.get("umbral_evidencia"),
+            forzar_por_sigla=params.get("forzar_por_sigla", False),
+        )
+        resp = generar_respuesta(q["query_final"], q["fragments"], generar_fn=generar_fn,
+                                 pregunta=pregunta_fn(entidad))
         _log(f"  [{i}/{len(entidades)}] {entidad!r} -> query={q['query_final']!r} | "
-             f"tool={q['tool_invoked']} | fallback={resp['fallback_used']} | "
-             f"fuentes={len(resp['sources_used'])}")
+             f"tool={q['tool_invoked']} | fragmentos={len(q['fragments'])} | "
+             f"fallback={resp['fallback_used']} | fuentes={len(resp['sources_used'])}")
+
         resultados.append({
             "entidad": entidad,
             "query_final": q["query_final"],
@@ -119,11 +180,13 @@ def run(cfg: dict, project_root: Path) -> dict:
             "tool_reason": q["tool_reason"],
             "fragments": [f["chunk_id"] for f in q["fragments"]],
             "scores": [f.get("score") for f in q["fragments"]],
-            # `contexts` es lo que RAGAS consume (retrieval-side, dueno: Luis).
+            "score_tipo": (q["fragments"][0].get("score_tipo") if q["fragments"] else None),
+            # `contexts` y `answer` son lo que consume RAGAS (Luis).
             "contexts": contextos_para_ragas(q["fragments"]),
             "answer": resp["answer"],
             "sources_used": resp["sources_used"],
             "fallback_used": resp["fallback_used"],
+            "ground_truth": item.get("ground_truth"),
         })
 
     n = len(resultados) or 1
@@ -133,8 +196,8 @@ def run(cfg: dict, project_root: Path) -> dict:
         "fecha": datetime.now().isoformat(timespec="seconds"),
         "proveedor": gen_cfg["proveedor"],
         "modelo_generador": gen_cfg["modelo"],
-        "usar_mocks": gen_cfg.get("usar_mocks", True),
-        "orquestacion": {"umbral_score": umbral, "k_fragments": k},
+        "usar_mocks": bool(cfg.get("_forzar_mocks") or gen_cfg.get("usar_mocks", False)),
+        "orquestacion": {k: params.get(k) for k in ("umbral", "umbral_evidencia", "forzar_por_sigla", "k")},
         "n_entidades": len(resultados),
         "metricas_generacion": {
             "tool_invocada_pct": sum(r["tool_invoked"] for r in resultados) / n,
@@ -144,7 +207,8 @@ def run(cfg: dict, project_root: Path) -> dict:
         "resultados": resultados,
     }
 
-    salida = outputs_dir / "resultado_generacion.json"
+    archivo = rutas.get("archivo_salida", "resultado_generacion.json")
+    salida = outputs_dir / archivo
     with open(salida, "w", encoding="utf-8") as f:
         json.dump(resumen, f, indent=2, ensure_ascii=False)
     _log(f"Guardado en: {salida}")
@@ -154,9 +218,12 @@ def run(cfg: dict, project_root: Path) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generacion RAG (M3) -- Agustin")
     parser.add_argument("--config", default=str(Path(__file__).parent / "config.yaml"))
+    parser.add_argument("--mocks", action="store_true",
+                        help="Fuerza los mocks propios (sin piezas del equipo ni dependencias).")
     args = parser.parse_args()
 
     cfg = cargar_config(args.config)
+    cfg["_forzar_mocks"] = args.mocks
     project_root = resolver_project_root()
     _log(f"PROJECT_ROOT: {project_root}")
     run(cfg, project_root)
