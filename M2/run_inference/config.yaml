@@ -13,4 +13,4 @@ eval_set_path: "M2/eval_harness/gold_examples_20.jsonl"
 normalizacion:
   activa: false
   
-output_path: "predictions/encoder_solo.json"
+output_path: "M2/predictions/encoder_solo.json"
