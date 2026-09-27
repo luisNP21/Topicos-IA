@@ -171,7 +171,7 @@ def _calcular_mock(eval_set: list[dict], embedding_model: str) -> dict:
 # Calculo de metricas en modo Real (Libreria Ragas + Groq LLM)
 
 
-def _calcular_real(eval_set: list[dict], llm_model: str) -> dict:
+def _calcular_real(eval_set: list[dict], llm_model: str, embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2") -> dict:
     try:
         from ragas import evaluate
         from ragas.metrics import (
@@ -182,7 +182,9 @@ def _calcular_real(eval_set: list[dict], llm_model: str) -> dict:
         )
         from datasets import Dataset
         from langchain_groq import ChatGroq
+        from langchain_core.embeddings import Embeddings
         from ragas.llms import LangchainLLMWrapper
+        from ragas.embeddings import LangchainEmbeddingsWrapper
 
         groq_key = os.environ.get("GROQ_API_KEY")
         if not groq_key:
@@ -196,16 +198,38 @@ def _calcular_real(eval_set: list[dict], llm_model: str) -> dict:
 
         llm = LangchainLLMWrapper(ChatGroq(model=llm_model, api_key=groq_key, temperature=0))
 
+        class LocalSentenceTransformerEmbeddings(Embeddings):
+            def __init__(self, model_name: str):
+                from sentence_transformers import SentenceTransformer
+                self.model = SentenceTransformer(model_name)
+
+            def embed_documents(self, texts: list[str]) -> list[list[float]]:
+                return self.model.encode(texts, show_progress_bar=False).tolist()
+
+            def embed_query(self, text: str) -> list[float]:
+                return self.model.encode([text], show_progress_bar=False)[0].tolist()
+
+        embeddings_wrapped = LangchainEmbeddingsWrapper(LocalSentenceTransformerEmbeddings(embedding_model))
+
         ds = Dataset.from_dict({
             "question":     [e["question"] for e in eval_set],
             "answer":       [e["answer"] for e in eval_set],
             "contexts":     [e["contexts"] for e in eval_set],
             "ground_truth": [e["ground_truth"] for e in eval_set],
         })
+
+        metricas_lista = [faithfulness, answer_relevancy, context_precision, context_recall]
+        for m in metricas_lista:
+            if hasattr(m, "llm"):
+                m.llm = llm
+            if hasattr(m, "embeddings"):
+                m.embeddings = embeddings_wrapped
+
         resultado = evaluate(
             ds,
-            metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
+            metrics=metricas_lista,
             llm=llm,
+            embeddings=embeddings_wrapped,
         )
         return {
             "faithfulness":       float(resultado["faithfulness"]),
@@ -215,7 +239,7 @@ def _calcular_real(eval_set: list[dict], llm_model: str) -> dict:
         }
     except Exception as e:
         print(f"[ragas] Error en evaluacion real ({e}). Empleando calculo local de respaldo.")
-        return _calcular_mock(eval_set, "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+        return _calcular_mock(eval_set, embedding_model)
 
 
 def run(cfg: dict, project_root: str = "") -> dict:
@@ -251,7 +275,7 @@ def run(cfg: dict, project_root: str = "") -> dict:
     print(f"[ragas] Modo: '{modo}' | Fuente de datos: {origen} | Casos: {len(eval_set)}")
 
     if modo == "real":
-        metricas = _calcular_real(eval_set, llm_model)
+        metricas = _calcular_real(eval_set, llm_model, embedding_model)
     else:
         metricas = _calcular_mock(eval_set, embedding_model)
 
