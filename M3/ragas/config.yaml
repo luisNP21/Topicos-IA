@@ -1,0 +1,24 @@
+proyecto:
+  nombre: "M3 -- Evaluacion RAGAS + cruce con harness M2"
+  seed_global: 42
+
+ragas:
+  # "mock": calculo con embeddings / overlap, sin requerir GROQ_API_KEY
+  # "real": usa libreria ragas con LLM de Groq como juez
+  modo: "mock"
+  llm_provider: "groq"
+  # Mismo modelo juez que M2 Dimension 3 (consistencia con el proyecto)
+  llm_model: "openai/gpt-oss-120b"
+  embedding_model: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+  # Archivo de salida producido por M3/generacion/run_generacion.py
+  archivo_generacion: "M3/outputs/resultado_generacion.json"
+
+cruce_harness:
+  # Ruta relativa al archivo de resultados de M2 (Dimension 1 exact-match)
+  resultado_dimension1_path: "M2/ejecucion/outputs_gold/resultado_dimension1.json"
+  # Umbrales para diagnosticar en que etapa falla el sistema
+  # (mismos criterios que scorecard.py de M2)
+  umbral_f1_bajo: 0.4
+  umbral_f1_alto: 0.7
+  umbral_recall_bajo: 0.4
+  umbral_faithfulness_bajo: 0.4
