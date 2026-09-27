@@ -96,9 +96,15 @@ def cruzar(
     """
     path = Path(resultado_dim1_path)
     if not path.exists():
-        repo_fallback = Path(__file__).resolve().parents[2] / "M2/ejecucion/outputs_gold/resultado_dimension1.json"
-        if repo_fallback.exists():
-            path = repo_fallback
+        repo_root = Path(__file__).resolve().parents[2]
+        candidatos = [
+            repo_root / "M2/outputs/resultado_dimension1.json",
+            repo_root / "M2/ejecucion/outputs_gold/resultado_dimension1.json",
+        ]
+        for cand in candidatos:
+            if cand.exists():
+                path = cand
+                break
     if not path.exists():
         print(f"[cruce_harness] AVISO: {path} no existe. Usando datos simulados.")
         return _cruce_simulado(metricas_ragas, umbrales)
@@ -193,6 +199,13 @@ def run(cfg: dict, project_root: str, metricas_ragas: dict) -> dict:
         "recall_bajo":       cruce_cfg.get("umbral_recall_bajo", 0.4),
         "faithfulness_bajo": cruce_cfg.get("umbral_faithfulness_bajo", 0.4),
     }
-    ruta_absoluta = str(Path(project_root) / rel_path) if project_root else rel_path
+    ruta_absoluta = rel_path
+    if project_root:
+        nueva_salida = Path(project_root) / "M2/outputs/resultado_dimension1.json"
+        salida_config = Path(project_root) / rel_path
+        if nueva_salida.exists():
+            ruta_absoluta = str(nueva_salida)
+        else:
+            ruta_absoluta = str(salida_config)
     return cruzar(ruta_absoluta, metricas_ragas, umbrales)
 
