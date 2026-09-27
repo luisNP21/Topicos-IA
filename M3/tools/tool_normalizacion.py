@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def _get_api_key() -> str | None:
+def get_api_key() -> str | None:
     key = os.environ.get("BIOPORTAL_API_KEY")
     if key:
         return key
@@ -25,23 +25,16 @@ def _get_api_key() -> str | None:
         return None
 
 
-BIOPORTAL_API_KEY = _get_api_key()
 BIOPORTAL_SEARCH_URL = "https://data.bioontology.org/search"
-MOCK_MODE = BIOPORTAL_API_KEY is None
-
-if MOCK_MODE:
-    print(
-        "[tool_normalizacion] BIOPORTAL_API_KEY no encontrada "
-        "(.env ni Colab Secrets) -- corriendo en MOCK_MODE."
-    )
 
 
-def normalizar_entidad(entidad: str, ontologia: str = "SNOMEDCT") -> dict:
+def normalizar_entidad(entidad: str, ontologia: str = "SNOMEDCT", api_key: str | None = None) -> dict:
     """
     Normaliza una entidad clinica contra SNOMED CT via BioPortal.
 
     entidad   : texto crudo del encoder, ej. "diabetes tipo 2"
     ontologia : ontologia BioPortal a consultar (por defecto SNOMEDCT)
+    api_key   : clave opcional, si no se pasa busca en entorno o Colab Secrets
 
     Devuelve:
     {
@@ -51,15 +44,16 @@ def normalizar_entidad(entidad: str, ontologia: str = "SNOMEDCT") -> dict:
         "normalization_failed": bool
     }
     """
-    if MOCK_MODE:
+    key = api_key or get_api_key()
+    if not key:
         return _normalizar_mock(entidad)
-    return _normalizar_real(entidad, ontologia)
+    return _normalizar_real(entidad, ontologia, api_key=key)
 
 
-def _normalizar_real(entidad: str, ontologia: str) -> dict:
+def _normalizar_real(entidad: str, ontologia: str, api_key: str) -> dict:
     params = {
         "q": entidad,
-        "apikey": BIOPORTAL_API_KEY,
+        "apikey": api_key,
         "ontologies": ontologia,
         "pagesize": 1,
     }
@@ -122,11 +116,21 @@ def run(cfg: dict, project_root) -> dict:
     entidades_prueba = tool_cfg.get("entidades_prueba", [])
     ontologia = tool_cfg["ontologia"]
 
-    resultados = [normalizar_entidad(e, ontologia) for e in entidades_prueba]
+    api_key = get_api_key()
+    modo = "real" if api_key else "mock"
+    if modo == "mock":
+        print(
+            "[tool_normalizacion] BIOPORTAL_API_KEY no encontrada "
+            "(.env ni Colab Secrets) -- corriendo en MOCK_MODE."
+        )
+    else:
+        print(f"[tool_normalizacion] BIOPORTAL_API_KEY detectada -- consultando BioPortal ({ontologia}).")
+
+    resultados = [normalizar_entidad(e, ontologia, api_key=api_key) for e in entidades_prueba]
     n_fallidas = sum(1 for r in resultados if r["normalization_failed"])
 
     return {
-        "modo": "mock" if MOCK_MODE else "real",
+        "modo": modo,
         "ontologia": ontologia,
         "n_evaluadas": len(resultados),
         "n_normalizacion_fallida": n_fallidas,
