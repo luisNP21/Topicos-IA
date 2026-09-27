@@ -6,7 +6,13 @@ responsabilidad de evaluacion centralizada en ese modulo.
 
 import argparse
 import os
+import sys
 from pathlib import Path
+
+M2_ROOT = str(Path(__file__).resolve().parents[1])
+if M2_ROOT in sys.path:
+    sys.path.remove(M2_ROOT)
+sys.path.insert(1, M2_ROOT)
 
 import yaml
 from dotenv import load_dotenv

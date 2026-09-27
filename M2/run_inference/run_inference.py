@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -10,11 +11,26 @@ if str(HARNESS_DIR) not in sys.path:
     sys.path.insert(0, str(HARNESS_DIR))
 
 import yaml
+from dotenv import load_dotenv
 
 from common import aggregate_entities_by_original_doc, chunk_words, log
 from gold_loader import cargar_gold_set
 from model_loader import cargar_modelo, sanity_check
 from inference import run_inference
+
+
+def resolver_project_root() -> Path:
+    load_dotenv()
+    root = os.environ.get("PROJECT_ROOT")
+    if not root:
+        raise RuntimeError(
+            "PROJECT_ROOT no esta definido. Crear un .env con:\n"
+            "  PROJECT_ROOT=/ruta/al/proyecto/en/Drive"
+        )
+    root_path = Path(root).expanduser()
+    if not root_path.exists():
+        raise RuntimeError(f"PROJECT_ROOT no existe: {root_path}")
+    return root_path
 
 
 def run(cfg: dict, project_root: Path) -> dict:
@@ -77,5 +93,5 @@ def run(cfg: dict, project_root: Path) -> dict:
 if __name__ == "__main__":
     with open(Path(__file__).with_name("config.yaml"), encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
-    project_root = Path(__file__).resolve().parents[1]
+    project_root = resolver_project_root()
     run(cfg, project_root)
