@@ -1,0 +1,10 @@
+# fuentes.yaml (registro manual de procedencia — este es SU insumo de responsabilidad)
+
+fuentes:
+  - doc_id: "gpc_diabetes_mellitus_tipo_2_2025"
+    titulo: "GPC para el tratamiento y seguimiento de la diabetes mellitus tipo 2 en la población colombiana mayor de 18 años"
+    fuente_url: "https://revistaendocrino.org/index.php/rcedm/article/view/907/1348"
+    licencia: "E-ISSN: 2805-5853 | L-ISSN: 2389-9786"
+    fecha_publicacion: "2025-01-01"
+    responsable: "Isabella Camacho"
+    archivo_local: "data/guias_clinicas/GPC_diabetes_mellitus_tipo_2.pdf"
