@@ -7,8 +7,8 @@ ragas:
   # "real": usa libreria ragas con LLM de Groq como juez
   modo: "mock"
   llm_provider: "groq"
-  # Mismo modelo juez que M2 Dimension 3 (consistencia de diseno)
-  llm_model: "openai/gpt-oss-120b"
+  # Mismo modelo juez que M2 Dimension 3 y M3 generacion (qwen/qwen3.8-27b via Groq)
+  llm_model: "qwen/qwen3.8-27b"
   embedding_model: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 cruce_harness:

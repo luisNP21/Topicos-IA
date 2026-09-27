@@ -29,8 +29,8 @@ python run_ragas.py --config config.yaml --modo mock
 ```
 
 ### Modo real (con GROQ_API_KEY y datos reales)
-Usa la librería `ragas` con el mismo LLM juez (`openai/gpt-oss-120b` via Groq)
-que se usó en M2 Dimensión 3:
+Usa la librería `ragas` con el mismo LLM juez (`qwen/qwen3.8-27b` via Groq)
+que se usó en M2 Dimensión 3 y M3 generación:
 
 ```bash
 python run_ragas.py --config config.yaml --modo real

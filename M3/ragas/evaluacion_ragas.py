@@ -264,7 +264,7 @@ def run(cfg: dict, project_root: str = "") -> dict:
     ragas_cfg = cfg.get("ragas", {})
     modo = ragas_cfg.get("modo", "mock")
     embedding_model = ragas_cfg.get("embedding_model", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
-    llm_model = ragas_cfg.get("llm_model", "openai/gpt-oss-120b")
+    llm_model = ragas_cfg.get("llm_model", "qwen/qwen3.8-27b")
     archivo_gen = ragas_cfg.get("archivo_generacion", "M3/outputs/resultado_generacion.json")
 
     # 1. Determinar el eval_set:
