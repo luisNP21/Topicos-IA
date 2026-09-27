@@ -7,6 +7,11 @@ chunking:
   max_tokens: 350
   overlap_tokens: 50
 
+paths:
+  chunks_dir: "data/guias_clinicas/chunks"
+  chroma_dir: "data/chroma_guias"
+  manifest_path: "data/guias_clinicas/corpus_manifest.json"
+
 front_matter:
   min_palabras: 25
   titulos_excluidos:

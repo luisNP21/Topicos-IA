@@ -71,20 +71,9 @@ def run(cfg: dict, project_root: str) -> dict:
         {
             "fuentes_yaml": str,    # ruta a fuentes.yaml, relativa o absoluta
             "config_yaml": str,     # ruta a config.yaml, relativa o absoluta
-            "chunks_dir": str,      # ej. "data/guias_clinicas/chunks"
-            "chroma_dir": str,      # ej. "data/chroma_guias"
-            "manifest_path": str,   # ej. "data/guias_clinicas/corpus_manifest.json"
         }
-
-    Devuelve:
-        {
-            "n_fuentes_ok": int,
-            "n_fuentes_fallidas": int,
-            "n_documentos": int,
-            "n_chunks": int,
-            "n_secciones_filtradas": int,
-            "errores": [{"doc_id": str, "error": str}],
-        }
+    Rutas de salida (chunks_dir, chroma_dir, manifest_path) se leen de config.yaml -> paths,
+    no de cfg -- toda la configuracion del pipeline vive en un solo archivo.
     """
     fuentes_yaml_path = cfg["fuentes_yaml"]
     fuentes_yaml_path = fuentes_yaml_path if Path(fuentes_yaml_path).is_absolute() else str(Path(project_root) / fuentes_yaml_path)
@@ -101,6 +90,11 @@ def run(cfg: dict, project_root: str) -> dict:
     tokenizer = cargar_tokenizer(config["embeddings"]["model_name"])
     max_tokens = config["chunking"]["max_tokens"]
     overlap_tokens = config["chunking"]["overlap_tokens"]
+
+    # NUEVO: paths de salida, ahora desde config.yaml en vez de cfg
+    chunks_dir = str(Path(project_root) / config["paths"]["chunks_dir"])
+    chroma_dir = str(Path(project_root) / config["paths"]["chroma_dir"])
+    manifest_path = str(Path(project_root) / config["paths"]["manifest_path"])
 
     converter = DocumentConverter()
 
@@ -125,18 +119,12 @@ def run(cfg: dict, project_root: str) -> dict:
             errores.append({"doc_id": fuente.get("doc_id", "desconocido"), "error": str(e)})
             print(f"ERROR {fuente.get('doc_id', 'desconocido')}: {e}")
             print(traceback.format_exc())
-            continue  # una fuente fallida no debe detener el resto del lote
+            continue
 
     if not todos_los_chunks:
-        raise RuntimeError(
-            f"Ninguna fuente se proceso exitosamente. Errores: {errores}"
-        )
+        raise RuntimeError(f"Ninguna fuente se proceso exitosamente. Errores: {errores}")
 
-    # Persistencia -- solo con lo que si se proceso bien
-    chunks_dir = str(Path(project_root) / cfg["chunks_dir"])
-    chroma_dir = str(Path(project_root) / cfg["chroma_dir"])
-    manifest_path = str(Path(project_root) / cfg["manifest_path"])
-
+    # ya no se reconstruyen chunks_dir/chroma_dir/manifest_path aqui -- vienen de arriba
     guardar_chunks_json(todos_los_chunks, out_dir=chunks_dir)
     coleccion = construir_indice_chroma(todos_los_chunks, todos_los_embeddings, persist_dir=chroma_dir)
 

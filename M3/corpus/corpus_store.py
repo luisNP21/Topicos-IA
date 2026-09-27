@@ -6,7 +6,7 @@ from datetime import date
 
 def cargar_coleccion(persist_dir: str, collection_name: str = "guias_clinicas"):
     """
-    Para uso de Pau: abre la colección ya construida, sin reconstruirla.
+    Para uso de retrieval: abre la colección ya construida, sin reconstruirla.
     Lanza si la colección no existe todavía — mejor fallar explícito que crear una vacía por accidente.
     """
     client = chromadb.PersistentClient(path=persist_dir)

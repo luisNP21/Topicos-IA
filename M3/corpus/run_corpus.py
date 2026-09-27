@@ -27,9 +27,6 @@ def main():
     cfg = {
         "fuentes_yaml": str(SCRIPT_DIR / args.fuentes),
         "config_yaml": str(SCRIPT_DIR / args.config),
-        "chunks_dir": "data/guias_clinicas/chunks",
-        "chroma_dir": "data/chroma_guias",
-        "manifest_path": "data/guias_clinicas/corpus_manifest.json",
     }
 
     stats = run(cfg=cfg, project_root=project_root)
