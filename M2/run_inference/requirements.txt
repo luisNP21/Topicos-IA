@@ -1,11 +1,7 @@
+# Dependencias de inferencia del modelo NER
 accelerate==1.14.0
 numpy==2.1.3
-pandas==2.2.3
 peft==0.20.0
-python-dotenv==1.2.3
 PyYAML==6.0.3
-scipy==1.16.3
-sentence-transformers==5.7.0
 torch
 transformers==5.16.1
-groq
