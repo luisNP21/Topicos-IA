@@ -22,7 +22,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Tool de normalizacion terminologica -- M3, Luis"
+        description="Tool de normalizacion terminologica -- M3"
     )
     parser.add_argument(
         "--config",
