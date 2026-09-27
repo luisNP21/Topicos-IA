@@ -1,9 +1,14 @@
 """
 Seccion 5 del harness: Dimension 1 -- exact-match con chunking.
-Reutiliza environment.py, gold_loader.py, model_loader.py, common.py, inference.py.
 """
 
 import json
+import sys
+from pathlib import Path
+
+INFERENCE_DIR = Path(__file__).resolve().parents[1] / "run_inference"
+if str(INFERENCE_DIR) not in sys.path:
+    sys.path.insert(0, str(INFERENCE_DIR))
 
 from common import (
     normalizar_entidad,
@@ -11,7 +16,6 @@ from common import (
     aggregate_entities_by_original_doc,
     micro_prf1_by_doc,
 )
-from environment import preparar_entorno
 from gold_loader import resolver_rutas, cargar_gold_set
 from model_loader import cargar_modelo, sanity_check
 from inference import predict_entities_chunked
@@ -73,14 +77,10 @@ def analizar_errores(true_by_doc: dict, pred_by_doc: dict) -> tuple[dict, list]:
 
 
 def run(cfg: dict, project_root) -> dict:
-    entorno = preparar_entorno(cfg)
     rutas = resolver_rutas(cfg, project_root)
     gold_examples = cargar_gold_set(rutas["gold_set_path"])
 
-    model, tokenizer, id2label = cargar_modelo(
-        cfg["modelo"]["base_checkpoint"], rutas["model_dir"],
-        cfg["modelo"]["label_list"], entorno["device"],
-    )
+    model, tokenizer, id2label = cargar_modelo(cfg["modelo"], project_root)
     sanity_check(model, tokenizer, id2label)
 
     window_words = cfg["chunking"]["window_words"]
