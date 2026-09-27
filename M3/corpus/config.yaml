@@ -1,0 +1,53 @@
+# config.yaml — configuración del pipeline de corpus, separada de las fuentes de datos
+
+embeddings:
+  model_name: "intfloat/multilingual-e5-base"
+
+chunking:
+  max_tokens: 350
+  overlap_tokens: 50
+
+front_matter:
+  min_palabras: 25
+  titulos_excluidos:
+    - portada
+    - resumen
+    - abstract
+    - índice
+    - indice
+    - tabla de contenido
+    - contenido
+    - agradecimientos
+    - prólogo
+    - prologo
+    - dedicatoria
+    - lista de figuras
+    - lista de tablas
+    - abreviaturas
+    - glosario
+    - autores
+    - créditos
+    - creditos
+
+categorias_seccion:
+  tratamiento:
+    - tratamiento
+    - manejo
+    - terapéutic
+    - terapeutic
+    - farmacológic
+    - farmacologic
+    - intervención
+    - intervencion
+  diagnostico:
+    - diagnóstico
+    - diagnostico
+    - criterios diagnósticos
+    - evaluación clínica
+    - evaluacion clinica
+  epidemiologia:
+    - epidemiología
+    - epidemiologia
+    - prevalencia
+    - incidencia
+    - factores de riesgo
