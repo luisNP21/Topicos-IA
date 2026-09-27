@@ -27,6 +27,7 @@ tres apartamientos que se identificaron en la entrega anterior:
 Referencias: SI4006 - S06 - Lab A (juez), Lab B (sesgos) y Dimension 3 (dominio).
 """
 
+import hashlib
 import json
 import os
 import re
@@ -398,33 +399,26 @@ class JudgeClient:
 # Carga de ejemplos (predicciones de la Dimension 1 + criterio del gold set)
 # --------------------------------------------------------------------------
 
-def cargar_rich_examples(dim1_path, gold_set_path) -> list[dict]:
+def cargar_rich_examples(dim1: dict, gold_examples: list[dict]) -> list[dict]:
     """
-    Reutiliza las predicciones de la Dimension 1 y le anexa a cada documento su
-    `criterio` (y el `input`) del gold set. El doc_id de la Dimension 1 es
-    'ex_{i}', con i = indice del ejemplo en el gold set -- por eso se puede
-    recuperar el criterio correspondiente.
+    Une las predicciones exactas con el criterio y texto del eval_set por doc_id.
     """
-    with open(dim1_path, "r", encoding="utf-8") as f:
-        dim1 = json.load(f)
-
-    gold_examples = cargar_gold_set(gold_set_path)
     true_by_doc = dim1["true_by_doc"]
     pred_by_doc = dim1["pred_by_doc"]
 
+    gold_by_doc = {example["doc_id"]: example for example in gold_examples}
     rich_examples = []
-    for doc_id in sorted(true_by_doc, key=lambda d: int(d.split("_")[1])):
-        idx = int(doc_id.split("_")[1])
+    for doc_id in sorted(true_by_doc):
         gold = sorted(true_by_doc[doc_id])
         pred = sorted(pred_by_doc.get(doc_id, []))
-        ex = gold_examples[idx] if idx < len(gold_examples) else {}
+        ex = gold_by_doc.get(doc_id, {})
         rich_examples.append({
             "doc_id": doc_id,
             "n_gold": len(gold),
             "gold": gold,
             "pred": pred,
             "criterio": ex.get("criterio", ""),
-            "input": ex.get("input", ""),
+            "input": ex.get("text", ""),
         })
 
     print(f"Ejemplos cargados desde Dimension 1: {len(rich_examples)} "
@@ -610,10 +604,21 @@ def classify_pattern(row: dict) -> str:
     return "E — caso mixto"
 
 
-def run(cfg: dict, project_root) -> dict:
+def run(
+    cfg: dict,
+    project_root,
+    eval_set: list[dict] | None = None,
+    dim1_result: dict | None = None,
+) -> dict:
     load_dotenv()
     rutas = resolver_rutas(cfg, project_root)
     judge_cfg = cfg["dimension3_llm_judge"]
+
+    if dim1_result is None:
+        with open(rutas["dim1_path"], "r", encoding="utf-8") as f:
+            dim1_result = json.load(f)
+    if eval_set is None:
+        eval_set = cargar_gold_set(rutas["gold_set_path"])
 
     api_key = os.environ.get("GROQ_API_KEY", "")
     if not api_key:
@@ -634,9 +639,15 @@ def run(cfg: dict, project_root) -> dict:
         api_keys=api_keys,
     )
 
-    rich_examples = cargar_rich_examples(rutas["dim1_path"], rutas["gold_set_path"])
+    rich_examples = cargar_rich_examples(dim1_result, eval_set)
 
-    checkpoint_path = rutas["output_dir"] / "checkpoint_sesgo_posicion.json"
+    checkpoint_data = json.dumps(
+        {"judge": judge_cfg, "examples": rich_examples},
+        ensure_ascii=False,
+        sort_keys=True,
+    ).encode("utf-8")
+    checkpoint_id = hashlib.sha256(checkpoint_data).hexdigest()[:12]
+    checkpoint_path = rutas["output_dir"] / f"checkpoint_sesgo_posicion_{checkpoint_id}.json"
     resultados = evaluar_rich_examples(rich_examples, judge, checkpoint_path=checkpoint_path)
     sesgo_posicion = resumir_sesgo_posicion(resultados)
 
@@ -673,7 +684,7 @@ def run(cfg: dict, project_root) -> dict:
     resultado_dimension3 = {
         "dimension": "llm_as_judge",
         "rol": "agustin",
-        "modelo_evaluado": cfg["modelo"]["base_checkpoint"],
+        "modelo_evaluado": cfg.get("modelo", {}).get("base_checkpoint", "cache"),
         "modelo_juez": judge_cfg["judge_model"],
         "judge_provider": judge_cfg["judge_provider"],
         "predicciones_origen": str(rutas["dim1_path"]),

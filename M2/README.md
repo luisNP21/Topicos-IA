@@ -104,19 +104,10 @@ python run_harness.py --config config.yaml
 pip install -r requirements.txt
 ```
 
-| Paquete | Version | Para que |
-|---|---|---|
-| `transformers`, `accelerate`, `torchao` | 5.16.1, 1.14.0, 0.16.0 | Cargar Clinical BERT |
-| `peft` | 0.20.0 | Adaptador LoRA |
-| `datasets` | 4.0.0 | (no se ve uso directo en los modulos revisados) |
-| `sentence-transformers` | 5.7.0 | Embeddings de la Dimension 1b |
-| `scipy` | 1.16.3 | Asignacion hungara (`linear_sum_assignment`) |
-| `numpy`, `pandas` | 2.1.3, 2.2.3 | Numerico / tabular |
-| `PyYAML` | 6.0.3 | Leer `config.yaml` |
-| `python-dotenv` | 1.2.3 | Leer `.env` |
-
-`environment.asegurar_paquetes()` es un respaldo de auto-instalacion, usar `pip install -r requirements.txt` como mecanismo
-principal, tal como dice el propio docstring del modulo.
+`M2/harness/requirements.txt` contiene las dependencias de evaluacion (embeddings, scipy,
+tablas, YAML y Groq). `M2/run_inference/requirements.txt` contiene las dependencias para
+cargar el encoder y generar el cache (PyTorch, Transformers y PEFT). El harness no requiere
+ni carga el modelo NER; `torchao` tampoco es necesario para esta inferencia.
 
 ### Configuracion
 
@@ -130,9 +121,8 @@ GROQ_API_KEY=gsk_...
 |---|---|---|
 | `proyecto.seed_global` | 42 | misma semilla en los 4 notebooks y el script |
 | `rutas.gold_set` | `M2/eval_harness/gold_examples_20.jsonl` | **distinto al `gold_examples.jsonl` de los notebooks** |
-| `rutas.model_dir` | `M1/saved_models/clinical_bert-distemist-lora` | requiere `adapter_config.json` + `adapter_model.safetensors` |
-| `modelo.base_checkpoint` | `PlanTL-GOB-ES/roberta-base-biomedical-clinical-es` | |
-| `chunking.window_words` / `overlap_words` | 277 / 50 |  |
+| `rutas.inference_config` | `../run_inference/config.yaml` | su `output_path` identifica el cache de predicciones |
+| `modelo.base_checkpoint` | `PlanTL-GOB-ES/roberta-base-biomedical-clinical-es` | solo metadata; el harness no lo carga |
 | `dimension1b_similitud_semantica.modelo_embeddings` | `paraphrase-multilingual-MiniLM-L12-v2` | |
 | `dimension1b...calibracion_umbral` | 4000 pares negativos, seed 42 | |
 | `dimension3_llm_judge.judge_model` | `openai/gpt-oss-120b` (via Groq) | temperatura 0.0 |
@@ -142,19 +132,23 @@ GROQ_API_KEY=gsk_...
 ### Uso
 
 ```bash
-# Las 4 piezas completas
+# Generar el cache de predicciones una vez
+python ../run_inference/run_inference.py
+
+# Evaluar el cache
 python run_harness.py --config config.yaml
 
 # Una dimension a la vez (debugging, sin re-correr todo)
 python run_harness.py --config config.yaml --solo exact
-python run_harness.py --config config.yaml --solo semantica   # requiere que 'exact' ya haya corrido
+python run_harness.py --config config.yaml --solo semantica   # calcula exact-match como paso previo
 python run_harness.py --config config.yaml --solo judge
-python run_harness.py --config config.yaml --solo scorecard   # requiere que las 3 anteriores hayan corrido
+python run_harness.py --config config.yaml --solo scorecard   # requiere resultados previos
 ```
 
-`verificar_prerequisitos()` corre antes que nada y falla rapido (gold set, adaptador LoRA,
-`GROQ_API_KEY`) en vez de tronar a mitad de la dimension 3 despues de haber gastado tiempo
-en las dos primeras.
+El harness no carga el modelo NER ni ejecuta inferencia: `run_harness.py` carga el gold set
+y crea `sistema` desde el cache configurado en `run_inference/config.yaml`. Después pasa
+ambos a `harness(eval_set, sistema, cfg, project_root)`. Verifica que exista el cache antes
+de ejecutar; semántica y juez siguen necesitando sus dependencias y `GROQ_API_KEY`.
 
 ### Ejecucion del script desde Google Colab
 
@@ -167,8 +161,9 @@ requerimientos, configura `PROJECT_ROOT` y `GROQ_API_KEY`, y ejecuta:
 python run_harness.py --config config.yaml
 ```
 
-Antes de ejecutarlo, verificar que el adaptador LoRA y el gold set correspondiente existan
-en las rutas configuradas en `config.yaml`, y agregar la clave `GROQ_API_KEY` en la ventana de secretos/keys de Colab (icono de llave  en el menú lateral izquierdo, habilitando la opción de acceso al notebook).
+Antes de ejecutar el harness, correr primero `M2/run_inference/run_inference.py` para
+generar el cache en Drive y confirmar que inferencia y evaluación usen el mismo gold set.
+Agregar `GROQ_API_KEY` en Secretos de Colab para la dimensión de juez.
 Las instrucciones detalladas estan en [`ejecucion/README.md`](ejecucion/README.md).
 
 ### Salidas del script

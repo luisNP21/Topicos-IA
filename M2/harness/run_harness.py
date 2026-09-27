@@ -17,7 +17,10 @@ sys.path.insert(1, M2_ROOT)
 import yaml
 from dotenv import load_dotenv
 
-from harness import run
+from cached_system import sistema_desde_cache
+from common import log
+from gold_loader import cargar_gold_set, resolver_rutas
+from harness import harness
 
 
 def cargar_config(config_path: str) -> dict:
@@ -51,9 +54,28 @@ def main():
     args = parser.parse_args()
 
     cfg = cargar_config(args.config)
-    cfg["solo"] = args.solo
     project_root = resolver_project_root()
-    return run(cfg, project_root)
+    rutas = resolver_rutas(cfg, project_root)
+
+    if args.solo == "scorecard":
+        import scorecard
+        return scorecard.build(cfg, project_root)
+
+    eval_set = cargar_gold_set(rutas["gold_set_path"])
+    if not rutas["predictions_path"].exists():
+        raise FileNotFoundError(
+            f"No se encontro el cache de predicciones: {rutas['predictions_path']}. "
+            "Ejecuta primero M2/run_inference/run_inference.py."
+        )
+    sistema = sistema_desde_cache(rutas["predictions_path"], eval_set)
+    metricas = harness(eval_set, sistema, cfg, project_root, solo=args.solo)
+
+    if args.solo is None:
+        import scorecard
+        scorecard.build(cfg, project_root)
+
+    log(f"Metricas finales: {metricas}")
+    return metricas
 
 
 if __name__ == "__main__":

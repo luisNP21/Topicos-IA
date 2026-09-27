@@ -3,9 +3,9 @@ proyecto:
   seed_global: 42
 
 rutas:
-  gold_set: "M2/eval_harness/gold_examples.jsonl"
+  gold_set: "M2/eval_harness/gold_examples_20.jsonl"
   outputs_dir: "M2/outputs"
-  model_dir: "M1/saved_models/clinical_bert-distemist-lora"
+  inference_config: "../run_inference/config.yaml"
 
 archivos_salida:
   dimension1: "resultado_dimension1.json"
@@ -16,36 +16,31 @@ archivos_salida:
 
 modelo:
   base_checkpoint: "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es"
-  checkpoint: "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es"
-  adapter_path: "M1/saved_models/clinical_bert-distemist-lora"
-
-chunking:
-  window_words: 277
-  overlap_words: 50
 
 dimension1b_similitud_semantica:
   modelo_embeddings: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-  funcion_similitud: "coseno"
+  funcion_similitud: "emb"
   algoritmo_asignacion: "hungaro"
   calibracion_umbral:
-    n_pares_negativos: 100
+    n_pares_negativos: 4000
     seed: 42
 
 dimension3_llm_judge:
+  judge_model: "qwen/qwen3.8-27b"
   judge_provider: "groq"
-  judge_model: "llama-3.3-70b-versatile"
   judge_temperature: 0.0
-  judge_max_tokens: 1000
-  judge_pausa_entre_llamadas: 1.0
+  judge_max_tokens: 600
+  judge_pausa_entre_llamadas: 3.0
+  fallar_si_modelo_no_disponible: true
   pares_longitud_path: "length_bias_pairs.json"
 
 scorecard:
-  archivo_salida_json: "scorecard_m2.json"
+  archivo_salida_json: "scorecard_m2.json y scorecard_m2.md"
   umbrales_debilidad:
-    f1_bajo: 0.3
+    f1_bajo: 0.2
     f1_alto: 0.7
     score_juez_bajo: 2.5
-    score_juez_alto: 4.0
+    score_juez_alto: 3.5
 
 audit:
   doc_id: "debe preservarse intacto en eval_set y resultados"
