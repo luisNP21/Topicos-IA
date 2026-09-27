@@ -8,7 +8,7 @@ chunking:
   window_words: 277
   overlap_words: 50
 
-eval_set_path: "M2/examples/gold_examples_20.jsonl"
+eval_set_path: "M2/eval_harness/gold_examples_20.jsonl"
 
 normalizacion:
   activa: false
