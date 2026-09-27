@@ -1,29 +1,24 @@
 # M2 — Evaluacion del modelo de reconocimiento de entidades clinicas
 
-Sistema que evalua el modelo Clinical BERT + LoRA (entrenado en M1) sobre el gold set de M2
-en dimensiones independientes — coincidencia exacta de spans, similitud semantica y un
-juez basado en LLM que **ademas emite un veredicto binario de dominio** (`cumple_criterio`,
-la "dimension de aciertos de dominio" de S06) — y las combina en un scorecard con
-diagnostico de debilidad. Existe en
-dos formas equivalentes: **cuatro notebooks** (exploratorios, uno por dimension mas el
-harness integrado) y **un script de linea de comandos** (`run_harness.py`, produccion,
-reproducible con un solo comando). Ambas formas leen y escriben en la misma carpeta del
-proyecto.
+Pipeline que evalua las predicciones NER del modelo Clinical BERT + LoRA (entrenado en M1)
+contra el gold set de M2 con tres dimensiones: exact-match, similitud semantica y un juez
+LLM que tambien emite un veredicto binario de dominio. Las dimensiones se combinan en un
+scorecard de debilidades. La inferencia y la evaluacion se ejecutan por separado: primero
+`run_inference.py` genera un cache por documento y despues el harness evalua ese cache.
 
-## Las dos formas de correr esto
+## Formas de ejecucion
 
-| | Notebooks | Script (`run_harness.py`) |
+| | Launcher de Colab | Scripts Python |
 |---|---|---|
-| Entorno | Google Colab, monta Drive | Cualquier maquina con Python, sin Colab obligatorio|
-| Configuracion | variables hardcodeadas al inicio de cada notebook | `.env` + `config.yaml`, versionados |
-| Ejecucion | celda por celda, manual | `python run_harness.py --config config.yaml` |
-| Uso previsto | revisar/depurar una dimension en detalle, iterar | correr todo de una sola vez, reproducible, para entregar |
+| Entrada | `ejecucion/start_inference_harness.ipynb` | `run_inference.py` y `run_harness.py` |
+| Entorno | Colab, monta Drive e instala ambos requirements | Python local o Colab con los mismos requirements |
+| Configuracion | monta el Drive y escribe `.env` en el repo clonado | `.env` + YAML de cada fase |
+| Ejecucion | corre inferencia y luego harness en celdas separadas | dos comandos, inferencia primero |
+| Uso previsto | pipeline completo sobre los archivos de Drive | ejecucion reproducible o depuracion con `--solo` |
 
-No son fuentes independientes de verdad — el script reimplementa la misma logica que ya se
-valido en los notebooks, refactorizada en modulos importables (`common.py`,
-`metrics_exact.py`, `metrics_semantic.py`, `metrics_judge.py`, `scorecard.py`) para poder
-correr sin abrir Colab. Los notebooks siguen siendo la referencia para entender y depurar
-cada dimension; el script es lo que se corre para generar el entregable final.
+`harness.ipynb` se conserva como base conceptual y notebook exploratorio; no es el launcher
+del pipeline modular y no se modifica al actualizar los scripts. `start_inference_harness.ipynb`
+es el punto de entrada de Colab para ejecutar los scripts de `run_inference/` y `harness/`.
 
 ---
 
@@ -34,8 +29,9 @@ cada dimension; el script es lo que se corre para generar el entregable final.
 |---|---|---|
 | `dimension1_exact_match.ipynb` | ¿La prediccion coincide caracter a caracter con el gold? | Nada (punto de partida) |
 | `dimension1b_similitud_semantica.ipynb` | ¿La prediccion es semanticamente equivalente al gold, aunque el span no coincida exacto? | Salida anterior (reusa las mismas predicciones) |
-| `04_llm_judge.ipynb` | ¿Un LLM juez califica la respuesta como buena, con controles de sesgo? | Nada (corre su propia inferencia) |
+| `llm_judge.ipynb` | ¿Un LLM juez califica la respuesta como buena, con controles de sesgo? | Nada (corre su propia inferencia) |
 | `harness.ipynb` | Junta las tres dimensiones anteriores en un scorecard unico con diagnostico de debilidad | Salidas de los tres notebooks anteriores |
+| `ejecucion/start_inference_harness.ipynb` | Ejecuta el pipeline modular de inferencia y evaluacion | Drive, los dos YAML y Secret `GROQ_API_KEY` |
 
 **Nota importante:** `harness.ipynb` no es un cuarto analisis independiente — reimplementa
 dentro de un solo notebook la logica completa de los tres notebooks individuales (exact-match,
@@ -50,7 +46,7 @@ harness es el que arma el scorecard final que se entrega.
 
 1. `dimension1_exact_match.ipynb` → genera `M2/outputs/resultado_dimension1.json`
 2. `dimension1b_similitud_semantica.ipynb` → lee el paso 1, genera `resultado_dimension1b_similitud.json`
-3. `04_llm_judge.ipynb` → corre su propia inferencia, genera `llm_judge_scorecard.csv` y `llm_judge_bias_summary.json`
+3. `llm_judge.ipynb` → corre su propia inferencia, genera `llm_judge_scorecard.csv` y `llm_judge_bias_summary.json`
 
 **Opcion B — correr todo de una vez con el harness integrado:**
 
@@ -89,94 +85,90 @@ archivos, sin tener que re-ejecutar todo.
 
 ---
 
-## Parte 2 — El script (`run_harness.py`)
+## Parte 2 — Pipeline modular
 
-Version en modulos Python de la misma logica, pensada para correr con un solo comando fuera
-de Colab, con configuracion versionada en vez de variables hardcodeadas.
+El pipeline separa la generacion de predicciones de su evaluacion. `run_inference.py`
+carga el modelo NER y guarda el cache; `run_harness.py` conserva el parser de argumentos,
+carga el `eval_set` y crea `sistema` desde ese cache. La funcion `harness` recibe esos datos
+y ejecuta exact-match, similitud semantica y LLM-as-judge. El harness no carga el modelo NER.
 
-```bash
-python run_harness.py --config config.yaml
-```
+### Launcher de Colab
 
-### Instalacion
+El notebook [`ejecucion/start_inference_harness.ipynb`](ejecucion/start_inference_harness.ipynb)
+organiza la corrida en estas fases:
 
-```bash
-pip install -r requirements.txt
-```
+1. Clona la rama `refactor-harness` en `/content/corpus` y cambia al directorio del repo.
+2. Instala `M2/run_inference/requirements.txt` y `M2/harness/requirements.txt`.
+3. Monta Drive, define `PROJECT_ROOT`, revisa el adaptador y el gold set, y escribe
+   `/content/corpus/.env` con `PROJECT_ROOT` y `GROQ_API_KEY` desde Colab Secrets.
+4. Entra a `M2/run_inference/` y ejecuta `python run_inference.py`; las predicciones quedan
+   en el `output_path` del YAML de inferencia.
+5. Entra a `M2/harness/` y ejecuta el CLI con `--config config.yaml`.
 
-`M2/harness/requirements.txt` contiene las dependencias de evaluacion (embeddings, scipy,
-tablas, YAML y Groq). `M2/run_inference/requirements.txt` contiene las dependencias para
-cargar el encoder y generar el cache (PyTorch, Transformers y PEFT). El harness no requiere
-ni carga el modelo NER; `torchao` tampoco es necesario para esta inferencia.
+En un runtime limpio, la celda `git pull` debe ejecutarse desde `/content/corpus`; si el
+notebook aún está en `/content`, primero cambia al directorio clonado.
 
-### Configuracion
+### Configuracion YAML
 
-**`.env`** (no versionado, uno por maquina):
-GROQ_API_KEY=gsk_...
+`M2/run_inference/config.yaml` controla exclusivamente la inferencia:
 
-
-**`config.yaml`** (versionado, compartido por el equipo):
-
-| Clave | Valor actual | Notas |
+| Clave | Valor actual | Uso |
 |---|---|---|
-| `proyecto.seed_global` | 42 | misma semilla en los 4 notebooks y el script |
-| `rutas.gold_set` | `M2/eval_harness/gold_examples_20.jsonl` | **distinto al `gold_examples.jsonl` de los notebooks** |
-| `rutas.inference_config` | `../run_inference/config.yaml` | su `output_path` identifica el cache de predicciones |
-| `modelo.base_checkpoint` | `PlanTL-GOB-ES/roberta-base-biomedical-clinical-es` | solo metadata; el harness no lo carga |
-| `dimension1b_similitud_semantica.modelo_embeddings` | `paraphrase-multilingual-MiniLM-L12-v2` | |
-| `dimension1b...calibracion_umbral` | 4000 pares negativos, seed 42 | |
-| `dimension3_llm_judge.judge_model` | `openai/gpt-oss-120b` (via Groq) | temperatura 0.0 |
-| `dimension3_llm_judge.pares_longitud_path` | `length_bias_pairs.json` | pares: corta correcta vs. larga **parcialmente correcta** |
-| `scorecard.umbrales_debilidad` | f1_bajo=0.2, f1_alto=0.7, score_juez_bajo=2.5, score_juez_alto=3.5 | define las 4 categorias de `diagnosticar_debilidad` |
+| `sistema` | `encoder_solo` | Identificador de esta corrida |
+| `modelo.checkpoint` | `PlanTL-GOB-ES/roberta-base-biomedical-clinical-es` | Encoder base |
+| `modelo.adapter_path` | `M1/saved_models/clinical_bert-distemist-lora` | Ruta relativa a `PROJECT_ROOT` |
+| `chunking.window_words` / `overlap_words` | 277 / 50 | Ventana y solapamiento de inferencia |
+| `eval_set_path` | `M2/eval_harness/gold_examples_20.jsonl` | Gold set usado para predecir |
+| `normalizacion.activa` | `false` | Variante encoder sin normalizacion |
+| `output_path` | `M2/predictions/encoder_solo.json` | Cache `{doc_id: [entidades]}` bajo `PROJECT_ROOT` |
 
-### Uso
+`M2/harness/config.yaml` controla la evaluacion y las salidas:
 
-```bash
-# Generar el cache de predicciones una vez
-python ../run_inference/run_inference.py
+| Clave | Valor actual | Uso |
+|---|---|---|
+| `rutas.gold_set` | `M2/eval_harness/gold_examples_20.jsonl` | Debe ser el mismo gold usado por inferencia |
+| `rutas.outputs_dir` | `M2/outputs` | Directorio de resultados |
+| `rutas.inference_config` | `../run_inference/config.yaml` | De ahi se lee el `output_path` del cache |
+| `archivos_salida` | `resultado_dimension1.json`, `resultado_dimension1b.json`, `resultado_dimension3.json`, scorecards | Artefactos de las dimensiones y scorecard |
+| `dimension1b_similitud_semantica` | embeddings `paraphrase-multilingual-MiniLM-L12-v2`, 4000 negativos, seed 42 | Matching semantico |
+| `dimension3_llm_judge` | `qwen/qwen3.8-27b`, Groq, temperatura 0, max 600 tokens, pausa 3 s | Juez y controles de sesgo |
+| `scorecard.umbrales_debilidad` | F1 bajo/alto 0.2/0.7; juez bajo/alto 2.5/3.5 | Diagnostico por documento |
 
-# Evaluar el cache
-python run_harness.py --config config.yaml
+Ambos YAML resuelven sus rutas de datos desde `PROJECT_ROOT`. El `.env` del runtime contiene
+`PROJECT_ROOT` y `GROQ_API_KEY`; no se debe versionar la clave.
 
-# Una dimension a la vez (debugging, sin re-correr todo)
-python run_harness.py --config config.yaml --solo exact
-python run_harness.py --config config.yaml --solo semantica   # calcula exact-match como paso previo
-python run_harness.py --config config.yaml --solo judge
-python run_harness.py --config config.yaml --solo scorecard   # requiere resultados previos
-```
+### Ejecucion desde terminal
 
-El harness no carga el modelo NER ni ejecuta inferencia: `run_harness.py` carga el gold set
-y crea `sistema` desde el cache configurado en `run_inference/config.yaml`. Después pasa
-ambos a `harness(eval_set, sistema, cfg, project_root)`. Verifica que exista el cache antes
-de ejecutar; semántica y juez siguen necesitando sus dependencias y `GROQ_API_KEY`.
-
-### Ejecucion del script desde Google Colab
-
-Para ejecutar el script en Colab, cargar en Google Colab alguno de los notebooks
-`ejecucion/start_gold.ipynb` o `ejecucion/start_adversarial.ipynb`, segun el gold set que se
-quiera evaluar, y correr sus celdas en orden. El notebook monta Google Drive, instala los
-requerimientos, configura `PROJECT_ROOT` y `GROQ_API_KEY`, y ejecuta:
+Desde la raiz del repo, instala ambas listas de dependencias:
 
 ```bash
+pip install -r M2/run_inference/requirements.txt
+pip install -r M2/harness/requirements.txt
+```
+
+Luego ejecuta las dos fases en orden:
+
+```bash
+cd M2/run_inference
+python run_inference.py
+cd ../harness
 python run_harness.py --config config.yaml
 ```
 
-Antes de ejecutar el harness, correr primero `M2/run_inference/run_inference.py` para
-generar el cache en Drive y confirmar que inferencia y evaluación usen el mismo gold set.
-Agregar `GROQ_API_KEY` en Secretos de Colab para la dimensión de juez.
-Las instrucciones detalladas estan en [`ejecucion/README.md`](ejecucion/README.md).
+El comando sin `--solo` ejecuta las tres dimensiones y genera el scorecard. Para depurar,
+`--solo semantica` ejecuta exact-match como prerequisito y luego semantica; `--solo judge`
+ejecuta exact-match y juez. `--solo scorecard` solo integra resultados ya existentes.
+Por ello, para preparar los tres artefactos antes de scorecard con comandos separados, corre
+`--solo semantica` y `--solo judge` antes de `--solo scorecard`.
 
-### Salidas del script
+El notebook actual termina con `--solo judge` seguido de `--solo scorecard`, pero no incluye
+un paso `--solo semantica`. Para generar el scorecard completo en esa corrida, ejecuta antes
+la dimension semantica o usa el comando sin `--solo`.
 
-Todo en `{PROJECT_ROOT}/M2/outputs/`:
-
-| Archivo | Generado por |
-|---|---|
-| `resultado_dimension1.json` | `metrics_exact.py` |
-| `resultado_dimension1b.json` | `metrics_semantic.py` |
-| `resultado_dimension3.json` | `metrics_judge.py` |
-| `scorecard_m2.json` | `scorecard.py` |
-| `scorecard_m2.md` | `scorecard.py` |
+Las salidas se guardan en `{PROJECT_ROOT}/M2/outputs/`: `resultado_dimension1.json`,
+`resultado_dimension1b.json`, `resultado_dimension3.json`, `scorecard_m2.json` y
+`scorecard_m2.md`. La dimension juez requiere `GROQ_API_KEY` en Colab Secrets. Consulta
+[`ejecucion/README.md`](ejecucion/README.md) para los detalles de acceso a Drive y Secret.
 
 ---
 
@@ -240,10 +232,8 @@ juntas.
 
 ## Reproducibilidad
 
-- Todos los notebooks fijan `SEED = 42` (`random`, `numpy`, `torch`) al inicio; el script
-  hace lo mismo via `common.fijar_seeds()`, llamado desde `run_harness.py` y de nuevo
-  dentro de `environment.preparar_entorno()` (que solo corre como parte de la dimension
-  exact-match — correr `--solo semantica` o `--solo judge` aislado no reimprime versiones
-  de librerias, pero la seed ya quedo fijada antes por `run_harness.py`).
-- Las rutas de entrada/salida son las mismas dentro de cada sistema (notebooks entre si,
-  script consigo mismo) pero **no coinciden exactamente entre notebooks y script**.
+- El CLI fija la semilla configurada en `harness/config.yaml` mediante
+   `common.fijar_seeds()` antes de calcular las dimensiones.
+- El launcher modular y los scripts usan `gold_examples_20.jsonl`; la ruta del cache se
+   comparte mediante `output_path` en `run_inference/config.yaml`. El notebook exploratorio
+   `harness.ipynb` conserva su propio flujo y sus rutas originales.
