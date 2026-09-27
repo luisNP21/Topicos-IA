@@ -1,0 +1,5 @@
+# Dependencias de M3/generacion (Agustin)
+# El generador usa Groq; el resto es stdlib + PyYAML/python-dotenv.
+groq
+PyYAML
+python-dotenv
