@@ -1,16 +1,13 @@
-"""
-Funciones puras de la Seccion 4, reutilizadas de M1/NB2.
-No dependen del modelo ni del tokenizer -- por eso viven separadas
-de inference.py, y son las que van a compartir metrics_exact.py,
-metrics_semantic.py y metrics_judge.py sin duplicacion.
-"""
-
+import random
 import re
 import string
-import random
 import sys
 from datetime import datetime
-import numpy as np
+
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover - optional in stripped environments
+    np = None
 
 
 def log(msg: str):
@@ -21,15 +18,16 @@ def log(msg: str):
 
 def fijar_seeds(seed: int):
     random.seed(seed)
-    np.random.seed(seed)
+    if np is not None:
+        np.random.seed(seed)
     try:
         import torch
         torch.manual_seed(seed)
     except ImportError:
         pass
 
+
 def normalizar_entidad(e: str) -> str:
-    """Quita puntuacion de borde que es artefacto de tokenizar con .split()."""
     return e.lower().strip().strip(string.punctuation + " ")
 
 
@@ -79,13 +77,8 @@ def micro_prf1_by_doc(true_by_doc: dict, pred_by_doc: dict) -> dict:
 
 
 def chunk_words(words: list[str], window_words: int, overlap_words: int) -> list[tuple]:
-    """
-    Parte una lista de palabras en ventanas solapadas.
-    Devuelve lista de (chunk_idx, sublist_de_palabras).
-    """
     if len(words) <= window_words:
         return [(0, words)]
-
     chunks = []
     step = window_words - overlap_words
     start = 0
