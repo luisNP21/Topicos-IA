@@ -1,0 +1,53 @@
+# Configuración del retrieval y de la orquestación de la normalización.
+# Las rutas relativas se resuelven desde la raíz del repositorio.
+
+corpus: mock                      # mock | real
+
+rutas:
+  mock:
+    corpus_json: data/mock/corpus_mock.json
+    chroma_dir: /content/chroma_mock          # disco local de Colab: Chroma usa SQLite y falla sobre Drive
+    manifest: data/mock/corpus_manifest_mock.json
+    consultas: data/mock/consultas_mock.jsonl
+    mapa_normalizacion: data/mock/normalizacion_mock.json
+    salida: M3/retrieval/outputs_mock
+  real:
+    corpus_json: data/guias_clinicas/chunks
+    chroma_dir: data/chroma_guias             # copiar a /content antes de usarlo en Colab
+    manifest: data/guias_clinicas/corpus_manifest.json
+    consultas: M3/retrieval/consultas_retrieval.jsonl
+    mapa_normalizacion: null                  # con el corpus real se usa normalizacion.normalizar_entidad
+    salida: M3/retrieval/outputs
+
+modelos:
+  embeddings: intfloat/multilingual-e5-base   # debe ser el mismo con el que se construyó el índice
+  reranker: cross-encoder/mmarco-mMiniLMv2-L12-H384-v1
+  reranker_alternativo: BAAI/bge-reranker-v2-m3
+
+retrieval:
+  k: 5                            # fragmentos entregados a la generación
+  n_candidatos: 30                # candidatos que ordena el reranker
+  krrf: 60                        # constante de Reciprocal Rank Fusion
+  encabezado_contextual: true     # BM25 y reranker leen "título. sección. texto"
+  modo_pipeline: intencion        # técnica que usa retrieve_advanced
+
+intencion:
+  plantillas:
+    - "tratamiento de {e}"
+    - "manejo farmacológico de {e}"
+    - "{e}: recomendaciones terapéuticas"
+  pregunta: "¿Cuál es el tratamiento de {e}?"
+
+orquestacion:
+  sistema_base: intencion         # sistema sobre el que opera la normalización
+  forzar_por_sigla: true
+  umbral: null                    # null: se usan los calibrados en <salida>/umbrales.json
+  umbral_evidencia: null
+
+calibracion:
+  pliegues: 3
+  semilla: 42
+  tolerancia_fuera_de_corpus: 0.0 # fracción de consultas fuera del corpus que puede superar la compuerta
+
+experimento:
+  sistema_advanced: intencion     # sistema que se compara con el ingenuo en delta_naive_vs_advanced.json

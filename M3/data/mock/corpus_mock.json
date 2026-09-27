@@ -1,0 +1,236 @@
+[
+  {
+    "chunk_id": "mock_diabetes_0",
+    "doc_id": "mock_diabetes",
+    "texto": "El diagnóstico de diabetes mellitus tipo 2 se establece mediante criterios como glucemia en ayunas mayor o igual a 126 mg/dL, glucemia de 2 horas mayor o igual a 200 mg/dL durante una prueba de tolerancia oral, HbA1c mayor o igual a 6.5% o glucemia aleatoria mayor o igual a 200 mg/dL en presencia de síntomas clásicos.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_diabetes_1",
+    "doc_id": "mock_diabetes",
+    "texto": "El manejo inicial de la diabetes mellitus tipo 2 incluye modificaciones del estilo de vida, alimentación saludable, actividad física regular y educación del paciente. La elección del tratamiento farmacológico debe considerar comorbilidades, riesgo cardiovascular, función renal y objetivos individuales.",
+    "seccion": "Tratamiento"
+  },
+  {
+    "chunk_id": "mock_diabetes_2",
+    "doc_id": "mock_diabetes",
+    "texto": "La metformina puede utilizarse como tratamiento farmacológico inicial en pacientes con diabetes mellitus tipo 2 cuando no existen contraindicaciones. El seguimiento debe incluir evaluación periódica del control glucémico y de posibles complicaciones.",
+    "seccion": "Tratamiento farmacológico"
+  },
+  {
+    "chunk_id": "mock_hipertension_0",
+    "doc_id": "mock_hipertension",
+    "texto": "La hipertensión arterial se caracteriza por una elevación persistente de la presión arterial. El diagnóstico debe basarse en mediciones realizadas correctamente y, cuando sea posible, confirmarse mediante mediciones repetidas o monitoreo ambulatorio.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_hipertension_1",
+    "doc_id": "mock_hipertension",
+    "texto": "El tratamiento de la hipertensión arterial incluye cambios en el estilo de vida como reducción del consumo de sodio, actividad física regular, control del peso y moderación del consumo de alcohol.",
+    "seccion": "Tratamiento no farmacológico"
+  },
+  {
+    "chunk_id": "mock_hipertension_2",
+    "doc_id": "mock_hipertension",
+    "texto": "Entre los medicamentos utilizados para el tratamiento de la hipertensión arterial se encuentran los inhibidores de la enzima convertidora de angiotensina, antagonistas de los receptores de angiotensina II, calcioantagonistas y diuréticos tiazídicos.",
+    "seccion": "Tratamiento farmacológico"
+  },
+  {
+    "chunk_id": "mock_asma_0",
+    "doc_id": "mock_asma",
+    "texto": "El asma es una enfermedad respiratoria inflamatoria crónica caracterizada por síntomas variables como sibilancias, dificultad respiratoria, opresión torácica y tos. Los síntomas pueden variar en intensidad y frecuencia.",
+    "seccion": "Descripción clínica"
+  },
+  {
+    "chunk_id": "mock_asma_1",
+    "doc_id": "mock_asma",
+    "texto": "El diagnóstico de asma debe considerar los antecedentes clínicos, la variabilidad de los síntomas y la evidencia de limitación variable del flujo espiratorio. La espirometría puede ayudar a confirmar el diagnóstico.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_asma_2",
+    "doc_id": "mock_asma",
+    "texto": "El tratamiento del asma busca controlar los síntomas y reducir el riesgo de exacerbaciones. Los corticosteroides inhalados constituyen un componente fundamental del tratamiento controlador en muchos pacientes.",
+    "seccion": "Tratamiento"
+  },
+  {
+    "chunk_id": "mock_neumonia_0",
+    "doc_id": "mock_neumonia",
+    "texto": "La neumonía adquirida en la comunidad es una infección del parénquima pulmonar que puede presentarse con fiebre, tos, producción de esputo, dificultad respiratoria y dolor torácico.",
+    "seccion": "Descripción clínica"
+  },
+  {
+    "chunk_id": "mock_neumonia_1",
+    "doc_id": "mock_neumonia",
+    "texto": "El diagnóstico de neumonía adquirida en la comunidad se basa en la evaluación clínica y, cuando está indicada, en estudios de imagen como la radiografía de tórax. La gravedad debe valorarse para determinar el lugar apropiado de tratamiento.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_neumonia_2",
+    "doc_id": "mock_neumonia",
+    "texto": "El tratamiento de la neumonía adquirida en la comunidad depende de la gravedad, las comorbilidades y los factores de riesgo del paciente. En los casos de etiología bacteriana se utilizan antibióticos seleccionados según el contexto clínico.",
+    "seccion": "Tratamiento"
+  },
+  {
+    "chunk_id": "mock_migrana_0",
+    "doc_id": "mock_migrana",
+    "texto": "La migraña es un trastorno neurológico que puede producir episodios de dolor de cabeza, frecuentemente acompañados de náuseas y sensibilidad a la luz o al sonido. Algunas personas presentan aura antes o durante el episodio.",
+    "seccion": "Descripción clínica"
+  },
+  {
+    "chunk_id": "mock_migrana_1",
+    "doc_id": "mock_migrana",
+    "texto": "El diagnóstico de migraña es principalmente clínico y requiere caracterizar las características del dolor, su duración, frecuencia, síntomas asociados y presencia de signos de alarma.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_migrana_2",
+    "doc_id": "mock_migrana",
+    "texto": "El tratamiento de los episodios agudos de migraña puede incluir analgésicos y medicamentos específicos para la migraña. En pacientes con episodios frecuentes puede considerarse tratamiento preventivo.",
+    "seccion": "Tratamiento"
+  },
+  {
+    "chunk_id": "mock_gastritis_0",
+    "doc_id": "mock_gastritis",
+    "texto": "La gastritis corresponde a la inflamación de la mucosa gástrica y puede asociarse con dolor o molestia epigástrica, náuseas, sensación de llenura y otros síntomas digestivos.",
+    "seccion": "Descripción clínica"
+  },
+  {
+    "chunk_id": "mock_gastritis_1",
+    "doc_id": "mock_gastritis",
+    "texto": "La evaluación de la gastritis depende de los síntomas y factores de riesgo. En determinados pacientes puede ser necesario investigar la presencia de Helicobacter pylori mediante pruebas específicas.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_gastritis_2",
+    "doc_id": "mock_gastritis",
+    "texto": "El tratamiento de la gastritis depende de la causa. Cuando existe infección por Helicobacter pylori, se utiliza un esquema de erradicación con medicamentos seleccionados según las recomendaciones clínicas y los patrones locales de resistencia.",
+    "seccion": "Tratamiento"
+  },
+  {
+    "chunk_id": "mock_artritis_reumatoide_0",
+    "doc_id": "mock_artritis_reumatoide",
+    "texto": "La artritis reumatoide es una enfermedad inflamatoria autoinmune que afecta principalmente las articulaciones y puede producir dolor, inflamación y rigidez, especialmente durante períodos de actividad de la enfermedad.",
+    "seccion": "Descripción clínica"
+  },
+  {
+    "chunk_id": "mock_artritis_reumatoide_1",
+    "doc_id": "mock_artritis_reumatoide",
+    "texto": "El diagnóstico de artritis reumatoide combina hallazgos clínicos con pruebas de laboratorio y estudios de imagen. Pueden evaluarse marcadores como el factor reumatoide y los anticuerpos antipéptidos citrulinados.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_artritis_reumatoide_2",
+    "doc_id": "mock_artritis_reumatoide",
+    "texto": "El tratamiento de la artritis reumatoide busca controlar la inflamación, prevenir el daño articular y mantener la función. Los fármacos antirreumáticos modificadores de la enfermedad son una parte fundamental del manejo.",
+    "seccion": "Tratamiento"
+  },
+  {
+    "chunk_id": "mock_hipotiroidismo_0",
+    "doc_id": "mock_hipotiroidismo",
+    "texto": "El hipotiroidismo ocurre cuando la glándula tiroides produce una cantidad insuficiente de hormonas tiroideas. Puede manifestarse con fatiga, intolerancia al frío, aumento de peso, piel seca y estreñimiento.",
+    "seccion": "Descripción clínica"
+  },
+  {
+    "chunk_id": "mock_hipotiroidismo_1",
+    "doc_id": "mock_hipotiroidismo",
+    "texto": "La evaluación inicial del hipotiroidismo suele incluir la medición de la hormona estimulante de la tiroides. Dependiendo de los resultados, puede solicitarse tiroxina libre y otros estudios para determinar la causa.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_hipotiroidismo_2",
+    "doc_id": "mock_hipotiroidismo",
+    "texto": "El tratamiento habitual del hipotiroidismo consiste en reemplazo de hormona tiroidea con levotiroxina. La dosis debe individualizarse y ajustarse de acuerdo con la respuesta clínica y los resultados de laboratorio.",
+    "seccion": "Tratamiento"
+  },
+  {
+    "chunk_id": "mock_infeccion_urinaria_0",
+    "doc_id": "mock_infeccion_urinaria",
+    "texto": "La infección del tracto urinario puede afectar diferentes partes del sistema urinario. Los síntomas de una infección urinaria baja pueden incluir disuria, aumento de la frecuencia urinaria y urgencia.",
+    "seccion": "Descripción clínica"
+  },
+  {
+    "chunk_id": "mock_infeccion_urinaria_1",
+    "doc_id": "mock_infeccion_urinaria",
+    "texto": "El diagnóstico de infección urinaria debe considerar los síntomas, el examen físico y, cuando está indicado, pruebas de orina. El urocultivo puede ser necesario en determinados pacientes o situaciones clínicas.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_infeccion_urinaria_2",
+    "doc_id": "mock_infeccion_urinaria",
+    "texto": "El tratamiento de la infección urinaria depende de la localización de la infección, las características del paciente y los patrones locales de resistencia antimicrobiana. La selección del antibiótico debe seguir las recomendaciones clínicas correspondientes.",
+    "seccion": "Tratamiento"
+  },
+  {
+    "chunk_id": "mock_depresion_0",
+    "doc_id": "mock_depresion",
+    "texto": "El trastorno depresivo puede presentar síntomas persistentes de ánimo deprimido, pérdida de interés o placer, alteraciones del sueño, cambios en el apetito, fatiga y dificultades de concentración.",
+    "seccion": "Descripción clínica"
+  },
+  {
+    "chunk_id": "mock_depresion_1",
+    "doc_id": "mock_depresion",
+    "texto": "El diagnóstico de trastorno depresivo se realiza mediante evaluación clínica de los síntomas, su duración, intensidad y repercusión funcional. También deben considerarse otras condiciones médicas o psiquiátricas que puedan explicar los síntomas.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_depresion_2",
+    "doc_id": "mock_depresion",
+    "texto": "El tratamiento de la depresión puede incluir psicoterapia, tratamiento farmacológico o una combinación de ambos, dependiendo de la gravedad, las características del paciente y sus preferencias.",
+    "seccion": "Tratamiento"
+  },
+  {
+    "chunk_id": "mock_malaria_0",
+    "doc_id": "mock_malaria",
+    "texto": "La malaria es una enfermedad infecciosa causada por parásitos del género Plasmodium y transmitida principalmente por la picadura de mosquitos infectados. Puede producir fiebre, escalofríos, cefalea y otros síntomas sistémicos.",
+    "seccion": "Descripción clínica"
+  },
+  {
+    "chunk_id": "mock_malaria_1",
+    "doc_id": "mock_malaria",
+    "texto": "El diagnóstico de malaria debe confirmarse mediante pruebas que detecten el parásito o sus componentes. La identificación de la especie de Plasmodium puede ser relevante para seleccionar el tratamiento adecuado.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_malaria_2",
+    "doc_id": "mock_malaria",
+    "texto": "El tratamiento de la malaria depende de la especie de Plasmodium, la gravedad de la enfermedad, la región donde se adquirió la infección y los patrones de resistencia conocidos.",
+    "seccion": "Tratamiento"
+  },
+  {
+    "chunk_id": "mock_osteoporosis_0",
+    "doc_id": "mock_osteoporosis",
+    "texto": "La osteoporosis es una enfermedad caracterizada por una disminución de la resistencia ósea y un aumento del riesgo de fracturas. Puede permanecer asintomática hasta que ocurre una fractura.",
+    "seccion": "Descripción clínica"
+  },
+  {
+    "chunk_id": "mock_osteoporosis_1",
+    "doc_id": "mock_osteoporosis",
+    "texto": "La evaluación de osteoporosis puede incluir densitometría ósea mediante absorciometría de rayos X de doble energía. La decisión de realizar estudios depende de la edad, factores de riesgo y antecedentes de fracturas.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_osteoporosis_2",
+    "doc_id": "mock_osteoporosis",
+    "texto": "El manejo de la osteoporosis incluye medidas para reducir el riesgo de caídas, adecuada ingesta de calcio y vitamina D cuando está indicada, actividad física y tratamiento farmacológico en pacientes con riesgo elevado de fractura.",
+    "seccion": "Tratamiento"
+  },
+  {
+    "chunk_id": "mock_diabetes_gestacional_0",
+    "doc_id": "mock_dm_gestacional",
+    "texto": "La diabetes mellitus gestacional es un trastorno del metabolismo de la glucosa identificado durante el embarazo. Su diagnóstico y manejo requieren considerar los cambios fisiológicos propios de la gestación.",
+    "seccion": "Descripción clínica"
+  },
+  {
+    "chunk_id": "mock_diabetes_gestacional_1",
+    "doc_id": "mock_dm_gestacional",
+    "texto": "El diagnóstico de diabetes mellitus gestacional se realiza mediante pruebas de tolerancia a la glucosa siguiendo los criterios establecidos para el embarazo. Las estrategias diagnósticas pueden variar según la guía clínica utilizada.",
+    "seccion": "Diagnóstico"
+  },
+  {
+    "chunk_id": "mock_diabetes_gestacional_2",
+    "doc_id": "mock_dm_gestacional",
+    "texto": "El manejo de la diabetes mellitus gestacional incluye educación nutricional, actividad física cuando es apropiada y monitoreo de la glucemia. Cuando las medidas no farmacológicas no son suficientes, puede requerirse tratamiento farmacológico.",
+    "seccion": "Tratamiento"
+  }
+]
