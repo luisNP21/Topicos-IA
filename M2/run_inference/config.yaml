@@ -1,0 +1,16 @@
+sistema: "encoder_solo"
+
+modelo:
+  checkpoint: "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es"
+  adapter_path: "M1/saved_models/clinical_bert-distemist-lora"
+
+chunking:
+  window_words: 277
+  overlap_words: 50
+
+eval_set_path: "M2/eval_harness/gold_examples_20.jsonl"
+
+normalizacion:
+  activa: false
+  
+output_path: "M2/predictions/encoder_solo.json"
