@@ -231,12 +231,30 @@ def _calcular_real(eval_set: list[dict], llm_model: str, embedding_model: str = 
             llm=llm,
             embeddings=embeddings_wrapped,
         )
-        return {
-            "faithfulness":       float(resultado["faithfulness"]),
-            "context_precision":  float(resultado["context_precision"]),
-            "context_recall":     float(resultado["context_recall"]),
-            "answer_relevancy":   float(resultado["answer_relevancy"]),
-        }
+        def _extraer_score(val) -> float:
+            if isinstance(val, (int, float)):
+                return float(val)
+            if hasattr(val, "tolist"):
+                val = val.tolist()
+            if isinstance(val, (list, tuple)):
+                validos = [float(x) for x in val if x is not None and not (isinstance(x, float) and np.isnan(x))]
+                return float(np.mean(validos)) if validos else 0.0
+            try:
+                return float(val)
+            except Exception:
+                return 0.0
+
+        scores = {}
+        for m_name in ["faithfulness", "context_precision", "context_recall", "answer_relevancy"]:
+            if m_name in resultado:
+                scores[m_name] = _extraer_score(resultado[m_name])
+            elif hasattr(resultado, "to_pandas"):
+                df = resultado.to_pandas()
+                if m_name in df.columns:
+                    scores[m_name] = float(df[m_name].mean())
+            else:
+                scores[m_name] = 0.0
+        return scores
     except Exception as e:
         print(f"[ragas] Error en evaluacion real ({e}). Empleando calculo local de respaldo.")
         return _calcular_mock(eval_set, embedding_model)
