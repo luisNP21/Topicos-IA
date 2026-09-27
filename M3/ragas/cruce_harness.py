@@ -96,6 +96,10 @@ def cruzar(
     """
     path = Path(resultado_dim1_path)
     if not path.exists():
+        repo_fallback = Path(__file__).resolve().parents[2] / "M2/ejecucion/outputs_gold/resultado_dimension1.json"
+        if repo_fallback.exists():
+            path = repo_fallback
+    if not path.exists():
         print(f"[cruce_harness] AVISO: {path} no existe. Usando datos simulados.")
         return _cruce_simulado(metricas_ragas, umbrales)
 

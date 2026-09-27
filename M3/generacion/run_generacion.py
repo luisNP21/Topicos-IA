@@ -87,6 +87,13 @@ def run(cfg: dict, project_root: Path) -> dict:
     outputs_dir.mkdir(parents=True, exist_ok=True)
 
     entidades_path = project_root / rutas["entidades"]
+    if not entidades_path.exists():
+        repo_fallback = Path(__file__).resolve().parents[2] / rutas["entidades"]
+        modulo_fallback = Path(__file__).resolve().parent / "entidades_ejemplo.json"
+        if repo_fallback.exists():
+            entidades_path = repo_fallback
+        elif modulo_fallback.exists():
+            entidades_path = modulo_fallback
     with open(entidades_path, "r", encoding="utf-8") as f:
         entidades = json.load(f)
     _log(f"Entidades de prueba: {len(entidades)} (desde {entidades_path})")

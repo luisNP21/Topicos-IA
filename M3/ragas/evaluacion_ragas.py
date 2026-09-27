@@ -232,10 +232,16 @@ def run(cfg: dict, project_root: str = "") -> dict:
 
     # B) Cargar de archivo de generacion de M3 si existe
     if not eval_set:
-        ruta_p = Path(project_root) / archivo_gen if project_root else Path(archivo_gen)
-        eval_set = cargar_eval_set_de_generacion(ruta_p)
-        if eval_set:
-            origen = str(ruta_p)
+        candidatos = []
+        if project_root:
+            candidatos.append(Path(project_root) / archivo_gen)
+        candidatos.append(Path(archivo_gen))
+        candidatos.append(Path(__file__).resolve().parents[2] / archivo_gen)
+        for cand in candidatos:
+            eval_set = cargar_eval_set_de_generacion(cand)
+            if eval_set:
+                origen = str(cand)
+                break
 
     # C) Fallback a EVAL_SET_MOCK
     if not eval_set:
