@@ -1,22 +1,25 @@
 """
 cruce_harness.py
-Cruza las metricas RAGAS con el F1 de extraccion de M2 -- Luis
+Cruza las metricas RAGAS con el F1 de extraccion de M2 
 
 Lee resultado_dimension1.json de M2, calcula F1 por documento a partir
-de true_by_doc y pred_by_doc, y lo cruza con las metricas RAGAS para
-diagnosticar con precision en que etapa del pipeline falla el sistema.
+de true_by_doc y pred_by_doc, y lo cruza con las metricas RAGAS por
+documento para diagnosticar en que etapa del pipeline falla el sistema.
 
-Misma logica que diagnosticar_debilidad() en M2/harness/scorecard.py.
 """
 
 import json
 from pathlib import Path
 
 
+
+# Calcular F1 por documento desde true_by_doc y pred_by_doc
+
+
 def _f1_por_doc(true_by_doc: dict, pred_by_doc: dict) -> dict:
     """
-    resultado_dimension1.json contiene el micro-PRF1 global pero no por documento.
-    Lo calculamos aqui a partir de las listas de entidades gold y predichas.
+    El resultado_dimension1.json tiene el F1 global pero no por documento.
+    Lo recalculamos aqui a partir de true_by_doc y pred_by_doc.
     """
     resultados = {}
     for doc_id, gold in true_by_doc.items():
@@ -36,6 +39,9 @@ def _f1_por_doc(true_by_doc: dict, pred_by_doc: dict) -> dict:
     return resultados
 
 
+# Reglas de diagnostico
+
+
 def diagnosticar(
     f1_extraccion: float,
     context_recall: float,
@@ -43,25 +49,31 @@ def diagnosticar(
     umbrales: dict,
 ) -> str:
     """
-    Diagnostico automatico por documento segun que metrica falla:
-    - f1_extraccion bajo    -> falla el extractor Clinical BERT (M1/M2)
-    - context_recall bajo   -> falla corpus (Isa) o retrieval (Pau)
-    - faithfulness bajo     -> el LLM (Agustin) alucina fuera del contexto
-    """
-    f1_bajo    = umbrales.get("umbral_f1_bajo", 0.4)
-    f1_alto    = umbrales.get("umbral_f1_alto", 0.7)
-    rec_bajo   = umbrales.get("umbral_recall_bajo", 0.4)
-    faith_bajo = umbrales.get("umbral_faithfulness_bajo", 0.4)
+    Misma logica de diagnosticar_debilidad() de M2/harness/scorecard.py.
+    Cada metrica apunta a una etapa distinta del pipeline:
 
-    if f1_extraccion < f1_bajo and context_recall >= (1 - rec_bajo) and faithfulness >= (1 - faith_bajo):
-        return "problema_extraccion"
-    if f1_extraccion >= f1_alto and context_recall < rec_bajo:
-        return "problema_corpus_retrieval"
+    - f1_extraccion bajo  -> M1/M2 no detecto bien las entidades
+    - context_recall bajo -> corpus/retrieval (Pau/Isa) no trajo lo necesario
+    - faithfulness bajo   -> generacion (Agustin) alucino cosas fuera del contexto
+    """
+    f1_bajo         = umbrales.get("f1_bajo", 0.4)
+    f1_alto         = umbrales.get("f1_alto", 0.7)
+    recall_bajo     = umbrales.get("recall_bajo", 0.4)
+    faith_bajo      = umbrales.get("faithfulness_bajo", 0.4)
+
+    if f1_extraccion < f1_bajo and context_recall >= (1 - recall_bajo) and faithfulness >= (1 - faith_bajo):
+        return "problema_extraccion"        # M1/M2 no detecto bien; el resto funciona
+    if f1_extraccion >= f1_alto and context_recall < recall_bajo:
+        return "problema_corpus_retrieval"  # buena extraccion, pero no hay guia o no se recupero
     if faithfulness < faith_bajo:
-        return "alucinacion_generacion"
-    if f1_extraccion >= f1_alto and context_recall >= (1 - rec_bajo) and faithfulness >= (1 - faith_bajo):
+        return "alucinacion_generacion"     # Agustin invento cosas fuera del contexto
+    if f1_extraccion >= f1_alto and context_recall >= (1 - recall_bajo) and faithfulness >= (1 - faith_bajo):
         return "funcionamiento_correcto"
     return "caso_mixto"
+
+
+
+# Cruce principal
 
 
 def cruzar(
@@ -70,23 +82,35 @@ def cruzar(
     umbrales: dict,
 ) -> dict:
     """
-    Realiza el cruce entre los resultados del Harness de M2 y las metricas de RAGAS.
+    resultado_dim1_path : ruta al resultado_dimension1.json de M2
+    metricas_ragas      : dict con faithfulness, context_precision,
+                          context_recall, answer_relevancy (globales o por doc)
+    umbrales            : umbrales de diagnostico del config.yaml
+
+    Devuelve un dict con:
+    - f1_global_m2      : F1 global de M2
+    - f1_por_doc        : F1 por documento calculado desde true/pred_by_doc
+    - diagnosticos      : diagnostico por documento
+    - resumen           : conteo de cada tipo de diagnostico
+    - tabla_markdown    : tabla lista para copiar en el informe
     """
     path = Path(resultado_dim1_path)
     if not path.exists():
-        print(f"[cruce_harness] AVISO: {path} no encontrado. Generando datos de respaldo.")
-        return _cruce_respaldo(metricas_ragas, umbrales)
+        print(f"[cruce_harness] AVISO: {path} no existe. Usando datos simulados.")
+        return _cruce_simulado(metricas_ragas, umbrales)
 
     with open(path, "r", encoding="utf-8") as f:
         dim1 = json.load(f)
 
-    f1_global = dim1.get("metrics", {}).get("f1", 0.0)
+    f1_global = dim1["metrics"]["f1"]
     true_by_doc = dim1.get("true_by_doc", {})
     pred_by_doc = dim1.get("pred_by_doc", {})
     f1_doc = _f1_por_doc(true_by_doc, pred_by_doc)
 
-    ctx_recall = metricas_ragas.get("context_recall", 0.0)
-    faith      = metricas_ragas.get("faithfulness", 0.0)
+    # RAGAS llega como metricas globales; las aplicamos a todos los docs
+    # (cuando Pau/Agustin entreguen datos por doc, se puede extender)
+    ctx_recall  = metricas_ragas.get("context_recall", 0.0)
+    faith       = metricas_ragas.get("faithfulness", 0.0)
 
     diagnosticos = {
         doc_id: diagnosticar(vals["f1"], ctx_recall, faith, umbrales)
@@ -115,30 +139,27 @@ def _tabla_markdown(f1_doc: dict, ragas: dict, diagnosticos: dict) -> str:
     a_rel    = ragas.get("answer_relevancy", 0.0)
 
     lineas = [
-        "| doc_id | F1 extracción (M2) | Context Recall | Faithfulness | Diagnóstico |",
+        "| doc_id | F1 extraccion (M2) | Context recall | Faithfulness | Diagnostico |",
         "|---|---|---|---|---|",
     ]
-    # Muestra los primeros 15 y el total
-    items = sorted(f1_doc.items())
-    for doc_id, vals in items[:15]:
+    for doc_id, vals in sorted(f1_doc.items()):
         lineas.append(
-            f"| `{doc_id}` | {vals['f1']:.3f} | {ctx_rec:.3f} | {faith:.3f} | **{diagnosticos.get(doc_id, '?')}** |"
+            f"| {doc_id} | {vals['f1']:.3f} | {ctx_rec:.3f} | {faith:.3f} "
+            f"| {diagnosticos.get(doc_id, '?')} |"
         )
-    if len(items) > 15:
-        lineas.append(f"| ... ({len(items)-15} documentos más) | ... | ... | ... | ... |")
-
     lineas.append("")
     lineas.append(
-        f"**Promedios RAGAS:** Faithfulness={faith:.3f} | Context Precision={ctx_prec:.3f} | "
-        f"Context Recall={ctx_rec:.3f} | Answer Relevancy={a_rel:.3f}"
+        f"**RAGAS global:** faithfulness={faith:.3f} | context_precision={ctx_prec:.3f} | "
+        f"context_recall={ctx_rec:.3f} | answer_relevancy={a_rel:.3f}"
     )
     return "\n".join(lineas)
 
 
-def _cruce_respaldo(metricas_ragas: dict, umbrales: dict) -> dict:
-    docs_simulados = {f"ex_{i}": {"f1": round(0.3 + i * 0.09, 3)} for i in range(10)}
-    ctx_recall = metricas_ragas.get("context_recall", 0.6)
-    faith      = metricas_ragas.get("faithfulness", 0.7)
+def _cruce_simulado(metricas_ragas: dict, umbrales: dict) -> dict:
+    """Fallback cuando no hay resultado_dimension1.json disponible todavia."""
+    docs_simulados = {f"ex_{i}": {"f1": round(0.3 + i * 0.07, 3)} for i in range(5)}
+    ctx_recall = metricas_ragas.get("context_recall", 0.5)
+    faith      = metricas_ragas.get("faithfulness", 0.5)
     diagnosticos = {
         doc_id: diagnosticar(vals["f1"], ctx_recall, faith, umbrales)
         for doc_id, vals in docs_simulados.items()
@@ -147,25 +168,27 @@ def _cruce_respaldo(metricas_ragas: dict, umbrales: dict) -> dict:
     for d in diagnosticos.values():
         resumen[d] = resumen.get(d, 0) + 1
     return {
-        "f1_global_m2": 0.716,
+        "f1_global_m2": None,
         "f1_por_doc": docs_simulados,
         "diagnosticos": diagnosticos,
         "resumen": resumen,
-        "tabla_markdown": _tabla_markdown(docs_simulados, metricas_ragas, diagnosticos),
+        "tabla_markdown": "(datos simulados -- resultado_dimension1.json no disponible)",
     }
 
 
 def run(cfg: dict, project_root: str, metricas_ragas: dict) -> dict:
+    """Punto de entrada estandar. Recibe las metricas RAGAS ya calculadas."""
     cruce_cfg = cfg.get("cruce_harness", {})
     rel_path  = cruce_cfg.get(
         "resultado_dimension1_path",
         "M2/ejecucion/outputs_gold/resultado_dimension1.json",
     )
     umbrales  = {
-        "umbral_f1_bajo":           cruce_cfg.get("umbral_f1_bajo", 0.4),
-        "umbral_f1_alto":           cruce_cfg.get("umbral_f1_alto", 0.7),
-        "umbral_recall_bajo":       cruce_cfg.get("umbral_recall_bajo", 0.4),
-        "umbral_faithfulness_bajo": cruce_cfg.get("umbral_faithfulness_bajo", 0.4),
+        "f1_bajo":           cruce_cfg.get("umbral_f1_bajo", 0.4),
+        "f1_alto":           cruce_cfg.get("umbral_f1_alto", 0.7),
+        "recall_bajo":       cruce_cfg.get("umbral_recall_bajo", 0.4),
+        "faithfulness_bajo": cruce_cfg.get("umbral_faithfulness_bajo", 0.4),
     }
     ruta_absoluta = str(Path(project_root) / rel_path) if project_root else rel_path
     return cruzar(ruta_absoluta, metricas_ragas, umbrales)
+

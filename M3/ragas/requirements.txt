@@ -5,3 +5,4 @@ langchain-groq==0.3.3
 python-dotenv==1.0.1
 PyYAML==6.0.2
 numpy==2.1.3
+

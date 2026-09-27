@@ -1,6 +1,6 @@
 """
 evaluacion_ragas.py
-Evaluacion RAGAS del sistema RAG de M3 -- Luis
+Evaluacion RAGAS del sistema RAG de M3
 
 Calcula faithfulness, context_precision, context_recall y answer_relevancy.
 Conecta automaticamente con las respuestas de generacion (resultado_generacion.json)
@@ -20,9 +20,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ------------------------------------------------------------------
+
 # Evaluacion Mock (embeddings o solapamiento lexico)
-# ------------------------------------------------------------------
+
 _EMB_MODEL = None
 
 
@@ -53,9 +53,9 @@ def _sim(a: str, b: str, model) -> float:
     return len(tokens_a & tokens_b) / len(tokens_a | tokens_b)
 
 
-# ------------------------------------------------------------------
+
 # Eval set de respaldo (simulado)
-# ------------------------------------------------------------------
+
 EVAL_SET_MOCK = [
     {
         "question": "diabetes mellitus tipo 2",
@@ -121,9 +121,9 @@ def cargar_eval_set_de_generacion(ruta_generacion: Path) -> list[dict] | None:
         return None
 
 
-# ------------------------------------------------------------------
+
 # Calculo de metricas en modo Mock
-# ------------------------------------------------------------------
+
 
 def _faithfulness_mock(caso: dict, model) -> float:
     contexto = " ".join(caso["contexts"])
@@ -167,9 +167,9 @@ def _calcular_mock(eval_set: list[dict], embedding_model: str) -> dict:
     return {k: float(np.mean(v)) for k, v in metricas.items()}
 
 
-# ------------------------------------------------------------------
+
 # Calculo de metricas en modo Real (Libreria Ragas + Groq LLM)
-# ------------------------------------------------------------------
+
 
 def _calcular_real(eval_set: list[dict], llm_model: str) -> dict:
     try:

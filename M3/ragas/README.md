@@ -1,54 +1,135 @@
-# M3/ragas — Evaluación RAGAS + Cruce con Harness M2 (Luis)
+# M3/ragas — Evaluación RAGAS + cruce con harness M2
 
-Módulo de evaluación integral del sistema RAG clínico y diagnóstico de debilidades por etapas.
-Cumple con el criterio de **Nivel 4 (5 puntos)** de la rúbrica de M3.
-
----
-
-## 🎯 ¿Qué hace este módulo?
-
-1. **Calcula las 4 métricas estándar de RAGAS:**
-   * **`faithfulness`** (Fidelidad): ¿La respuesta del LLM se sustenta exclusivamente en los fragmentos clínicos recuperados o alucina?
-   * **`context_precision`** (Precisión del contexto): ¿Los pasajes traídos por el retrieval son realmente pertinentes para la consulta?
-   * **`context_recall`** (Cobertura del contexto): ¿El retrieval logró encontrar toda la evidencia necesaria para la recomendación?
-   * **`answer_relevancy`** (Relevancia de respuesta): ¿La respuesta final atiende directamente la consulta formulada?
-
-2. **Cruce multidimensional con el Harness de M2:**
-   Toma el archivo `M2/ejecucion/outputs_gold/resultado_dimension1.json` (donde Clinical BERT obtuvo un F1 de 0.72) y calcula el F1 por documento clínico para cruzarlo con el comportamiento del RAG.
-
-3. **Diagnóstico automático de fallas:**
-   * `problema_extraccion`: El extractor falló (F1 < 0.4), pero el retrieval y generación habrían funcionado.
-   * `problema_corpus_retrieval`: Extracción perfecta (F1 ≥ 0.7), pero no se encontró la guía en el corpus (Recall < 0.4).
-   * `alucinacion_generacion`: El LLM inventó datos no respaldados por las fuentes (Faithfulness < 0.4).
-   * `funcionamiento_correcto`: Todas las etapas superan el estándar de calidad.
+Evalúa el sistema RAG de M3 con las cuatro métricas estándar de **RAGAS** y las
+cruza con el **F1 de extracción de M2** para diagnosticar en qué etapa del pipeline
+falla el sistema.
 
 ---
 
-## 🚀 Modos de Ejecución
+## Qué mide cada métrica y qué te dice si falla
 
-### Modo Mock (Prueba rápida / Sin costo de API)
+| Métrica | Pregunta que responde | Si falla, el problema está en… |
+|---|---|---|
+| **Faithfulness** | ¿La respuesta se basa en el contexto recuperado? | Generación (alucina cosas fuera del contexto) |
+| **Context precision** | ¿Los chunks recuperados son relevantes? | Retrieval ( trae ruido) |
+| **Context recall** | ¿Se recuperó todo lo necesario? | Corpus (Isa) o retrieval (no lo encontró) |
+| **Answer relevancy** | ¿La respuesta contesta lo que se preguntó? | Retrieval + generación combinados |
+
+---
+
+## Modos de ejecución
+
+### Modo mock (sin GROQ_API_KEY, sin datos reales)
+Calcula las métricas manualmente usando embeddings locales.
+
 ```bash
+python run_ragas.py --config config.yaml
+# o explícitamente:
 python run_ragas.py --config config.yaml --modo mock
 ```
-Calcula las métricas con embeddings multilingües y el cruce con M2 usando los casos disponibles.
 
-### Modo Real (Con LLM Groq como Juez)
+### Modo real (con GROQ_API_KEY y datos reales de Pau/Agustín)
+Usa la librería `ragas` con el mismo LLM juez (`openai/gpt-oss-120b` via Groq)
+que se usó en M2 Dimensión 3:
+
 ```bash
 python run_ragas.py --config config.yaml --modo real
 ```
-Requiere la variable `GROQ_API_KEY` en `.env` o en los Secretos de Google Colab (🔑).
+
+Requiere `GROQ_API_KEY` en `.env` o en la ventana de Secretos de Colab.
 
 ---
 
-## 📦 Estructura del Módulo
+## Instalación
+
+```bash
+pip install -r requirements.txt
+```
+
+Para modo mock solo se necesitan `sentence-transformers`, `numpy` y `pyyaml`.
+`ragas` y `langchain-groq` solo son necesarios para modo real.
+
+---
+
+## Salida de ejemplo (modo mock)
+
+```
+[ragas] modo=mock | n_casos=3
+[ragas] faithfulness      : 0.6823
+[ragas] context_precision : 0.5241
+[ragas] context_recall    : 0.5912
+[ragas] answer_relevancy  : 0.6104
+
+============================================================
+TABLA DE CRUCE RAGAS x HARNESS M2
+============================================================
+| doc_id | F1 extraccion (M2) | Context recall | Faithfulness | Diagnostico |
+|---|---|---|---|---|
+| ex_0   | 0.652 | 0.591 | 0.682 | caso_mixto |
+| ex_1   | 0.284 | 0.591 | 0.682 | problema_extraccion |
+...
+
+Resumen de diagnosticos:
+  caso_mixto: 38 documentos
+  problema_extraccion: 12 documentos
+  funcionamiento_correcto: 6 documentos
+  problema_corpus_retrieval: 3 documentos
+```
+
+---
+
+## Cómo conectar con los datos reales de Pau y Agustín
+
+Cuando Pau entregue los `contexts` y Agustín las `answers`, el `eval_set_externo`
+se pasa en `cfg` reemplazando el simulado integrado:
+
+```python
+from evaluacion_ragas import run
+
+cfg = {
+    "ragas": {"modo": "real", ...},
+    "eval_set_externo": [
+        {
+            "question":     "diabetes mellitus tipo 2",
+            "contexts":     ["...fragmento recuperado por Pau..."],
+            "answer":       "...respuesta generada por Agustín...",
+            "ground_truth": "...respuesta esperada del gold set...",
+        },
+        ...
+    ]
+}
+resultado = run(cfg=cfg, project_root="/ruta/al/proyecto")
+```
+
+---
+
+## Estructura
 
 ```
 M3/ragas/
-├── config.yaml          # Configuración, rutas a outputs y umbrales
-├── config_utils.py      # Helper de carga de YAML
-├── cruce_harness.py     # Lógica de cruce con M2 y diagnóstico
-├── evaluacion_ragas.py  # Cálculo de las 4 métricas RAGAS
-├── requirements.txt     # Dependencias del módulo
-├── run_ragas.py         # Entrypoint CLI
-└── start_ragas.ipynb    # Cuaderno lanzador para Google Colab
+├── config.yaml          # modo, modelo LLM, umbrales de diagnostico
+├── config_utils.py      # cargar_config() — mismo patron que M3/corpus/
+├── requirements.txt     # sentence-transformers, ragas, langchain-groq, etc.
+├── run_ragas.py         # entrypoint CLI
+├── evaluacion_ragas.py  # 4 metricas RAGAS (mock + real)
+└── cruce_harness.py     # cruza RAGAS con F1 de M2 y genera diagnostico
 ```
+
+---
+
+## Cruce con el harness de M2 
+
+El módulo `cruce_harness.py` lee `M2/ejecucion/outputs_gold/resultado_dimension1.json`,
+calcula el F1 por documento desde `true_by_doc` y `pred_by_doc`, y genera una tabla
+de diagnóstico automático:
+
+| F1 extracción | Context recall | Faithfulness | Diagnóstico |
+|---|---|---|---|
+| Bajo | Alto | Alto | **problema_extraccion** — M1/M2 no detectó bien; el resto funciona |
+| Alto | Bajo | — | **problema_corpus_retrieval** — no hay guía clínica o retrieval no la encontró |
+| — | — | Bajo | **alucinacion_generacion** — el LLM inventó cosas fuera del contexto |
+| Alto | Alto | Alto | **funcionamiento_correcto** |
+
+La lógica de diagnóstico replica explícitamente `diagnosticar_debilidad()` de
+`M2/harness/scorecard.py` para mantener consistencia de diseño a lo largo del proyecto.
+

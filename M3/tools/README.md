@@ -1,7 +1,7 @@
 # M3/tools — Tool de normalización terminológica
 
 Tool de normalización de entidades clínicas contra **SNOMED CT** vía la API de
-**BioPortal**. Parte del pipeline de M3 (Luis): recibe el nombre de una enfermedad
+**BioPortal**. Recibe el nombre de una enfermedad
 en texto libre (salida del encoder Clinical BERT de M1/M2) y devuelve el término
 canónico de SNOMED CT, para mejorar la calidad de las queries de retrieval.
 

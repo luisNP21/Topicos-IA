@@ -1,6 +1,6 @@
 """
 tool_normalizacion.py
-Tool de normalizacion terminologica (SNOMED CT via BioPortal) -- M3, Luis
+Tool de normalizacion terminologica (SNOMED CT via BioPortal) -- M3
 
 Dado un nombre de enfermedad en texto libre (salida del encoder de M1/M2),
 intenta normalizarlo contra SNOMED CT. Secretos via .env (python-dotenv),

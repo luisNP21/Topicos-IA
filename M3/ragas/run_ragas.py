@@ -1,7 +1,6 @@
 """
 run_ragas.py
 Entry point para correr la evaluacion RAGAS desde linea de comandos.
-Mismo patron que run_corpus.py de M3/corpus y run_tools.py de M3/tools:
 codigo versionado en git, datos en Drive via PROJECT_ROOT (.env).
 
 Uso:

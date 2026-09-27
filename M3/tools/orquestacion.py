@@ -1,6 +1,6 @@
 """
 orquestacion.py
-Decide CUANDO invocar tool_normalizacion -- M3, Luis
+Decide CUANDO invocar tool_normalizacion -- M3
 
 Regla de negocio de invocacion: si el retrieval con la entidad cruda ya
 devuelve un score suficiente, no se invoca la tool (es caro llamar a una
@@ -61,9 +61,9 @@ def resolver_query(entidad: str, retrieve_fn, umbral: float) -> dict:
     }
 
 
-# ------------------------------------------------------------------
+
 # Funciones mock para smoke-test sin modulo de retrieval real
-# ------------------------------------------------------------------
+
 
 def _retrieve_mock_bueno(query: str, k: int) -> list[dict]:
     return [{"chunk_id": "c1", "score": 0.8, "texto": "..."}]
