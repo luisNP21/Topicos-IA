@@ -1,10 +1,41 @@
-# fuentes.yaml (registro manual de procedencia — este es SU insumo de responsabilidad)
-
 fuentes:
-  - doc_id: "gpc_diabetes_mellitus_tipo_2_2025"
-    titulo: "GPC para el tratamiento y seguimiento de la diabetes mellitus tipo 2 en la población colombiana mayor de 18 años"
-    fuente_url: "https://revistaendocrino.org/index.php/rcedm/article/view/907/1348"
-    licencia: "E-ISSN: 2805-5853 | L-ISSN: 2389-9786"
+
+  - doc_id: "gpc_cancer_colorrectal"
+    titulo: "GPC para el tamizaje de cáncer colorrectal adultos"
+    fuente_url: "https://revistagastrocol.com/index.php/rcg/article/view/1451/2235"
+    licencia: "DOI: https://doi.org/10.22516/25007440.1451 (no reporta ISBN)"
     fecha_publicacion: "2025-01-01"
     responsable: "Isabella Camacho"
-    archivo_local: "data/guias_clinicas/GPC_diabetes_mellitus_tipo_2.pdf"
+    archivo_local: "data/guias_clinicas/gpc_cancer_colorrectal.pdf"
+
+  - doc_id: "gpc_diabetes_mellitus_tipo_2"
+    titulo: "GPC para el tratamiento y seguimiento de la diabetes mellitus tipo 2 en la población colombiana mayor de 18 años"
+    fuente_url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/CA/gpc-profesionales-diabetes-mellitus-tipo2-poblacion-mayor-18-anos.pdf"
+    licencia: "ISBN: 978-958-8903-75-0 "
+    fecha_publicacion: "2025-01-01"
+    responsable: "Isabella Camacho"
+    archivo_local: "data/guias_clinicas/gpc_diabetes_mellitus_tipo2.pdf"
+
+  - doc_id: "gpc_cancer_mama"
+    titulo: "GPC para la detección temprana, tratamiento integral, seguimiento y rehabilitación del cáncer de mama"
+    fuente_url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/INEC/IETS/GPC_Ptes_Mama-3.pdf#:~:text=Gu%C3%ADa%20de%20pr%C3%A1ctica%20cl%C3%ADnica%20(GPC)%20para%20la%20detecci%C3%B3n%20temprana,%20tratamiento%20integral%20seguimiento%20y%20rehabilitaci%C3%B3n%20del%20c%C3%A1ncer%20de%20mama%20|%20Gu%C3%ADa%20No.%20GPC-2013-19"
+    licencia: "ISBN: 978-958-8838-09-0"
+    fecha_publicacion: "2025-01-01"
+    responsable: "Isabella Camacho"
+    archivo_local: "data/guias_clinicas/gpc_cancer_mama.pdf"
+  
+  - doc_id: "gpc_falla_cardiaca"
+    titulo: "GPC para la rehabilitación de la falla cardíaca en la población mayor de 18 años"
+    fuente_url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/CA/gpc-prof-rehabilitacion-falla-cardiaca-poblacion-mayor-18-anos-b-c-d.pdf"
+    licencia: "ISBN: 978-958-8903-33-0"
+    fecha_publicacion: "2025-01-01"
+    responsable: "Isabella Camacho"
+    archivo_local: "data/guias_clinicas/gpc_falla_cardiaca.pdf"
+
+  - doc_id: "gpc_depresion_adultos"
+    titulo: "GPC para el tratamiento y seguimiento de la depresión en adultos"
+    fuente_url: "https://www.salud.gob.ec/wp-content/uploads/2019/02/61069_MSP_Gui%CC%81a_DEPRESION_20180228_D.pdf#:~:text=Detecci%C3%B3n%20temprana%20y%20diagn%C3%B3stico%20del%20episodio%20depresivo%20y%20trastorno%20depresivo%20recurrente%20en%20adultos.%20Atenci%C3%B3n%20integral%20de%20los%20adultos%20con%20diagn%C3%B3stico%20de%20episodio%20depresivo%20o%20trastorno%20depresivo%20recurrente.%20Gu%C3%ADa%2022"
+    licencia: "ISBN: 978-9942-22-232-9"
+    fecha_publicacion: "2025-01-01"
+    responsable: "Isabella Camacho"
+    archivo_local: "data/guias_clinicas/gpc_depresion_adultos.pdf"
