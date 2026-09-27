@@ -12,7 +12,7 @@ falla el sistema.
 |---|---|---|
 | **Faithfulness** | ¿La respuesta se basa en el contexto recuperado? | Generación (alucina cosas fuera del contexto) |
 | **Context precision** | ¿Los chunks recuperados son relevantes? | Retrieval ( trae ruido) |
-| **Context recall** | ¿Se recuperó todo lo necesario? | Corpus (Isa) o retrieval (no lo encontró) |
+| **Context recall** | ¿Se recuperó todo lo necesario? | Corpus  o retrieval (no lo encontró) |
 | **Answer relevancy** | ¿La respuesta contesta lo que se preguntó? | Retrieval + generación combinados |
 
 ---
@@ -28,7 +28,7 @@ python run_ragas.py --config config.yaml
 python run_ragas.py --config config.yaml --modo mock
 ```
 
-### Modo real (con GROQ_API_KEY y datos reales de Pau/Agustín)
+### Modo real (con GROQ_API_KEY y datos reales)
 Usa la librería `ragas` con el mismo LLM juez (`openai/gpt-oss-120b` via Groq)
 que se usó en M2 Dimensión 3:
 
@@ -78,9 +78,9 @@ Resumen de diagnosticos:
 
 ---
 
-## Cómo conectar con los datos reales de Pau y Agustín
+## Cómo conectar con los datos reales de 
 
-Cuando Pau entregue los `contexts` y Agustín las `answers`, el `eval_set_externo`
+Cuando entregue los `contexts` y Agustín las `answers`, el `eval_set_externo`
 se pasa en `cfg` reemplazando el simulado integrado:
 
 ```python
