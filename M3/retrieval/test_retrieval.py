@@ -343,7 +343,7 @@ class TestConfiguracion(unittest.TestCase):
     def test_rutas_relativas_a_la_raiz_del_repositorio(self):
         from config_retrieval import RAIZ_REPO, cargar_config, resolver, rutas
         cfg = cargar_config()
-        self.assertEqual(Path(rutas(cfg)["consultas"]), RAIZ_REPO / "M3/data/mock/consultas_mock.jsonl")
+        self.assertEqual(Path(rutas(cfg)["consultas"]), RAIZ_REPO / "M3/retrieval/data/mock/consultas_mock.jsonl")
         self.assertEqual(resolver("/content/x"), str(Path("/content/x")))
         self.assertIsNone(resolver(None))
 

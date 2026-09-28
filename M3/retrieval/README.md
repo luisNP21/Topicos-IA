@@ -12,7 +12,7 @@ y decide cuándo normalizar esa entidad con SNOMED CT / UMLS antes de buscar.
 | `retrieval.py` | Técnicas de búsqueda sobre el índice Chroma y las funciones `retrieve_naive` y `retrieve_advanced` |
 | `../generacion/orquestacion.py` | Criterio de invocación de la normalización y compuerta de evidencia (`resolver_query`) |
 | `experimento_s08.py` | Experimento controlado, calibración de umbrales con validación cruzada y tablas de resultados |
-| `construir_indice_mock.py` | Índice Chroma del corpus de prueba (`M3/data/mock/corpus_mock.json`), con el código de la ingesta (`M3/corpus`) |
+| `construir_indice_mock.py` | Índice Chroma del corpus de prueba (`M3/retrieval/data/mock/corpus_mock.json`), con el código de la ingesta (`M3/corpus`) |
 | `start_retrieval.ipynb` | Ejecución completa en Colab |
 | `test_retrieval.py` | Pruebas unitarias con modelos simulados |
 | `consultas_retrieval.jsonl` | Consultas para el corpus definitivo (pendientes de etiquetar) |

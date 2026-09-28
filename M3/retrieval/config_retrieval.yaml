@@ -5,11 +5,11 @@ corpus: mock                      # mock | real
 
 rutas:
   mock:
-    corpus_json: M3/data/mock/corpus_mock.json
+    corpus_json: M3/retrieval/data/mock/corpus_mock.json
     chroma_dir: /content/chroma_mock          # disco local de Colab: se reconstruye en cada sesión
-    manifest: M3/data/mock/corpus_manifest_mock.json
-    consultas: M3/data/mock/consultas_mock.jsonl
-    mapa_normalizacion: M3/data/mock/normalizacion_mock.json
+    manifest: M3/retrieval/data/mock/corpus_manifest_mock.json
+    consultas: M3/retrieval/data/mock/consultas_mock.jsonl
+    mapa_normalizacion: M3/retrieval/data/mock/normalizacion_mock.json
     salida: M3/retrieval/outputs_mock
   real:
     # La ingesta guarda sus salidas en Drive (PROJECT_ROOT = .../Proyecto-Salud/M3).
