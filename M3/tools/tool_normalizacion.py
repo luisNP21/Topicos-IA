@@ -8,6 +8,9 @@ con fallback a Colab Secrets si no esta en .env.
 """
 
 import os
+import re
+import unicodedata
+
 import requests
 from dotenv import load_dotenv
 
@@ -26,6 +29,23 @@ def get_api_key() -> str | None:
 
 
 BIOPORTAL_SEARCH_URL = "https://data.bioontology.org/search"
+
+
+def _tokens(texto: str) -> set:
+    """Tokens significativos (minusculas, sin tildes, >2 letras) para comparar etiquetas."""
+    sin_tildes = "".join(c for c in unicodedata.normalize("NFD", texto.lower())
+                         if unicodedata.category(c) != "Mn")
+    return {t for t in re.findall(r"\w+", sin_tildes) if len(t) > 2}
+
+
+def _plausible(entidad: str, etiqueta: str) -> bool:
+    """True si la etiqueta de BioPortal comparte algun token significativo con la entidad.
+
+    Evita aceptar resultados sin relacion: para texto clinico en espanol BioPortal a
+    veces devuelve etiquetas en ingles o basura (p. ej. 'asma bronquial' ->
+    'Smooth muscle antibody'), que al reescribir la query arruinan el retrieval.
+    """
+    return bool(_tokens(entidad) & _tokens(etiqueta))
 
 
 def normalizar_entidad(entidad: str, ontologia: str = "SNOMEDCT", api_key: str | None = None) -> dict:
@@ -73,9 +93,24 @@ def _normalizar_real(entidad: str, ontologia: str, api_key: str) -> dict:
             "normalization_failed": True,
         }
 
+    etiqueta = resultados[0]["prefLabel"]
+    sin_aporte = etiqueta.strip().lower() == entidad.strip().lower()
+    if not _plausible(entidad, etiqueta) or sin_aporte:
+        # Resultado sin relacion con la entidad, o que la repite tal cual (no aporta):
+        # fallo explicito (se mantiene la entidad original) en vez de reescribir la
+        # query con un termino ajeno.
+        motivo = "sin relacion" if not _plausible(entidad, etiqueta) else "sin aporte"
+        print(f"[tool_normalizacion] descartado: '{entidad}' -> '{etiqueta}' ({motivo})")
+        return {
+            "entidad_original": entidad,
+            "entidad_normalizada": entidad,
+            "source_terminology": None,
+            "normalization_failed": True,
+        }
+
     return {
         "entidad_original": entidad,
-        "entidad_normalizada": resultados[0]["prefLabel"],
+        "entidad_normalizada": etiqueta,
         "source_terminology": f"{ontologia} (via BioPortal)",
         "normalization_failed": False,
     }
