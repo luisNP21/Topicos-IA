@@ -58,8 +58,10 @@ def _cargar_entidades(ruta: Path) -> list[dict]:
     """
     Acepta .json (lista de strings o de dicts) o .jsonl (una consulta por linea).
 
-    Devuelve [{entidad, ground_truth}]. Se admiten los nombres del equipo
-    ('consulta') y los de RAGAS ('question'/'ground_truth').
+    Devuelve [{id, entidad, pregunta, tipo_caso, ground_truth}]. Admita los nombres
+    del eval set del equipo ('entidad', 'pregunta', 'esperado') y los de RAGAS
+    ('question', 'ground_truth'). La `pregunta` del caso, si viene, se usa tal cual
+    para la generacion; si no, se cae a la plantilla de intencion del retrieval.
     """
     if ruta.suffix == ".jsonl":
         registros = [json.loads(l) for l in ruta.read_text(encoding="utf-8").splitlines() if l.strip()]
@@ -69,12 +71,19 @@ def _cargar_entidades(ruta: Path) -> list[dict]:
     entidades = []
     for r in registros:
         if isinstance(r, str):
-            entidades.append({"entidad": r, "ground_truth": None})
+            entidades.append({"id": None, "entidad": r, "pregunta": None,
+                              "tipo_caso": None, "ground_truth": None})
             continue
-        entidad = r.get("consulta") or r.get("entidad") or r.get("question") or ""
-        ground_truth = r.get("ground_truth") or r.get("respuesta_esperada") or r.get("esperado")
-        if entidad:
-            entidades.append({"entidad": entidad, "ground_truth": ground_truth})
+        entidad = r.get("entidad") or r.get("consulta") or r.get("question") or ""
+        if not entidad:
+            continue
+        entidades.append({
+            "id": r.get("id"),
+            "entidad": entidad,
+            "pregunta": r.get("pregunta") or r.get("question"),
+            "tipo_caso": r.get("tipo_caso"),
+            "ground_truth": r.get("ground_truth") or r.get("respuesta_esperada") or r.get("esperado"),
+        })
     return entidades
 
 
@@ -92,44 +101,37 @@ def _piezas_mock(cfg: dict) -> tuple[Callable, Callable, dict, Callable]:
 def _piezas_reales(cfg: dict, project_root: Path) -> tuple[Callable, Callable, dict, Callable]:
     """
     Piezas del equipo: retrieval (Pau) y normalizacion (Luis).
-    Falla con un mensaje claro si las ramas aun no estan merged o faltan dependencias.
+
+    La normalizacion se toma con `normalizador_desde_config` de Pau, que elige el
+    mapa simulado (corpus mock) o la tool real de Luis segun `config_retrieval.yaml`.
+    Falla con un mensaje claro si las piezas no estan integradas o faltan dependencias.
     """
     mod = cfg["modulos"]
     retr_dir = project_root / mod["retrieval_dir"]
-    tool_dir = project_root / mod["tool_dir"]
     retr_cfg_path = project_root / mod["retrieval_config"]
-    tool_cfg_path = project_root / mod["tool_config"]
 
-    for carpeta in (retr_dir, tool_dir):
-        sys.path.insert(0, str(carpeta))
+    sys.path.insert(0, str(retr_dir))
     os.environ["M3_RETRIEVAL_CONFIG"] = str(retr_cfg_path)
 
     try:
         import retrieval
         from config_retrieval import (cargar_config as cargar_retr, configurar_pipeline,
-                                      parametros_orquestacion)
-        from tool_normalizacion import normalizar_entidad
+                                      normalizador_desde_config, parametros_orquestacion)
     except Exception as e:
         raise RuntimeError(
             "No se pudieron importar las piezas reales (M3/retrieval y M3/tools). "
-            "Verifica que las ramas de Paula y Luis esten integradas y que las "
-            f"dependencias del retrieval (chromadb, rank_bm25, corpus_utils) esten instaladas: {e}"
+            "Verifica que las ramas de Pau y Luis esten integradas y que las "
+            f"dependencias del retrieval (chromadb, rank_bm25) esten instaladas: {e}"
         ) from e
 
-    tool_cfg = yaml.safe_load(tool_cfg_path.read_text(encoding="utf-8"))
-    ontologia = tool_cfg["tool_normalizacion"]["ontologia"]
-
     retrieval_cfg = cargar_retr(str(retr_cfg_path))
-    configurar_pipeline(retrieval_cfg)           # construye el indice (Chroma) y fija el modo
-    params = parametros_orquestacion(retrieval_cfg)
-    _log(f"Piezas REALES: retrieval ({mod['retrieval_config']}) + tool ({ontologia}).")
+    configurar_pipeline(retrieval_cfg)                         # indice Chroma + modo del pipeline
+    params = parametros_orquestacion(retrieval_cfg)            # umbrales (calibrados o provisionales)
+    normalizar_fn = normalizador_desde_config(retrieval_cfg)   # mapa mock o tool real, segun el YAML
+    _log(f"Piezas REALES: retrieval ({mod['retrieval_config']}) + normalizacion "
+         f"(corpus '{retrieval_cfg['corpus']}').")
 
-    return (
-        retrieval.retrieve_advanced,
-        lambda entidad: normalizar_entidad(entidad, ontologia=ontologia),
-        params,
-        retrieval.pregunta_intencion,
-    )
+    return retrieval.retrieve_advanced, normalizar_fn, params, retrieval.pregunta_intencion
 
 
 def run(cfg: dict, project_root: Path) -> dict:
@@ -167,14 +169,21 @@ def run(cfg: dict, project_root: Path) -> dict:
             umbral_evidencia=params.get("umbral_evidencia"),
             forzar_por_sigla=params.get("forzar_por_sigla", False),
         )
+        # Pregunta del caso si viene; si no, la plantilla de intencion del retrieval.
+        pregunta = item.get("pregunta") or pregunta_fn(entidad)
         resp = generar_respuesta(q["query_final"], q["fragments"], generar_fn=generar_fn,
-                                 pregunta=pregunta_fn(entidad))
-        _log(f"  [{i}/{len(entidades)}] {entidad!r} -> query={q['query_final']!r} | "
-             f"tool={q['tool_invoked']} | fragmentos={len(q['fragments'])} | "
-             f"fallback={resp['fallback_used']} | fuentes={len(resp['sources_used'])}")
+                                 pregunta=pregunta)
+        _log(f"  [{i}/{len(entidades)}] {entidad!r} ({item.get('tipo_caso') or '-'}) -> "
+             f"query={q['query_final']!r} | tool={q['tool_invoked']} | "
+             f"fragmentos={len(q['fragments'])} | fallback={resp['fallback_used']} | "
+             f"fuentes={len(resp['sources_used'])}")
 
         resultados.append({
+            "id": item.get("id"),
             "entidad": entidad,
+            # `question` es la pregunta real del caso; RAGAS deberia usarla (hoy usa `entidad`).
+            "question": pregunta,
+            "tipo_caso": item.get("tipo_caso"),
             "query_final": q["query_final"],
             "tool_invoked": q["tool_invoked"],
             "tool_reason": q["tool_reason"],
@@ -220,10 +229,15 @@ def main() -> None:
     parser.add_argument("--config", default=str(Path(__file__).parent / "config.yaml"))
     parser.add_argument("--mocks", action="store_true",
                         help="Fuerza los mocks propios (sin piezas del equipo ni dependencias).")
+    parser.add_argument("--entidades", default=None,
+                        help="Eval set a generar (ruta relativa a PROJECT_ROOT); sobreescribe "
+                             "rutas.entidades del config. Util para el ejemplos.json del equipo.")
     args = parser.parse_args()
 
     cfg = cargar_config(args.config)
     cfg["_forzar_mocks"] = args.mocks
+    if args.entidades:
+        cfg["rutas"]["entidades"] = args.entidades
     project_root = resolver_project_root()
     _log(f"PROJECT_ROOT: {project_root}")
     run(cfg, project_root)

@@ -160,6 +160,21 @@ class TestCargaEntidades(unittest.TestCase):
             self.assertEqual(r[0]["entidad"], "hipertension")
             self.assertEqual(r[0]["ground_truth"], "x")
 
+    def test_eval_set_del_equipo(self):
+        # Formato de eval_set_casos.json: id, input, entidad, pregunta, tipo_caso, esperado
+        casos = [{"id": "caso_01", "input": "nota clinica", "entidad": "DM2",
+                  "pregunta": "¿Tratamiento de DM2?", "tipo_caso": "abreviatura",
+                  "esperado": "metformina"}]
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "eval.json"
+            p.write_text(json.dumps(casos), encoding="utf-8")
+            r = _cargar_entidades(p)
+        self.assertEqual(r[0]["entidad"], "DM2")
+        self.assertEqual(r[0]["pregunta"], "¿Tratamiento de DM2?")
+        self.assertEqual(r[0]["ground_truth"], "metformina")
+        self.assertEqual(r[0]["tipo_caso"], "abreviatura")
+        self.assertEqual(r[0]["id"], "caso_01")
+
 
 class TestIntegracionPiezasReales(unittest.TestCase):
     """Verifica el cableado con las piezas del equipo (imports + YAML) con modulos
@@ -175,10 +190,15 @@ class TestIntegracionPiezasReales(unittest.TestCase):
             "def pregunta_intencion(entidad):\n"
             "    return f'¿Cuál es el tratamiento de {entidad}?'\n", encoding="utf-8")
         (root / "M3/retrieval/config_retrieval.py").write_text(
-            "def cargar_config(ruta=None):\n    return {'ok': True}\n"
+            "def cargar_config(ruta=None):\n    return {'ok': True, 'corpus': 'mock'}\n"
             "def configurar_pipeline(cfg):\n    return None\n"
             "def parametros_orquestacion(cfg):\n"
-            "    return {'umbral': 0.7, 'umbral_evidencia': 0.3, 'forzar_por_sigla': True, 'k': 5}\n",
+            "    return {'umbral': 0.7, 'umbral_evidencia': 0.3, 'forzar_por_sigla': True, 'k': 5}\n"
+            "def normalizador_desde_config(cfg):\n"
+            "    def normalizar(entidad):\n"
+            "        return {'entidad_original': entidad, 'entidad_normalizada': entidad,\n"
+            "                'source_terminology': None, 'normalization_failed': True}\n"
+            "    return normalizar\n",
             encoding="utf-8")
         (root / "M3/tools/tool_normalizacion.py").write_text(
             "def normalizar_entidad(entidad, ontologia='SNOMEDCT', api_key=None):\n"
