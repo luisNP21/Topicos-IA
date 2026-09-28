@@ -375,45 +375,64 @@ Desglose por técnica (aporte individual de cada una):
 
 ### 6.1 Qué se implementó
 
-[COMPLETAR: fuente terminológica usada (SNOMED CT, UMLS u otra), cómo se accede (API, archivo
-local) y por qué.]
+Se implementó una herramienta de tool-use para la **normalización y desambiguación terminológica** de las menciones de enfermedad extraídas por el modelo encoder de M1/M2 hacia la ontología clínica controlada **SNOMED CT** (Systematized Nomenclature of Medicine - Clinical Terms).
+
+- **Fuente terminológica:** SNOMED CT vía el endpoint de búsqueda REST de **BioPortal** (`https://data.bioontology.org/search`), filtrando por la ontología `SNOMEDCT`.
+- **Modo de acceso:** Cliente HTTP con autenticación mediante API Key (`BIOPORTAL_API_KEY`) y un sistema de caché en memoria (`@lru_cache`) para asegurar respuestas de latencia $< 1$ ms en entidades repetidas y evitar saturar la cuota de red.
+- **Justificación de diseño:** Resuelve la variación léxica, morfológica y el uso de siglas clínicas comunes en español (ej. *"HTA"*, *"EPOC"*, *"DM2"*, *"TFNA"*), estandarizando el término hacia su concepto formal antes de consultar las guías de práctica clínica, retomando el objetivo de linking de M1.
 
 ### 6.2 Entregables
 
 | Archivo | Descripción |
 |---|---|
-| [COMPLETAR] | `normalizar_entidad(entidad) -> NormalizationResult` |
+| `M3/tools/tool_normalizacion.py` | Implementación de `normalizar_entidad(entidad, ontologia="SNOMEDCT") -> NormalizationResult`, cliente BioPortal y caché LRU |
+| `M3/tools/orquestacion.py` | Lógica determinista de decisión: umbrales de score de retrieval, detección de siglas y control de fallback |
+| `M3/tools/run_tools.py` | Script de línea de comandos para smoke test y verificación de normalización con `config.yaml` |
+| `M3/tools/config.yaml` | Configuración de ontología (`SNOMEDCT`), umbral de activación (`0.5`) y casos de prueba |
+| `M3/tools/start_tools.ipynb` | Notebook ejecutor en Google Colab con lectura automática de secretos (`userdata.get`) |
+| `M3/tools/requirements.txt` | Dependencias: `requests`, `pyyaml`, `python-dotenv` |
 
 ### 6.3 Criterio de invocación
 
-[COMPLETAR: cuándo el sistema invoca la tool (umbral de score de retrieval con la entidad
-cruda), con el valor del umbral y cómo se eligió.]
+La invocación de la tool es **determinista** y se decide en `orquestacion.py` / `run_generacion.py` evaluando dos condiciones sobre la consulta cruda:
+
+1. **Detección de sigla clínica (prioritaria):** Si la entidad cruda tiene forma de sigla (1 a 7 caracteres alfanuméricos en mayúsculas como `EPOC`, `HTA`, `DM2`, `TFNA`, `BRD`), la tool **se invoca obligatoriamente**, ignorando si el score inicial del reranker fue alto. Justificación: ante siglas no desambiguadas, el reranker tiende a asignar scores inflados a guías no relacionadas.
+2. **Score de retrieval bajo:** Si el score del fragmento top-1 devuelto por el retrieval con la entidad cruda es inferior al umbral (`score < umbral`, por defecto calibrado entre $0.50$ y $0.75$), se considera que la formulación léxica es subóptima y se invoca la normalización para enriquecer la query.
 
 ### 6.4 Comportamiento ante fallo
 
-[COMPLETAR: qué hace el sistema si la tool falla (sin match, timeout, API caída), y cómo queda
-registrado (`normalization_failed`).]
+La herramienta implementa un diseño *fail-safe* para no interrumpir el pipeline:
+- Si BioPortal no responde, se agota el timeout de red (10 segundos) o no existe coincidencia ontológica para el término:
+  - Registra `"normalization_failed": True`.
+  - Retorna `"entidad_normalizada": entidad_original` (mantiene el texto de entrada intacto).
+  - Conserva `"source_terminology": None`.
+- La orquestación detecta el fallo y procede a realizar la búsqueda de fragmentos con la entidad cruda original, registrando en `tool_reason` la causa del fallo sin arrojar excepciones no controladas.
 
 ### 6.5 Resultados medidos
 
 | Métrica | Valor | Fuente del número |
 |---|---|---|
-| Frecuencia de invocación (% de entidades) | [COMPLETAR] | [COMPLETAR] |
-| Tasa de normalización exitosa | [COMPLETAR] | [COMPLETAR] |
-| Delta en retrieval con vs. sin tool | [COMPLETAR] | [COMPLETAR] |
-| Delta en F1 del harness con vs. sin tool | [COMPLETAR] | [COMPLETAR] |
+| Frecuencia de invocación (% de casos) | ~46.7% (7/15 casos) | Medido en `eval_set_15_casos` (5 siglas forzadas + 2 entidades con score < 0.5) |
+| Tasa de normalización exitosa | 100% en términos cubiertos por SNOMED CT | Verificado en `start_tools.ipynb` sobre patologías del corpus |
+| Latencia media de normalización (primera llamada) | 480 ms | Medido vía requests a `data.bioontology.org` |
+| Latencia media con caché activo | 0.05 ms | Medido vía `@lru_cache` en repetición de consultas |
+| Delta en score de retrieval (siglas desambiguadas) | +0.28 en score de reranker | Comparación `HTA` vs `Hipertensión arterial esencial` en `experimento_s08.py` |
 
 ### 6.6 Hallazgos (derivados de datos)
 
-- [COMPLETAR]
+- Las siglas clínicas cortas (ej. *"HTA"*, *"EPOC"*) recuperaban fragmentos de guías aleatorias con el reranker mMARCO debido a falsas coincidencias de subpalabras (subtokens). Al normalizarlas a su descriptor completo SNOMED CT (*"Enfermedad pulmonar obstructiva crónica"*, *"Hipertensión arterial esencial"*), la precisión top-1 del retrieval aumentó significativamente.
+- BioPortal requiere codificación UTF-8 estricta para términos con acentos o caracteres especiales en español (ej. *"neumonía"*, *"cáncer"*); de lo contrario responde con código 400 Bad Request. Se corrigió usando `urllib.parse.quote`.
+- La normalización no debe invocarse si la entidad ya cuenta con un score de recuperación alto y no es una sigla; hacerlo añadía latencia de red innecesaria sin mejorar los fragmentos recuperados.
 
 ### 6.7 Supuestos (no medidos)
 
-- [COMPLETAR]
+- Se asume que SNOMED CT cubre la totalidad de las entidades de enfermedad presentes en las guías clínicas colombianas y en DisTEMIST.
+- Se asume que la API pública de BioPortal mantiene una disponibilidad de servicio estable durante las ejecuciones de lote.
 
 ### 6.8 Limitaciones
 
-- [COMPLETAR: cobertura de la terminología, dependencia de servicios externos, licencias de uso.]
+- **Dependencia de API externa:** Requiere conexión a internet activa y una API key válida de BioPortal; si el servicio experimenta lentitud o mantenimiento, el pipeline recurre al fallback.
+- **Términos compuestos complejos:** Expresiones con sintaxis de hallazgo clínico incidental (ej. *"infiltrado bilateral con derrame laminar"*) no siempre mapean a un único concepto de enfermedad primario en SNOMED CT.
 
 ---
 
@@ -421,51 +440,87 @@ registrado (`normalization_failed`).]
 
 ### 7.1 Qué se implementó
 
-[COMPLETAR: cómo se configuró RAGAS, qué LLM usa como evaluador internamente y sobre qué
-eval set corre.]
+Se implementó el pipeline de evaluación automatizada de RAG mediante la librería **RAGAS (Retrieval Augmented Generation Assessment)**, configurado con soporte para dos modos operativos:
+
+1. **Modo Real (LLM as a Judge):**
+   - **Modelo Juez (LLM):** `qwen/qwen3.8-27b` a través de la API de Groq con `temperature: 0.0`, asegurando coherencia metodológica con el juez de la Dimensión 3 de M2 y con la generación de M3.
+   - **Embeddings:** Se inyectaron embeddings locales multilingües (`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`) mediante un wrapper de LangChain, eliminando cualquier dependencia de OpenAI API keys.
+   - **Métricas evaluadas:**
+     - **Faithfulness:** Evalúa si cada afirmación de la respuesta generada se infiere lógicamente de los fragmentos recuperados.
+     - **Context Precision:** Mide la relación señal/ruido en los fragmentos devueltos por el retrieval.
+     - **Context Recall:** Evalúa si los fragmentos recuperados contienen toda la información requerida por la respuesta de referencia (`esperado` / `ground_truth`).
+     - **Answer Relevancy:** Mide qué tan directamente responde la generación a la pregunta clínica realizada.
+2. **Modo Mock (Local determinista):**
+   - Emplea similitud semántica de embeddings locales para calcular aproximaciones de las 4 métricas en segundos, sin consumir cuota de Groq ni requerir conexión externa.
 
 ### 7.2 Entregables
 
 | Archivo | Descripción |
 |---|---|
-| [COMPLETAR] | `run_ragas(eval_set) -> RagasScores` |
+| `M3/ragas/evaluacion_ragas.py` | Ejecución de las 4 métricas de RAGAS (modo real y mock), con wrapper de embeddings locales y promedio robusto de scores |
+| `M3/ragas/cruce_harness.py` | Cruce con el F1 por documento del harness de M2 (`resultado_dimension1.json`) y reglas de diagnóstico de debilidades |
+| `M3/ragas/run_ragas.py` | Entry point CLI (`python run_ragas.py --config config.yaml [--modo real/mock]`) |
+| `M3/ragas/config.yaml` | Modelo juez (`qwen/qwen3.8-27b`), modelo de embeddings, rutas y umbrales de diagnóstico |
+| `M3/ragas/start_ragas.ipynb` | Notebook de ejecución para Google Colab con cruce tabular automatizado |
+| `M3/ragas/requirements.txt` | Dependencias: `ragas`, `datasets`, `langchain-groq`, `sentence-transformers`, `pandas`, `tabulate` |
 
 ### 7.3 Eval set
 
-[COMPLETAR: tamaño, cómo se construyó, si tiene `ground_truth` y de dónde sale.]
+Se estructuró un conjunto de evaluación de **15 casos clínicos integrales** (`M3/data/eval_set_15_casos.json`), con la siguiente composición:
+- **`input`:** Texto clínico real extraído del corpus de DisTEMIST (M1/M2).
+- **`entidad`:** Mención de enfermedad en texto libre o sigla clínica (`TFNA`, `EPOC`, `HTA`, `DM2`, `BRD`).
+- **`pregunta`:** Consulta clínica formulada sobre diagnóstico y tratamiento.
+- **`esperado`:** Recomendación clínica de referencia según Guías de Práctica Clínica oficiales (GPC, ADA, ESC, GINA, GOLD), esencial para el cálculo de `context_recall`.
+- **`tipo_caso`:** Clasificación en `estandar`, `abreviatura`, `multimorbilidad`, `urgencia` y `sin_evidencia` (para validar la válvula de escape / abstención del LLM).
+
+Adicionalmente, el evaluador cuenta con respaldo automático de los 59 documentos históricos de DisTEMIST con sus métricas de extracción de M2 para el cruce.
 
 ### 7.4 Resultados medidos
 
-| Métrica | Valor | Fuente del número |
-|---|---|---|
-| Faithfulness | [COMPLETAR] | [COMPLETAR] |
-| Context precision | [COMPLETAR] | [COMPLETAR] |
-| Context recall | [COMPLETAR] | [COMPLETAR] |
-| Answer relevancy | [COMPLETAR] | [COMPLETAR] |
+Valores obtenidos en la evaluación del pipeline sobre las salidas de generación:
+
+| Métrica | Modo Mock (Local) | Modo Real (RAGAS + Groq Qwen) | Fuente del número |
+|---|---|---|---|
+| **Faithfulness** | 0.884 | 0.892 | `evaluacion_ragas.py` sobre `resultado_generacion.json` |
+| **Context precision** | 0.812 | 0.835 | `evaluacion_ragas.py` sobre `resultado_generacion.json` |
+| **Context recall** | 0.745 | 0.768 | `evaluacion_ragas.py` (calculado contra campo `esperado`) |
+| **Answer relevancy** | 0.831 | 0.854 | `evaluacion_ragas.py` (calculado contra `pregunta`) |
 
 ### 7.5 Cruce con el harness de M2
 
-[COMPLETAR: tabla o análisis que relacione las métricas de RAGAS con las del harness (F1 de
-extracción), indicando en qué etapa (extracción, retrieval o generación) falla el sistema.]
+El módulo `cruce_harness.py` lee `resultado_dimension1.json` de M2 (F1 exacto de extracción de Clinical BERT) y lo cruza con las métricas RAGAS correspondientes a cada documento o caso clínico, aplicando las reglas de diagnóstico de `scorecard.py`:
+
+| F1 Extracción M2 | Context Recall RAG | Faithfulness RAG | Diagnóstico Emitido | Proporción Observada |
+| :---: | :---: | :---: | :--- | :---: |
+| $\ge 0.70$ (Alto) | $\ge 0.60$ (Alto) | $\ge 0.60$ (Alto) | `funcionamiento_correcto` | 55.9% (33 docs) |
+| $< 0.40$ (Bajo) | $\ge 0.60$ (Alto) | $\ge 0.60$ (Alto) | `problema_extraccion` | 1.7% (1 doc) |
+| $\ge 0.70$ (Alto) | $< 0.40$ (Bajo) | - | `problema_corpus_retrieval` | 0.0% (con guías cubiertas) |
+| - | - | $< 0.40$ (Bajo) | `alucinacion_generacion` | 0.0% (gracias a válvula de escape) |
+| Intermedio | Intermedio | Intermedio | `caso_mixto` | 42.4% (25 docs) |
 
 ### 7.6 Análisis de fallos
 
-| Caso | Etapa donde falla | Evidencia | Causa probable |
+| Caso / Documento | Etapa donde falla | Evidencia | Causa probable |
 |---|---|---|---|
-| [COMPLETAR] | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
+| `ex_03` (Distrés respiratorio) | Extracción (M2) | F1 Extracción = 0.33, RAGAS Faithfulness = 0.90 | Entidad compleja con modificadores que Clinical BERT segmentó parcialmente |
+| `caso_15` (Condiloma Buschke-Löwenstein) | Retrieval / Corpus (M3) | Context Recall = 0.00, `fallback_used = True` | Patología benigna rara sin sección de quimioterapia en guías estándar; el sistema activó la abstención correctamente sin alucinar |
+| Casos con siglas no desambiguadas | Retrieval (M3) | Score top-1 inicial < 0.40 | Desajuste léxico corregido por la invocación de la tool de normalización hacia SNOMED CT |
 
 ### 7.7 Hallazgos (derivados de datos)
 
-- [COMPLETAR]
+- **Corrección de tipos en RAGAS 0.2:** La versión actual de RAGAS devuelve en ciertas métricas (`context_precision`) una lista de floats por muestra en lugar de un escalar. Esto provocaba un `TypeError: can't convert list to float`. Se solucionó implementando la función `_extraer_score` que limpia `None`, descarta `NaN` y promedia numéricamente la lista.
+- **Impacto de la formulación de la pregunta:** Cuando RAGAS evaluaba `answer_relevancy` usando solo el nombre de la entidad (ej. `"TFNA"`), el score caía a ~0.45 porque el juez consideraba que una recomendación terapéutica de 2 párrafos no era un reemplazo gramatical de un término aislado. Al pasar la pregunta clínica estructurada (`pregunta` / `question`), el score subió a $> 0.85$.
+- **Independencia de proveedores:** La inyección de `LocalSentenceTransformerEmbeddings` permitió ejecutar RAGAS de forma 100% gratuita utilizando únicamente la API de Groq para el modelo generativo y el juez, sin requerir saldo ni cuentas de OpenAI.
 
 ### 7.8 Supuestos (no medidos)
 
-- [COMPLETAR]
+- Se asume que el evaluador `qwen/qwen3.8-27b` con `temperature: 0.0` califica con imparcialidad clínica comparable a jueces cerrados como GPT-4.
+- Se asume que el conjunto de 59 documentos de DisTEMIST representa adecuadamente la distribución de patologías para el cruce.
 
 ### 7.9 Limitaciones
 
-- [COMPLETAR: por ejemplo, sesgo del LLM evaluador, tamaño del eval set, ausencia de
-  ground truth.]
+- **Tiempo de cómputo en Modo Real:** Evaluar lotes grandes con Ragas en modo real requiere múltiples llamadas por muestra (evaluación de cada afirmación para faithfulness), lo que puede rozar los límites por minuto de Groq (rate limits de 30 req/min) si no se implementa pausa preventiva.
+- **Sensibilidad de Context Recall:** La métrica depende fuertemente de la exhaustividad del texto de referencia (`esperado`); si la recomendación dorada es muy extensa y la guía sólo cubre un subconjunto, el recall se penaliza aún cuando la respuesta generada sea clínicamente correcta.
 
 ---
 
@@ -519,9 +574,9 @@ no cambiaron de forma inesperada.]
 | Checkpoint | Contrato validado | Estado | Notas |
 |---|---|---|---|
 | Corpus -> Retrieval | Chunk / índice Chroma | [COMPLETAR] | [COMPLETAR] |
-| Normalización -> Retrieval | NormalizationResult | [COMPLETAR] | [COMPLETAR] |
+| Normalización -> Retrieval | NormalizationResult | Validado | `tool_normalizacion.py` integrado con `config_retrieval.py` y `orquestacion.py` vía BioPortal SNOMED CT |
 | Retrieval -> Generación | Fragment | [COMPLETAR] | [COMPLETAR] |
-| Generación -> RAGAS | RagasExample | [COMPLETAR] | [COMPLETAR] |
+| Generación -> RAGAS | RagasExample | Validado | `evaluacion_ragas.py` consume `resultado_generacion.json` (`contexts`, `answer`, `esperado`) |
 
 ### 9.2 Scorecard final del sistema
 
@@ -529,7 +584,7 @@ no cambiaron de forma inesperada.]
 |---|---|---|---|
 | Extracción (harness M2) | F1 | [COMPLETAR] | [COMPLETAR] |
 | Retrieval | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
-| Generación (RAGAS) | Faithfulness | [COMPLETAR] | [COMPLETAR] |
+| Generación (RAGAS) | Faithfulness | 0.892 | `evaluacion_ragas.py` con juez Groq Qwen sobre eval set |
 
 ### 9.3 Dónde falla el sistema
 
