@@ -166,105 +166,93 @@ Chunk = {
 
 ### 3.3 Resultados medidos
 
-Parámetros de configuración (confirmar contra el `config.yaml` final antes de reportar):
+Parámetros de configuración:
 
 | Parámetro | Valor | Fuente |
 |---|---|---|
 | Modelo de embeddings | `intfloat/multilingual-e5-base` | `config.yaml` |
-| `max_tokens` / `overlap_tokens` | 350 / 50 (valores propuestos inicialmente) | [COMPLETAR: confirmar en `config.yaml`] |
-| `min_palabras` (front matter) | 25 (valor propuesto inicialmente) | [COMPLETAR: confirmar en `config.yaml`] |
+| `max_tokens` / `overlap_tokens` | 500 / 50 | `config.yaml` |
+| `min_palabras` (front matter) | 25 | `config.yaml` |
 
 Resultados de la corrida:
 
 | Métrica | Valor | Fuente del número |
 |---|---|---|
-| Documentos indexados | [COMPLETAR] | [COMPLETAR: `stats` de `run()` y celda de verificación de fuentes] |
-| Fuentes fallidas | [COMPLETAR] | [COMPLETAR: `stats["errores"]`] |
-| Chunks totales en Chroma | [COMPLETAR] | [COMPLETAR: `coleccion.count()`] |
-| Secciones filtradas como front matter | [COMPLETAR] | [COMPLETAR: `stats["n_secciones_filtradas"]`] |
-| Chunks por `categoria_seccion` | [COMPLETAR: tratamiento / diagnostico / epidemiologia / otro] | [COMPLETAR: conteo sobre metadata de Chroma o JSON] |
-| Chunks por documento (mín / media / máx) | [COMPLETAR] | [COMPLETAR] |
-| Tamaño de la colección Chroma en Drive | ~18 MB en una corrida intermedia | Observado en Drive; [COMPLETAR: valor final] |
+| Documentos indexados | 3 | `start_corpus.ipynb`, secciones 4 y 5: `n_documentos` y verificación de fuentes |
+| Fuentes fallidas | 0 | `start_corpus.ipynb`, sección 4: `n_fuentes_fallidas` y lista `errores` vacía |
+| Chunks totales en Chroma | 64 | `start_corpus.ipynb`, sección 5: `coleccion.count()` |
+| Secciones filtradas como front matter | 2 | `start_corpus.ipynb`, sección 4: `n_secciones_filtradas` |
+| Chunks por documento (mín / media / máx) | 12 / 21,3 / 29 | `start_corpus.ipynb`, sección 5.2: conteo por documento (12, 23 y 29) |
+| Chunks sobre `max_tokens` (500) / límite del modelo (512) | 8 / 0 | `start_corpus.ipynb`, sección 5.2 |
 
 ### 3.4 Procedencia, licencia y responsabilidad
 
 | Aspecto | Detalle |
 |---|---|
-| Origen | Guías clínicas simuladas, generadas con IA por decisión del equipo. El contenido clínico (dosis, cifras, criterios) es inventado y no cita evidencia ni fuentes reales |
-| Generación | Un prompt por enfermedad que fija la estructura de secciones (front matter: portada, resumen, índice, abreviaturas, glosario; cuerpo: epidemiología, diagnóstico, tratamiento farmacológico con tabla de dosificación, tratamiento no farmacológico, seguimiento). Enfermedades elegidas entre las especialidades cubiertas por DisTEMIST. [COMPLETAR: IA usada, fecha de generación, lista final de enfermedades] |
-| Licencia | [COMPLETAR: términos de uso del contenido generado y del modelo que lo generó] |
-| Vigencia | Sin vigencia clínica: las fechas de publicación son ficticias. No debe usarse para ninguna decisión clínica |
-| Responsable | Isa (campo `responsable` en `fuentes.yaml`) |
-| Trazabilidad | `corpus_manifest.json` registra, por documento: `doc_id`, `titulo`, `fuente_url`, `licencia`, `fecha_publicacion`, `fecha_indexado`, `responsable`. Cada chunk conserva `doc_id` y `seccion` para citar el origen |
+| Origen | Guías creadas con apoyo de IA a partir de guías clínicas reales. El material generado no sustituye las fuentes originales ni debe usarse por sí solo para tomar decisiones clínicas |
+| Generación | Se utilizó IA para elaborar las guías tomando como base las fuentes clínicas reales registradas en `M3/corpus/fuentes.yaml`. Los PDFs usados están en `M3/corpus/guias_clinicas/` |
+| Licencia y acceso | `M3/corpus/fuentes.yaml` contiene los enlaces de acceso (`fuente_url`), la información de licencia o ISBN, las fechas registradas, el responsable y la ruta local de cada fuente |
+| Vigencia | Consultar la fecha y la guía original registradas en `fuentes.yaml` |
+| Responsable | Isabella Camacho (campo `responsable` en `fuentes.yaml`) |
+| Trazabilidad | `fuentes.yaml` registra la procedencia y ubicación de las fuentes; `corpus_manifest.json` registra, por documento, `doc_id`, `titulo`, `fuente_url`, `licencia`, `fecha_publicacion`, `fecha_indexado` y `responsable`. Cada chunk conserva `doc_id` y `seccion` para citar el origen |
 
 ### 3.5 Qué pasa si el corpus está mal
 
+El corpus es la base de todo lo que recupera el sistema, y ninguna etapa posterior puede
+compensar un corpus deficiente. Modos de falla identificados:
+
 | Modo de falla | Efecto en el sistema | Estado | Detección / mitigación |
 |---|---|---|---|
-| Sección de tratamiento ausente o mal clasificada | El filtro por categoría deja el pool vacío o trae chunks de otra categoría | Anticipado | Fallback a búsqueda sin filtro; medir frecuencia en la evaluación |
 | Enfermedad sin cobertura en el corpus | Recall bajo; riesgo de respuesta forzada con contexto pobre | Anticipado | `fallback_used` en generación; context recall de RAGAS |
+| Cobertura parcial de una enfermedad (guía sin la sección relevante) | El retrieval devuelve fragmentos que mencionan la enfermedad pero no responden la consulta | Anticipado | Evaluación con gold set de relevancia (sección 5) |
 | Guía desactualizada o con contenido erróneo | Respuesta fluida con evidencia obsoleta y score alto; el pipeline no lo detecta | Anticipado | Sin detección automática; con guías simuladas no aplica clínicamente, pero se documenta como límite del diseño |
-| Mismo `doc_id` reutilizado con contenido editado | La caché sirve los chunks viejos sin aviso | Anticipado (regla aceptada) | Disciplina de nombres: nueva versión = nuevo nombre |
-| Front matter mal filtrado (sección clínica descartada o boilerplate indexado) | Pérdida de información o ruido en el índice | [COMPLETAR: observado / anticipado] | Inspección manual de las secciones marcadas como filtradas |
-| Desfase entre chunks JSON, manifest y Chroma | Documentos visibles en una capa pero no en otra | Anticipado | Celda de verificación de fuentes que compara las cuatro capas |
+| Mismo `doc_id` reutilizado con contenido editado | La caché sirve los chunks anteriores sin aviso | Anticipado (regla aceptada) | Disciplina de nombres: nueva versión = nuevo nombre |
+| Metadato `categoria_seccion` incorrecto | Solo afecta a los módulos que lo usen; el retrieval actual no lo utiliza | Anticipado | Revisión manual de una muestra si se incorpora en un módulo posterior |
 
-[COMPLETAR: reemplazar "Anticipado" por "Observado" y agregar la evidencia en los casos que
-ocurran durante la ejecución final.]
+### 3.6 Limitaciones
 
-### 3.6 Hallazgos (derivados de datos)
+**Principal: construir un corpus completo que se adapte al problema es complejo con los datos
+y el alcance actuales.** Las guías clínicas son documentos extensos y heterogéneos, escritos
+para un lector humano que navega por secciones, y no para responder consultas a partir del
+nombre de una enfermedad. Nuestro pipeline parte de una entidad extraída y necesita
+fragmentos que contengan información utilizable sobre ella, pero esa información está
+dispersa y depende del contexto clínico. Con un número reducido de guías, el retrieval tiene
+poco material entre el cual encontrar el fragmento adecuado, y por eso los resultados del
+módulo están acotados por el corpus y no solo por las técnicas de retrieval aplicadas.
 
-Observados al ejecutar el pipeline:
+Limitaciones complementarias:
 
-- Docling devuelve las tablas como `TableItem`, sin atributo `.text`; la primera versión de
-  `ingerir_documento` fallaba con `AttributeError`. Se corrigió exportando la tabla a markdown.
-- El primer indexado falló con `DuplicateIDError` con 64 ids duplicados: el contador de
-  `chunk_id` se reiniciaba en cada sección. Además, `guardar_chunks_json` había sobrescrito
-  archivos de chunks distintos bajo el mismo nombre. Se corrigió con `renumerar_chunks` (id
-  secuencial por documento) y se regeneró la carpeta de chunks.
-- Una ruta escrita como expresión de Python dentro de `fuentes.yaml` se leyó como texto
-  literal y produjo `FileNotFoundError`. Las rutas del YAML son solo texto relativo; la
-  concatenación con `PROJECT_ROOT` se hace en código.
-- Un nombre de archivo mal escrito en `fuentes.yaml` interrumpió una corrida en la que ya se
-  habían generado los chunks de 3 PDFs. Motivó la caché por `doc_id`, para no reprocesar
-  guías ya indexadas.
-- Al revisar guías reales, el nombre de la enfermedad aparecía en fragmentos sin recomendación
-  de tratamiento (observación cualitativa, sin cifra; ver 1.4). Motivó `categoria_seccion`.
+- **Consultas con más contexto que el nombre de la enfermedad:** ampliar la entrada del
+  retrieval con la pregunta clínica y los datos relevantes del caso, no solo las entidades
+  extraídas.
+- **Corpus semi simulado:** el contenido clínico es generado a partir de resúmenes de guías clínicas
+  reales, y como no se cuenta con profesionales del área, ninguna conclusión sobre la calidad clínica 
+  de las respuestas es válida. 
+- **Tamaño y cobertura:** # documentos (3 enfermedades). Con pocos documentos las métricas de retrieval 
+  son sensibles a casos individuales y tienen poca variabilidad. No hay cobertura de subpoblaciones, 
+  comorbilidades ni múltiples versiones de una misma guía.
+- **Parseo de PDFs:** las tablas se exportan a markdown y las tablas complejas pueden perder
+  estructura. 
+- **Control de vigencia:** todas las guías se diferencian por su id y el nombre de la fuente. Para pasos posteriores
+  se podría incluir un control mas robusto.
 
-Cuantitativos: [COMPLETAR: conteos de la tabla 3.3 y hallazgos de la revisión manual del filtro
-de front matter, indicando cuántas secciones revisadas y cuántas se descartaron por error.]
+### 3.7 Proyección: escalar el corpus
 
-### 3.7 Supuestos (no medidos)
+Dado lo extensas que son las guías clínicas, un corpus robusto es la mejora de mayor impacto
+para el sistema: más información en el índice significa más material para el retrieval y,
+en principio, mejores resultados. Líneas de escalamiento:
 
-- `categoria_seccion`, asignada por palabras clave sobre el título, refleja el contenido real
-  de la sección. No se validó contra una revisión manual de los chunks.
-- `min_palabras` conserva las secciones clínicas con poco texto corrido (por ejemplo tablas de
-  recomendaciones). [COMPLETAR: cuántas guías se inspeccionaron para calibrarlo.]
-- Las guías simuladas reproducen la estructura de guías reales lo suficiente para representar
-  el problema de retrieval. No se comparó contra guías reales.
-- `multilingual-e5-base` es adecuado para retrieval en español clínico. No se comparó contra
-  otros embedders en este módulo.
-- Los valores de `max_tokens` y `overlap_tokens` son adecuados. No se hizo un barrido de
-  parámetros.
-- Chroma se puede leer directamente desde Drive montado. Si otro integrante ve errores de
-  lectura, copiar la carpeta a disco local del runtime.
-
-### 3.8 Limitaciones
-
-- **Corpus simulado:** el contenido clínico es inventado, por lo que ninguna conclusión sobre
-  calidad clínica de las respuestas es válida. Además, guías generadas con una plantilla común
-  son más homogéneas que las reales, y esto puede hacer el retrieval más fácil de lo que sería
-  en producción.
-- **Clasificación por palabras clave:** títulos que no usen las raíces configuradas caen en
-  `otro`, y la clasificación no mira el contenido del chunk.
-- **Tamaño del corpus:** [COMPLETAR: número de documentos y enfermedades cubiertas]; con pocos
-  documentos, las métricas de retrieval tienen poca variabilidad y son sensibles a casos
-  individuales.
-- **Tablas:** se exportan a markdown; tablas complejas pueden perder estructura o producir
-  chunks largos. [COMPLETAR: resultado de la revisión de las tablas de dosificación.]
-- **Caché por existencia:** el pipeline no detecta cambios de contenido bajo el mismo `doc_id`.
-- **Sin detección de guías desactualizadas o contradictorias entre documentos.**
-- **Dependencia de Docling** para el parseo de PDFs; un PDF escaneado o con maquetación
-  atípica puede extraerse mal. [COMPLETAR: si ocurrió con alguna guía.]
+- **Más documentos y mayor cobertura:** ampliar el número de enfermedades, las guías por
+  enfermedad y las versiones, idealmente con guías reales y licencias verificadas.
+- **Un corpus diseñado para el problema:** preparar el contenido de modo que responda a
+  consultas por entidad, en lugar de indexar los documentos tal como se publican.
+- **Uso de `categoria_seccion` en un módulo posterior:** el metadato ya está disponible en
+  cada chunk y en Chroma. Puede incorporarse como filtro o señal de ranking en retrieval, una
+  vez validada su calidad con una revisión manual y medido su aporte contra la línea base.
+- **Control de calidad y vigencia:** detección de cambios de contenido, manejo de versiones y
+  revisión de cobertura por enfermedad.
+- **Evaluación con guías reales:** repetir la evaluación (sección 7) para determinar qué
+  parte de los resultados se sostiene fuera del corpus simulado.
 
 ---
 
