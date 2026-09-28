@@ -126,7 +126,7 @@ def _piezas_reales(cfg: dict, project_root: Path) -> tuple[Callable, Callable, d
             f"dependencias del retrieval (chromadb, rank_bm25) esten instaladas: {e}"
         ) from e
 
-    retrieval_cfg = cargar_retr(str(retr_cfg_path))
+    retrieval_cfg = cargar_retr(os.environ["M3_RETRIEVAL_CONFIG"])   # respeta el override local si existe
     configurar_pipeline(retrieval_cfg)                         # indice Chroma + modo del pipeline
     params = parametros_orquestacion(retrieval_cfg)            # umbrales (calibrados o provisionales)
     normalizar_fn = normalizador_desde_config(retrieval_cfg)   # mapa mock o tool real, segun el YAML
