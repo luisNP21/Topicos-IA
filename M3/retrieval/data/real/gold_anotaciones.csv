@@ -1,0 +1,65 @@
+﻿chunk_id,doc_id,seccion,categoria_ingesta,relevante_tratamiento_general,motivo
+gpc_depresion_adultos_chunk0,gpc_depresion_adultos,Diagnóstico y tratamiento del episodio depresivo y del trastorno depre,tratamiento,0,Portada (la ingesta la clasifica como tratamiento por el título).
+gpc_depresion_adultos_chunk1,gpc_depresion_adultos,2. Resumen,otro,1,Resumen: enuncia el tratamiento (TCC en leve; antidepresivo más psicoterapia en moderada y grave; ISRS de primera elección). Límite: es un resumen.
+gpc_depresion_adultos_chunk2,gpc_depresion_adultos,3. Índice,otro,0,Índice.
+gpc_depresion_adultos_chunk3,gpc_depresion_adultos,4. Abreviaturas,otro,0,Abreviaturas.
+gpc_depresion_adultos_chunk4,gpc_depresion_adultos,5. Glosario,otro,0,Glosario.
+gpc_depresion_adultos_chunk5,gpc_depresion_adultos,6. Epidemiología y factores de riesgo de la depresión,epidemiologia,0,Epidemiología y factores de riesgo.
+gpc_depresion_adultos_chunk6,gpc_depresion_adultos,Conducta según el escenario clínico,otro,0,Tamizaje según escenario clínico.
+gpc_depresion_adultos_chunk7,gpc_depresion_adultos,Estudios de laboratorio,otro,0,Exámenes de laboratorio.
+gpc_depresion_adultos_chunk8,gpc_depresion_adultos,Criterios diagnósticos CIE-10 de episodio depresivo,diagnostico,0,Criterios diagnósticos CIE-10.
+gpc_depresion_adultos_chunk9,gpc_depresion_adultos,Gravedad del episodio depresivo (CIE-10),otro,0,Gravedad del episodio.
+gpc_depresion_adultos_chunk10,gpc_depresion_adultos,Diagnóstico diferencial (síntomas que sugieren depresión),diagnostico,0,Diagnóstico diferencial.
+gpc_depresion_adultos_chunk11,gpc_depresion_adultos,8. Tratamiento farmacológico de la depresión,tratamiento,1,Tratamiento farmacológico: a quién se indica y latencia de respuesta.
+gpc_depresion_adultos_chunk12,gpc_depresion_adultos,Líneas de tratamiento y recomendaciones,tratamiento,1,"Líneas de tratamiento farmacológico (ISRS, ATC, mirtazapina)."
+gpc_depresion_adultos_chunk13,gpc_depresion_adultos,Líneas de tratamiento y recomendaciones,tratamiento,1,"Continuación: benzodiacepinas, mantenimiento."
+gpc_depresion_adultos_chunk14,gpc_depresion_adultos,Efectos adversos frecuentes y precauciones,otro,1,Efectos adversos y precauciones; incluye qué fármaco evitar en cada grupo. Límite.
+gpc_depresion_adultos_chunk15,gpc_depresion_adultos,Fases del tratamiento farmacológico,tratamiento,1,Fases del tratamiento farmacológico.
+gpc_depresion_adultos_chunk16,gpc_depresion_adultos,Modelo escalonado de atención,otro,1,Modelo escalonado: intervención por paso.
+gpc_depresion_adultos_chunk17,gpc_depresion_adultos,Depresión leve,otro,1,"Depresión leve: ejercicio, psicoeducación, terapia breve."
+gpc_depresion_adultos_chunk18,gpc_depresion_adultos,Depresión moderada y grave,otro,1,Depresión moderada y grave: antidepresivo más psicoterapia.
+gpc_depresion_adultos_chunk19,gpc_depresion_adultos,"Psicoterapias: línea, sesiones y duración",otro,1,"Psicoterapias: línea, sesiones y duración."
+gpc_depresion_adultos_chunk20,gpc_depresion_adultos,Terapia electroconvulsiva y otras técnicas,otro,1,Terapia electroconvulsiva.
+gpc_depresion_adultos_chunk21,gpc_depresion_adultos,Riesgo suicida (paso 4),otro,0,Riesgo suicida: evaluación y conducta. Solo relevante para la consulta de riesgo suicida.
+gpc_depresion_adultos_chunk22,gpc_depresion_adultos,Riesgo suicida (paso 4),otro,0,Riesgo suicida: hospitalización y alta. Solo relevante para riesgo suicida.
+gpc_depresion_adultos_chunk23,gpc_depresion_adultos,Manejo especializado del riesgo suicida,tratamiento,1,Manejo especializado del riesgo suicida: psicoterapia y fármacos.
+gpc_depresion_adultos_chunk24,gpc_depresion_adultos,Situaciones especiales,otro,1,"Situaciones especiales: embarazo, adulto mayor, depresión resistente."
+gpc_depresion_adultos_chunk25,gpc_depresion_adultos,Seguimiento,otro,0,Seguimiento. Límite: incluye mantener el antidepresivo 6-12 meses.
+gpc_depresion_adultos_chunk26,gpc_depresion_adultos,Pronóstico y predictores de respuesta,otro,0,Pronóstico.
+gpc_depresion_adultos_chunk27,gpc_depresion_adultos,Signos de alarma,otro,0,Signos de alarma.
+gpc_depresion_adultos_chunk28,gpc_depresion_adultos,Criterios de referencia y contrarreferencia,otro,0,Referencia y contrarreferencia.
+gpc_diabetes_mellitus_tipo_2_chunk0,gpc_diabetes_mellitus_tipo_2,,otro,0,Portada: datos de la guía.
+gpc_diabetes_mellitus_tipo_2_chunk1,gpc_diabetes_mellitus_tipo_2,2. Resumen,otro,0,Resumen: solo enumera lo que cubre la guía; no da recomendaciones.
+gpc_diabetes_mellitus_tipo_2_chunk2,gpc_diabetes_mellitus_tipo_2,3. Índice,otro,0,Índice.
+gpc_diabetes_mellitus_tipo_2_chunk3,gpc_diabetes_mellitus_tipo_2,4. Abreviaturas,otro,0,Abreviaturas.
+gpc_diabetes_mellitus_tipo_2_chunk4,gpc_diabetes_mellitus_tipo_2,5. Glosario,otro,0,Glosario.
+gpc_diabetes_mellitus_tipo_2_chunk5,gpc_diabetes_mellitus_tipo_2,6. Epidemiología,epidemiologia,0,Epidemiología.
+gpc_diabetes_mellitus_tipo_2_chunk6,gpc_diabetes_mellitus_tipo_2,7. Diagnóstico,diagnostico,0,Diagnóstico y tamización.
+gpc_diabetes_mellitus_tipo_2_chunk7,gpc_diabetes_mellitus_tipo_2,8. Tratamiento farmacológico,tratamiento,1,"Metformina, terapia combinada e insulina según HbA1c."
+gpc_diabetes_mellitus_tipo_2_chunk8,gpc_diabetes_mellitus_tipo_2,8. Tratamiento farmacológico,tratamiento,1,Tabla de antidiabéticos con dosis y observaciones.
+gpc_diabetes_mellitus_tipo_2_chunk9,gpc_diabetes_mellitus_tipo_2,8. Tratamiento farmacológico,tratamiento,1,Continuación de la tabla: GLP-1 e insulinas.
+gpc_diabetes_mellitus_tipo_2_chunk10,gpc_diabetes_mellitus_tipo_2,9. Tratamiento no farmacológico y manejo,tratamiento,1,"Dieta, ejercicio, educación y cirugía bariátrica."
+gpc_diabetes_mellitus_tipo_2_chunk11,gpc_diabetes_mellitus_tipo_2,10. Seguimiento y pronóstico,otro,0,"Seguimiento: metas de HbA1c y tamización de complicaciones. Límite: incluye IECA/ARA2 en microalbuminuria, pero es sobre todo monitoreo."
+gpc_falla_cardiaca_chunk0,gpc_falla_cardiaca,"Guía de práctica clínica para la prevención, diagnóstico, tratamiento ",tratamiento,0,Portada (la ingesta la clasifica como tratamiento por el título).
+gpc_falla_cardiaca_chunk1,gpc_falla_cardiaca,2. Resumen,otro,0,Resumen: solo enumera temas.
+gpc_falla_cardiaca_chunk2,gpc_falla_cardiaca,3. Índice,otro,0,Índice.
+gpc_falla_cardiaca_chunk3,gpc_falla_cardiaca,4. Abreviaturas,otro,0,Abreviaturas.
+gpc_falla_cardiaca_chunk4,gpc_falla_cardiaca,5. Glosario,otro,0,Glosario. Límite: define 'manejo médico óptimo'.
+gpc_falla_cardiaca_chunk5,gpc_falla_cardiaca,"6. Epidemiología, clasificación y factores de riesgo de la falla cardí",epidemiologia,0,Epidemiología y factores de riesgo.
+gpc_falla_cardiaca_chunk6,gpc_falla_cardiaca,Clasificación funcional NYHA y etapas ACC/AHA,otro,0,Clasificación NYHA y etapas.
+gpc_falla_cardiaca_chunk7,gpc_falla_cardiaca,7. Diagnóstico de la falla cardíaca: de los síntomas a la confirmación,diagnostico,0,Diagnóstico.
+gpc_falla_cardiaca_chunk8,gpc_falla_cardiaca,Conducta diagnóstica según el escenario clínico,otro,0,Conducta diagnóstica.
+gpc_falla_cardiaca_chunk9,gpc_falla_cardiaca,Conducta diagnóstica según el escenario clínico,otro,0,Conducta diagnóstica (continuación).
+gpc_falla_cardiaca_chunk10,gpc_falla_cardiaca,Criterios de fenotipo (falla cardíaca con fracción de eyección reducid,otro,0,Criterios de fenotipo.
+gpc_falla_cardiaca_chunk11,gpc_falla_cardiaca,Falla cardíaca aguda: congestión e hipoperfusión,otro,0,Perfiles clínicos de la falla aguda y precipitantes; no es tratamiento.
+gpc_falla_cardiaca_chunk12,gpc_falla_cardiaca,8. Tratamiento farmacológico de la falla cardíaca aguda y crónica,tratamiento,1,Introducción al tratamiento farmacológico: define el manejo médico óptimo.
+gpc_falla_cardiaca_chunk13,gpc_falla_cardiaca,Falla cardíaca aguda (manejo hospitalario),tratamiento,1,"Manejo hospitalario de la falla aguda (diuréticos, vasodilatadores)."
+gpc_falla_cardiaca_chunk14,gpc_falla_cardiaca,Falla cardíaca aguda (manejo hospitalario),tratamiento,1,"Continuación: betabloqueador, ventilación no invasiva."
+gpc_falla_cardiaca_chunk15,gpc_falla_cardiaca,"Falla cardíaca crónica: estadio B, estadios C y D, y fracción de eyecc",otro,1,Falla crónica: IECA/ARA II y betabloqueadores (la ingesta la clasifica como 'otro').
+gpc_falla_cardiaca_chunk16,gpc_falla_cardiaca,"Falla cardíaca crónica: estadio B, estadios C y D, y fracción de eyecc",otro,1,"Falla crónica: antialdosterónicos, digoxina, ivabradina."
+gpc_falla_cardiaca_chunk17,gpc_falla_cardiaca,"Falla cardíaca crónica: estadio B, estadios C y D, y fracción de eyecc",otro,1,Falla con fracción de eyección conservada.
+gpc_falla_cardiaca_chunk18,gpc_falla_cardiaca,Medidas de estilo de vida,otro,1,Restricción de sal y líquidos; cardiodesfibrilador y resincronización.
+gpc_falla_cardiaca_chunk19,gpc_falla_cardiaca,Medidas de estilo de vida,otro,1,Continuación: dispositivos de resincronización.
+gpc_falla_cardiaca_chunk20,gpc_falla_cardiaca,Falla cardíaca avanzada,otro,1,"Falla avanzada: trasplante, clínica de falla cardíaca."
+gpc_falla_cardiaca_chunk21,gpc_falla_cardiaca,Rehabilitación cardíaca,otro,1,Rehabilitación cardíaca: ejercicio supervisado.
+gpc_falla_cardiaca_chunk22,gpc_falla_cardiaca,10. Seguimiento y pronóstico,otro,0,"Seguimiento y signos de alarma. Límite: controles de laboratorio, no tratamiento."

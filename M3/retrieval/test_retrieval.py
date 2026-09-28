@@ -7,6 +7,7 @@ falsos con la misma interfaz que los reales, así que no descargan modelos.
 
 from __future__ import annotations
 
+import json
 import sys
 import tempfile
 import unittest
@@ -297,103 +298,319 @@ class TestCalibracionYExperimento(unittest.TestCase):
             correr_experimento(indice(), [], sistema_base="intencion_sin_reranker")
 
 
+PERFILES = ("mock", "real")
+
+
+def config_de_prueba(tmp, corpus="mock", chunks=GUIA):
+    """Configuración completa en un directorio temporal, con los dos perfiles. No lee el YAML del
+    repositorio, así que las pruebas no dependen del perfil que esté activo allí."""
+    tmp = Path(tmp)
+    (tmp / "chunks").mkdir(exist_ok=True)
+    for c in chunks:
+        (tmp / "chunks" / f"{c['chunk_id']}.json").write_text(json.dumps(c, ensure_ascii=False), encoding="utf-8")
+    (tmp / "mapa.json").write_text(json.dumps({"hta": "hipertensión arterial"}, ensure_ascii=False), encoding="utf-8")
+    perfil = {"corpus_json": str(tmp / "chunks"), "chroma_dir": str(tmp / "chroma"), "manifest": None,
+              "consultas": str(tmp / "consultas.jsonl"), "mapa_normalizacion": str(tmp / "mapa.json"),
+              "salida": str(tmp / "salida")}
+    return {"corpus": corpus,
+            "rutas": {"mock": dict(perfil), "real": dict(perfil, solo_guias_indexadas=True)},
+            "corpus_pipeline": {"config": None},
+            "normalizacion": {"directorio": str(tmp), "config": str(tmp / "config.yaml")},
+            "modelos": {"embeddings": "intfloat/multilingual-e5-base", "reranker": "r", "reranker_alternativo": "r2"},
+            "retrieval": {"k": 3, "n_candidatos": 3, "krrf": 60, "encabezado_contextual": True,
+                          "modo_pipeline": "intencion"},
+            "intencion": {"plantillas": ["tratamiento de {e}"], "pregunta": "¿Cuál es el tratamiento de {e}?"},
+            "orquestacion": {"sistema_base": "intencion", "forzar_por_sigla": True, "umbral": None,
+                             "umbral_evidencia": None,
+                             "umbrales_provisionales": {"umbral": .75, "umbral_evidencia": .55}},
+            "calibracion": {"pliegues": 2, "semilla": 42, "tolerancia_fuera_de_corpus": 0.0},
+            "experimento": {"sistema_advanced": "intencion"}}
+
+
 class TestConfiguracion(unittest.TestCase):
     def setUp(self):
         import retrieval
         self.original = (retrieval.PLANTILLAS_INTENCION, retrieval.PREGUNTA_INTENCION)
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = Path(self._tmp.name)
 
     def tearDown(self):
         import retrieval
         retrieval.configurar_intencion(*self.original)
+        self._tmp.cleanup()
 
-    def _cfg(self, corpus="mock"):
-        """Config forzada a un perfil. Las pruebas de configuracion no deben depender
-        del perfil por defecto del YAML (que hoy es 'real' para la corrida real)."""
-        from config_retrieval import cargar_config
-        cfg = cargar_config()
-        cfg["corpus"] = corpus
-        return cfg
-
-    def test_yaml_por_defecto(self):
+    def test_yaml_del_repositorio_en_ambos_perfiles(self):
         from config_retrieval import cargar_config, rutas
         cfg = cargar_config()
-        # El perfil por defecto puede ser mock o real segun la corrida; lo que se
-        # verifica es que sea un perfil valido y que exponga las rutas esperadas.
-        self.assertIn(cfg["corpus"], cfg["rutas"])
-        self.assertIn("chroma_dir", rutas(cfg))
         self.assertEqual(pregunta_intencion("asma"), cfg["intencion"]["pregunta"].format(e="asma"))
+        for perfil in PERFILES:
+            with self.subTest(perfil=perfil):
+                r = rutas(dict(cfg, corpus=perfil))
+                self.assertTrue({"corpus_json", "chroma_dir", "consultas", "mapa_normalizacion", "salida"} <= r.keys())
+                for clave in ("consultas", "anotaciones", "gold_meta", "mapa_normalizacion"):
+                    valor = cfg["rutas"][perfil].get(clave)
+                    if valor and not valor.startswith("/"):
+                        self.assertTrue(Path(r[clave]).exists(), f"{perfil}.{clave}: {r[clave]}")
 
     def test_intencion_configurable(self):
         import yaml
         from config_retrieval import cargar_config
-        cfg = yaml.safe_load((AQUI / "config_retrieval.yaml").read_text(encoding="utf-8"))
+        cfg = config_de_prueba(self.tmp)
         cfg["intencion"] = {"plantillas": ["manejo de {e}"], "pregunta": "¿Cómo se trata {e}?"}
-        with tempfile.TemporaryDirectory() as tmp:
-            ruta = Path(tmp) / "c.yaml"
-            ruta.write_text(yaml.safe_dump(cfg, allow_unicode=True), encoding="utf-8")
-            cargar_config(ruta)
+        ruta = self.tmp / "c.yaml"
+        ruta.write_text(yaml.safe_dump(cfg, allow_unicode=True), encoding="utf-8")
+        cargar_config(ruta)
         self.assertEqual(pregunta_intencion("asma"), "¿Cómo se trata asma?")
 
     def test_parametros_de_orquestacion(self):
-        import json
-        from config_retrieval import cargar_config, parametros_orquestacion
-        cfg = self._cfg()
-        with tempfile.TemporaryDirectory() as tmp:
-            cfg["rutas"]["mock"]["salida"] = tmp
-            provisional = cfg["orquestacion"]["umbrales_provisionales"]["umbral"]
-            self.assertEqual(parametros_orquestacion(cfg)["umbral"], provisional)
-            cfg["orquestacion"]["umbrales_provisionales"] = None
-            with self.assertRaises(FileNotFoundError):
-                parametros_orquestacion(cfg)
-            (Path(tmp) / "umbrales.json").write_text(json.dumps({"final": {"umbral": .8, "umbral_evidencia": .3}}))
-            self.assertEqual(parametros_orquestacion(cfg)["umbral"], .8)
-        cfg["orquestacion"].update(umbral=.6, umbral_evidencia=.2)
-        self.assertEqual(parametros_orquestacion(cfg)["umbral_evidencia"], .2)
+        from config_retrieval import parametros_orquestacion
+        for perfil in PERFILES:
+            with self.subTest(perfil=perfil), tempfile.TemporaryDirectory() as salida:
+                cfg = config_de_prueba(self.tmp, perfil)
+                cfg["rutas"][perfil]["salida"] = salida
+                self.assertEqual(parametros_orquestacion(cfg)["umbral"], .75)
+                cfg["orquestacion"]["umbrales_provisionales"] = None
+                with self.assertRaises(FileNotFoundError):
+                    parametros_orquestacion(cfg)
+                (Path(salida) / "umbrales.json").write_text(json.dumps({"final": {"umbral": .8, "umbral_evidencia": .3}}))
+                self.assertEqual(parametros_orquestacion(cfg)["umbral"], .8)
+                cfg["orquestacion"].update(umbral=.6, umbral_evidencia=.2)
+                self.assertEqual(parametros_orquestacion(cfg)["umbral_evidencia"], .2)
 
     def test_rutas_relativas_a_la_raiz_del_repositorio(self):
-        from config_retrieval import RAIZ_REPO, cargar_config, resolver, rutas
-        cfg = self._cfg()
-        self.assertEqual(Path(rutas(cfg)["consultas"]), RAIZ_REPO / "M3/retrieval/data/mock/consultas_mock.jsonl")
-        # Ruta absoluta valida en cualquier SO (en Windows "/content/x" no es absoluta).
-        absolut = str(Path.cwd() / "x")
-        self.assertEqual(resolver(absolut), absolut)
+        from config_retrieval import RAIZ_REPO, resolver, rutas
+        for perfil in PERFILES:
+            with self.subTest(perfil=perfil):
+                cfg = config_de_prueba(self.tmp, perfil)
+                cfg["rutas"][perfil]["consultas"] = "M3/retrieval/data/x.jsonl"
+                self.assertEqual(Path(rutas(cfg)["consultas"]), RAIZ_REPO / "M3/retrieval/data/x.jsonl")
+        # Ruta absoluta válida en cualquier SO (en Windows "/content/x" no es absoluta).
+        absoluta = str(Path.cwd() / "x")
+        self.assertEqual(resolver(absoluta), absoluta)
         self.assertIsNone(resolver(None))
 
-    def test_copia_el_indice_desde_el_origen(self):
-        from config_retrieval import cargar_config, preparar_indice
-        cfg = self._cfg()
-        with tempfile.TemporaryDirectory() as tmp:
-            origen = Path(tmp) / "drive_chroma"
-            origen.mkdir()
-            (origen / "chroma.sqlite3").write_text("x")
-            cfg["rutas"]["mock"].update(chroma_origen=str(origen), chroma_dir=str(Path(tmp) / "local"))
-            self.assertTrue((Path(preparar_indice(cfg)) / "chroma.sqlite3").exists())
-            cfg["rutas"]["mock"].update(chroma_origen=str(Path(tmp) / "no_existe"), chroma_dir=str(Path(tmp) / "otro"))
-            with self.assertRaises(FileNotFoundError):
-                preparar_indice(cfg)
-
     def test_normalizador_simulado_y_real(self):
-        from config_retrieval import cargar_config, normalizador_desde_config
-        cfg = self._cfg()
-        self.assertFalse(normalizador_desde_config(cfg)("HTA")["normalization_failed"])
-        with tempfile.TemporaryDirectory() as tmp:
-            (Path(tmp) / "tool_normalizacion.py").write_text(
-                "def normalizar_entidad(entidad, ontologia='X'):\n"
-                "    return {'entidad_original': entidad, 'entidad_normalizada': ontologia,\n"
-                "            'source_terminology': ontologia, 'normalization_failed': False}\n")
-            (Path(tmp) / "config.yaml").write_text("tool_normalizacion:\n  ontologia: SNOMEDCT\n")
-            cfg["rutas"]["mock"]["mapa_normalizacion"] = None
-            cfg["normalizacion"] = {"directorio": tmp, "config": str(Path(tmp) / "config.yaml")}
-            self.assertEqual(normalizador_desde_config(cfg)("DM2")["entidad_normalizada"], "SNOMEDCT")
+        from config_retrieval import normalizador_desde_config
+        (self.tmp / "tool_normalizacion.py").write_text(
+            "def normalizar_entidad(entidad, ontologia='X'):\n"
+            "    return {'entidad_original': entidad, 'entidad_normalizada': ontologia,\n"
+            "            'source_terminology': ontologia, 'normalization_failed': False}\n")
+        (self.tmp / "config.yaml").write_text("tool_normalizacion:\n  ontologia: SNOMEDCT\n")
+        for perfil in PERFILES:
+            with self.subTest(perfil=perfil):
+                cfg = config_de_prueba(self.tmp, perfil)
+                self.assertEqual(normalizador_desde_config(cfg)("HTA")["entidad_normalizada"], "hipertensión arterial")
+                self.assertTrue(normalizador_desde_config(cfg)("DM2")["normalization_failed"])
+                cfg["rutas"][perfil]["mapa_normalizacion"] = None
+                self.assertEqual(normalizador_desde_config(cfg)("DM2")["entidad_normalizada"], "SNOMEDCT")
+
+    def test_mapa_simulado_del_corpus_real(self):
+        mapa = json.loads((AQUI / "data/real/normalizacion_simulada.json").read_text(encoding="utf-8"))
+        self.assertTrue(all(k == k.strip().lower() for k in mapa))
+        for sigla in ("dm2", "icc", "tdm", "iam", "epoc", "siadh"):
+            self.assertIn(sigla, mapa)
+        self.assertNotIn("diabetes", mapa)       # término ambiguo: no se resuelve a tipo 2
 
     def test_verifica_el_modelo_del_corpus(self):
-        from config_retrieval import cargar_config, verificar_modelo_del_corpus
-        cfg = cargar_config()
-        with tempfile.TemporaryDirectory() as tmp:
-            (Path(tmp) / "config.yaml").write_text("embeddings:\n  model_name: otro-modelo\n")
-            cfg["corpus_pipeline"] = {"config": str(Path(tmp) / "config.yaml")}
-            with self.assertRaises(RuntimeError):
-                verificar_modelo_del_corpus(cfg)
+        from config_retrieval import verificar_modelo_del_corpus
+        cfg = config_de_prueba(self.tmp)
+        (self.tmp / "corpus.yaml").write_text("embeddings:\n  model_name: otro-modelo\n")
+        cfg["corpus_pipeline"] = {"config": str(self.tmp / "corpus.yaml")}
+        with self.assertRaises(RuntimeError):
+            verificar_modelo_del_corpus(cfg)
+
+
+class ChromaFalso:
+    """Construye y abre colecciones en memoria, indexadas por la carpeta de destino."""
+    def __init__(self, chunks_construidos=None):
+        self.colecciones, self.construcciones = {}, 0
+        self.chunks_construidos = chunks_construidos
+
+    def construir(self, chunks, destino, modelo):
+        Path(destino).mkdir(parents=True)
+        self.colecciones[destino] = ColeccionFalsa(self.chunks_construidos or chunks)
+        self.construcciones += 1
+
+    def abrir(self, destino):
+        return self.colecciones[destino]
+
+
+class TestIndice(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = Path(self._tmp.name)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _preparar(self, cfg, chroma, **kw):
+        from config_retrieval import preparar_indice
+        return preparar_indice(cfg, construir_fn=chroma.construir, abrir_fn=chroma.abrir, **kw)
+
+    def test_reconstruye_si_no_existe_y_reutiliza_si_coincide(self):
+        for perfil in PERFILES:
+            with self.subTest(perfil=perfil):
+                (self.tmp / perfil).mkdir()
+                cfg = config_de_prueba(self.tmp / perfil, perfil)
+                chroma = ChromaFalso()
+                destino = self._preparar(cfg, chroma)
+                self.assertEqual(destino, cfg["rutas"][perfil]["chroma_dir"])
+                self._preparar(cfg, chroma)
+                self.assertEqual(chroma.construcciones, 1)
+
+    def test_reconstruye_un_indice_con_ids_de_otra_ingesta(self):
+        cfg, chroma = config_de_prueba(self.tmp, "real"), ChromaFalso()
+        destino = cfg["rutas"]["real"]["chroma_dir"]
+        Path(destino).mkdir()
+        (Path(destino) / "viejo.bin").write_text("x")
+        chroma.colecciones[destino] = ColeccionFalsa(GUIA + CHUNKS)
+        self._preparar(cfg, chroma)
+        self.assertEqual(chroma.construcciones, 1)
+        self.assertFalse((Path(destino) / "viejo.bin").exists())
+
+    def test_falla_si_el_indice_construido_no_coincide(self):
+        from config_retrieval import IndiceInconsistente
+        cfg = config_de_prueba(self.tmp, "real")
+        with self.assertRaises(IndiceInconsistente) as e:
+            self._preparar(cfg, ChromaFalso(chunks_construidos=GUIA + CHUNKS))
+        self.assertIn("el índice tiene 7 chunks y la carpeta de chunks 4", str(e.exception))
+        self.assertIn("sifilis_c0", str(e.exception))
+
+    def test_detecta_textos_distintos_con_los_mismos_ids(self):
+        from config_retrieval import IndiceInconsistente, verificar_indice
+        otro = [dict(c) for c in GUIA]
+        otro[1]["texto"] += " (reingestado)"
+        with self.assertRaises(IndiceInconsistente) as e:
+            verificar_indice(ColeccionFalsa(otro), GUIA)
+        self.assertIn("dm_1", str(e.exception))
+
+    def test_chunks_faltantes_o_repetidos(self):
+        from config_retrieval import preparar_indice
+        cfg = config_de_prueba(self.tmp, "real")
+        (self.tmp / "chunks" / "copia.json").write_text(json.dumps(GUIA[0]), encoding="utf-8")
+        with self.assertRaises(ValueError):
+            preparar_indice(cfg, construir_fn=ChromaFalso().construir)
+        cfg["rutas"]["real"]["corpus_json"] = str(self.tmp / "no_existe")
+        with self.assertRaises(FileNotFoundError):
+            preparar_indice(cfg)
+
+    def test_no_borra_un_indice_en_drive(self):
+        from config_retrieval import preparar_indice
+        cfg = config_de_prueba(self.tmp, "real")
+        cfg["rutas"]["real"]["chroma_dir"] = "/content/drive/MyDrive/x/chroma_guias"
+        with self.assertRaises(ValueError):
+            preparar_indice(cfg)
+
+    def test_manifest_solo_con_guias_indexadas(self):
+        from config_retrieval import filtrar_manifest
+        ix = indice(GUIA, manifest={"gpc_dm": {"titulo": "Diabetes"}, "gpc_cancer_mama": {"titulo": "Mama"}})
+        self.assertEqual(filtrar_manifest(ix), ["gpc_cancer_mama"])
+        self.assertEqual(list(ix.manifest), ["gpc_dm"])
+
+
+class TestGoldSet(unittest.TestCase):
+    def setUp(self):
+        self.ix = indice(GUIA + CHUNKS)
+        info = info_indice(self.ix)
+        self.gold = {
+            "consultas": [
+                {"consulta": "diabetes mellitus tipo 2", "tipo": "exacta", "relevantes": ["gpc_dm"],
+                 "chunks_relevantes": ["dm_2", "dm_3"]},
+                {"consulta": "sífilis", "tipo": "exacta", "relevantes": ["gpc_sifilis"],
+                 "chunks_relevantes": ["sifilis_c0"]},
+                {"consulta": "amiloidosis", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": True},
+            ],
+            "anotaciones": [{"chunk_id": c["chunk_id"], "doc_id": c["doc_id"], "relevante_tratamiento_general":
+                             "1" if c["chunk_id"] in ("dm_2", "dm_3", "sifilis_c0") else "0"} for c in GUIA + CHUNKS],
+            "meta": {"anotador": "IA (prueba)",
+                     "corpus": {"n_chunks": 7, "n_guias": 4, "huella_sha256": info["huella_sha256"],
+                                "chunks_por_guia": {"gpc_dm": 4, "gpc_epoc": 1, "gpc_sifilis": 1, "gpc_sepsis": 1}},
+                     "consultas": {"total": 3, "dentro_del_corpus": 2, "fuera_del_corpus": 1}}}
+
+    def _falla(self, gold, ix=None):
+        from gold_set import GoldSetInvalido, validar_gold
+        with self.assertRaises(GoldSetInvalido) as e:
+            validar_gold(ix or self.ix, gold)
+        return str(e.exception)
+
+    def test_gold_set_valido(self):
+        from gold_set import validar_gold
+        filas = validar_gold(self.ix, self.gold)
+        self.assertTrue(filas and all(f["Resultado"] == "correcta" for f in filas))
+
+    def test_chunk_inexistente_da_un_error_legible(self):
+        self.gold["consultas"][0]["chunks_relevantes"] = ["dm_2", "dm_99"]
+        mensaje = self._falla(self.gold)
+        self.assertIn("dm_99 (consulta 'diabetes mellitus tipo 2')", mensaje)
+        self.assertIn("Corrija el gold set", mensaje)
+
+    def test_chunk_de_otra_guia(self):
+        self.gold["consultas"][0]["chunks_relevantes"] = ["dm_2", "sifilis_c0"]
+        self.assertIn("sifilis_c0 es de gpc_sifilis", self._falla(self.gold))
+
+    def test_consulta_dentro_del_corpus_sin_chunks(self):
+        self.gold["consultas"][1]["chunks_relevantes"] = []
+        self.assertIn("'sífilis' no tiene chunks_relevantes", self._falla(self.gold))
+
+    def test_corpus_cambiado_detiene_con_la_comparacion_que_fallo(self):
+        otro = [dict(c) for c in GUIA + CHUNKS]
+        otro[0]["texto"] += " (reingestado)"
+        mensaje = self._falla(self.gold, indice(otro))
+        self.assertIn("Huella del corpus", mensaje)
+        self.assertIn("no es el que se anotó", mensaje)
+        mensaje = self._falla(self.gold, indice(GUIA))
+        self.assertIn("Número de chunks: índice 4, gold_meta 7", mensaje)
+        self.assertIn("sifilis_c0 anotado pero no está en el índice", mensaje)
+
+    def test_sin_detener_devuelve_las_comprobaciones(self):
+        from gold_set import validar_gold
+        self.gold["meta"]["corpus"]["huella_sha256"] = "otra"
+        filas = validar_gold(self.ix, self.gold, detener=False)
+        self.assertEqual([f["Comprobación"] for f in filas if f["Resultado"] == "falla"], ["Huella del corpus"])
+
+    def test_resumen(self):
+        from gold_set import resumen_gold
+        r = resumen_gold(self.gold)
+        self.assertEqual(r["anotador"], "IA (prueba)")
+        self.assertIn({"Tipo de consulta": "Nombre exacto", "Consultas": 2}, r["por_tipo"])
+        dm = next(f for f in r["por_guia"] if f["Guía"] == "gpc_dm")
+        self.assertEqual((dm["Chunks relevantes distintos"], dm["Chunks anotados de tratamiento"]), (2, 2))
+        self.assertEqual(r["por_consulta"][2]["Guía"], "fuera del corpus")
+
+    def test_el_experimento_se_detiene_antes_de_medir(self):
+        from experimento_s08 import correr_desde_config
+        from gold_set import GoldSetInvalido
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        cfg = config_de_prueba(tmp.name, "real", GUIA + CHUNKS)
+        r = cfg["rutas"]["real"]
+        Path(r["consultas"]).write_text("\n".join(json.dumps(c, ensure_ascii=False) for c in self.gold["consultas"]),
+                                        encoding="utf-8")
+        (Path(r["salida"]).parent / "meta.json").write_text(json.dumps(self.gold["meta"]), encoding="utf-8")
+        r["gold_meta"] = str(Path(r["salida"]).parent / "meta.json")
+        norm = normalizador({})
+        correr_desde_config(cfg, self.ix, norm)
+        self.assertTrue((Path(r["salida"]) / "gold_meta.json").exists())
+        otro = [dict(c) for c in GUIA + CHUNKS]
+        otro[0]["texto"] += " (reingestado)"
+        r["salida"] = str(Path(r["salida"]) / "segunda")
+        with self.assertRaises(GoldSetInvalido):
+            correr_desde_config(cfg, indice(otro), norm)
+        self.assertFalse(Path(r["salida"]).exists())
+
+    def test_gold_set_real_del_repositorio_es_coherente(self):
+        """Los archivos versionados concuerdan entre sí; la huella solo se comprueba con el corpus real."""
+        from gold_set import cargar_gold, validar_gold
+        cfg = {"corpus": "real", "rutas": {"real": {
+            "consultas": "M3/retrieval/data/real/gold_consultas.jsonl",
+            "anotaciones": "M3/retrieval/data/real/gold_anotaciones.csv",
+            "gold_meta": "M3/retrieval/data/real/gold_meta.json"}}}
+        gold = cargar_gold(cfg)
+        self.assertIn("IA", gold["meta"]["anotador"])
+        chunks = [{"chunk_id": a["chunk_id"], "doc_id": a["doc_id"], "seccion": a["seccion"], "texto": a["motivo"]}
+                  for a in gold["anotaciones"]]
+        filas = validar_gold(indice(chunks), gold, detener=False)
+        self.assertEqual([f["Comprobación"] for f in filas if f["Resultado"] == "falla"], ["Huella del corpus"])
 
 
 if __name__ == "__main__":

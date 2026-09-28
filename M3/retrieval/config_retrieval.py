@@ -14,6 +14,7 @@ import json
 import os
 import shutil
 import sys
+from collections import Counter
 from pathlib import Path
 
 import yaml
@@ -56,25 +57,108 @@ def verificar_modelo_del_corpus(cfg: dict) -> None:
                            f"{cfg['modelos']['embeddings']}; deben coincidir.")
 
 
-def preparar_indice(cfg: dict) -> str:
-    """Si el perfil define chroma_origen (por ejemplo, el índice en Drive), lo copia a chroma_dir
-    en el disco local la primera vez: Chroma usa SQLite y puede fallar sobre el disco de Drive."""
-    r = rutas(cfg)
-    origen, destino = r.get("chroma_origen"), r["chroma_dir"]
-    if origen and not Path(destino).exists():
-        if not Path(origen).exists():
-            raise FileNotFoundError(f"No existe el índice en {origen}. ¿Está montado Drive y corrió la ingesta?")
-        shutil.copytree(origen, destino)
+class IndiceInconsistente(RuntimeError):
+    """El índice Chroma no contiene exactamente los chunks JSON del corpus."""
+
+
+def cargar_chunks_corpus(cfg: dict) -> list[dict]:
+    """Chunks JSON del perfil activo: la fuente de verdad del índice y del gold set."""
+    ruta = rutas(cfg)["corpus_json"]
+    if not Path(ruta).exists():
+        raise FileNotFoundError(f"No existen los chunks en {ruta}. ¿Está montado Drive y corrió la ingesta?")
+    chunks = retrieval.cargar_chunks_json(ruta)
+    if not chunks:
+        raise ValueError(f"No hay chunks en {ruta}.")
+    invalidos = [c.get("chunk_id") for c in chunks if not {"chunk_id", "doc_id", "texto"} <= c.keys()]
+    if invalidos:
+        raise ValueError(f"Chunks sin chunk_id, doc_id o texto: {invalidos[:5]}")
+    repetidos = sorted(k for k, n in Counter(c["chunk_id"] for c in chunks).items() if n > 1)
+    if repetidos:
+        raise ValueError(f"chunk_id repetidos en {ruta}: {repetidos[:5]}")
+    return [{**c, "seccion": c.get("seccion")} for c in chunks]
+
+
+def verificar_indice(coleccion, chunks: list[dict]) -> None:
+    """Falla si el índice no tiene exactamente los mismos ids y textos que los chunks JSON."""
+    todo = coleccion.get(include=["documents"])
+    en_indice = dict(zip(todo["ids"], todo["documents"]))
+    en_json = {c["chunk_id"]: c["texto"] for c in chunks}
+    sobran, faltan = sorted(en_indice.keys() - en_json.keys()), sorted(en_json.keys() - en_indice.keys())
+    distintos = sorted(k for k in en_indice.keys() & en_json.keys() if en_indice[k] != en_json[k])
+    problemas = []
+    if len(en_indice) != len(en_json):
+        problemas.append(f"el índice tiene {len(en_indice)} chunks y la carpeta de chunks {len(en_json)}")
+    if sobran:
+        problemas.append(f"{len(sobran)} ids del índice no están en los JSON (p. ej. {sobran[:3]})")
+    if faltan:
+        problemas.append(f"{len(faltan)} chunks JSON no están en el índice (p. ej. {faltan[:3]})")
+    if distintos:
+        problemas.append(f"{len(distintos)} chunks tienen otro texto en el índice (p. ej. {distintos[:3]})")
+    if problemas:
+        raise IndiceInconsistente("El índice no coincide con los chunks JSON: " + "; ".join(problemas) + ".")
+
+
+def _abrir_coleccion(persist_dir: str):
+    import chromadb
+    return chromadb.PersistentClient(path=persist_dir).get_collection(retrieval.COLECCION)
+
+
+def _construir_con_ingesta(chunks: list[dict], persist_dir: str, modelo_embeddings: str) -> None:
+    """Mismo código de la ingesta (M3/corpus), sin Docling: embeddings y colección Chroma."""
+    sys.path.insert(0, resolver("M3/corpus"))
+    from corpus_store import construir_indice_chroma
+    from embeddings import cargar_modelo_embeddings, embeber_chunks
+    modelo = cargar_modelo_embeddings(modelo_embeddings)
+    construir_indice_chroma(chunks, embeber_chunks(chunks, modelo), persist_dir=persist_dir)
+
+
+def preparar_indice(cfg: dict, construir_fn=None, abrir_fn=None, forzar: bool = False) -> str:
+    """Deja en chroma_dir (disco local) un índice con exactamente los chunks de corpus_json.
+
+    Si ya existe y coincide con los JSON se reutiliza; si no, se borra y se reconstruye con el
+    código de la ingesta. Nunca se copia un índice ya construido: puede arrastrar ids de ingestas
+    anteriores o venir de otra versión de Chroma."""
+    construir_fn = construir_fn or _construir_con_ingesta
+    abrir_fn = abrir_fn or _abrir_coleccion
+    destino = rutas(cfg)["chroma_dir"]
+    if "/content/drive/" in Path(destino).as_posix() + "/":
+        raise ValueError(f"chroma_dir ({destino}) debe estar en el disco local: el índice se borra y reconstruye.")
+    chunks = cargar_chunks_corpus(cfg)
+    if Path(destino).exists() and not forzar:
+        try:
+            verificar_indice(abrir_fn(destino), chunks)
+            return destino
+        except Exception as e:
+            print(f"Aviso: se reconstruye el índice de {destino} ({e})")
+    if Path(destino).exists():
+        shutil.rmtree(destino)
+    construir_fn(chunks, destino, cfg["modelos"]["embeddings"])
+    verificar_indice(abrir_fn(destino), chunks)
+    print(f"Índice reconstruido en {destino}: {len(chunks)} chunks, "
+          f"{len({c['doc_id'] for c in chunks})} guías.")
     return destino
+
+
+def filtrar_manifest(indice: retrieval.IndiceRAG) -> list[str]:
+    """Deja en el manifiesto solo las guías del índice y devuelve las que se descartaron."""
+    docs = {c["doc_id"] for c in indice.chunks}
+    descartadas = sorted(set(indice.manifest) - docs)
+    indice.manifest = {d: v for d, v in indice.manifest.items() if d in docs}
+    return descartadas
 
 
 def indice_desde_config(cfg: dict, **kw) -> retrieval.IndiceRAG:
     verificar_modelo_del_corpus(cfg)
     r, m, rt = rutas(cfg), cfg["modelos"], cfg["retrieval"]
     kw.setdefault("modelo_reranker", m["reranker"])
-    return retrieval.construir_indice(preparar_indice(cfg), r["manifest"], modelo_embeddings=m["embeddings"],
-                                      n_candidatos=rt["n_candidatos"], krrf=rt["krrf"],
-                                      enriquecer=rt["encabezado_contextual"], **kw)
+    indice = retrieval.construir_indice(preparar_indice(cfg), r["manifest"], modelo_embeddings=m["embeddings"],
+                                        n_candidatos=rt["n_candidatos"], krrf=rt["krrf"],
+                                        enriquecer=rt["encabezado_contextual"], **kw)
+    if r.get("solo_guias_indexadas"):
+        descartadas = filtrar_manifest(indice)
+        if descartadas:
+            print(f"Aviso: el manifiesto lista guías que no están en el índice y se ignoran: {descartadas}")
+    return indice
 
 
 def parametros_orquestacion(cfg: dict) -> dict:
