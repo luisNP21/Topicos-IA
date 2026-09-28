@@ -56,17 +56,17 @@ def diagnosticar(
     - context_recall bajo -> corpus/retrieval (Pau/Isa) no trajo lo necesario
     - faithfulness bajo   -> generacion (Agustin) alucino cosas fuera del contexto
     """
-    f1_bajo         = umbrales.get("f1_bajo", 0.4)
-    f1_alto         = umbrales.get("f1_alto", 0.7)
-    recall_bajo     = umbrales.get("recall_bajo", 0.4)
-    faith_bajo      = umbrales.get("faithfulness_bajo", 0.4)
+    f1_bajo         = umbrales.get("umbral_f1_bajo", umbrales.get("f1_bajo", 0.4))
+    f1_alto         = umbrales.get("umbral_f1_alto", umbrales.get("f1_alto", 0.7))
+    recall_bajo     = umbrales.get("umbral_recall_bajo", umbrales.get("recall_bajo", 0.4))
+    faith_bajo      = umbrales.get("umbral_faithfulness_bajo", umbrales.get("faithfulness_bajo", 0.4))
 
     if f1_extraccion < f1_bajo and context_recall >= (1 - recall_bajo) and faithfulness >= (1 - faith_bajo):
         return "problema_extraccion"        # M1/M2 no detecto bien; el resto funciona
-    if f1_extraccion >= f1_alto and context_recall < recall_bajo:
-        return "problema_corpus_retrieval"  # buena extraccion, pero no hay guia o no se recupero
+    if f1_extraccion >= f1_bajo and context_recall < recall_bajo:
+        return "problema_corpus_retrieval"  # extraccion aceptable/alta, pero no hay guia o no se recupero
     if faithfulness < faith_bajo:
-        return "alucinacion_generacion"     # Agustin invento cosas fuera del contexto
+        return "alucinacion_generacion"     # generacion invento cosas fuera del contexto
     if f1_extraccion >= f1_alto and context_recall >= (1 - recall_bajo) and faithfulness >= (1 - faith_bajo):
         return "funcionamiento_correcto"
     return "caso_mixto"
