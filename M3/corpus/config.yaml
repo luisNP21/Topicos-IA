@@ -4,7 +4,7 @@ embeddings:
   model_name: "intfloat/multilingual-e5-base"
 
 chunking:
-  max_tokens: 350
+  max_tokens: 500
   overlap_tokens: 50
 
 paths:
