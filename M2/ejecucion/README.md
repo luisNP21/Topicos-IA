@@ -17,9 +17,17 @@ En `M2/harness/config.yaml` se deben establecer estas variables:
 
 ```yaml
 rutas:
-  gold_set: "M2/eval_harness/gold_examples_adversariales.jsonl"
+  gold_set: "M2/eval_harness/gold_examples.jsonl"
   outputs_dir: "M2/outputs"
   model_dir: "M1/saved_models/clinical_bert-distemist-lora"
+```
+
+Si se va correr la inferencia, establecer las variables en `M2/run_inference/config.yaml`:
+
+```yaml
+eval_set_path: "M2/eval_harness/gold_examples.jsonl"
+  
+output_path: "M2/predictions/encoder_solo.json"
 ```
 
 Durante la ejecucion del notebook tambien se utilizan las variables
@@ -27,19 +35,11 @@ Durante la ejecucion del notebook tambien se utilizan las variables
 
 ## Ejecucion
 
-1. Cargar en Google Colab uno de estos notebooks:
-  - `start_gold.ipynb` para evaluar el gold set normal.
-  - `start_adversarial.ipynb` para evaluar el gold set adversarial.
+1. Cargar en Google Colab el notebook.
 2. Asegurarse de tener la key `GROQ_API_KEY` configurada y activa en la ventana de Secretos de Colab.
 3. Ejecutar las celdas en orden y autorizar el acceso a Google Drive cuando Colab lo solicite.
 4. Verificar o ajustar en `M2/harness/config.yaml` estas variables:
 
-  ```yaml
-  rutas:
-    gold_set: "M2/eval_harness/gold_examples_adversariales.jsonl"
-    outputs_dir: "M2/outputs"
-    model_dir: "M1/saved_models/clinical_bert-distemist-lora"
-  ```
 
 5. El notebook instalará los requerimientos y ejecutará `run_harness.py` con `config.yaml`.
 

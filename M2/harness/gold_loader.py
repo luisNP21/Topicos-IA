@@ -6,17 +6,22 @@ carga/validacion del gold set.
 import json
 from pathlib import Path
 
+import yaml
+
 
 def resolver_rutas(cfg: dict, project_root: Path) -> dict:
     """Seccion 1: centraliza todas las rutas derivadas de PROJECT_ROOT + config.yaml."""
-    model_dir = project_root / cfg["rutas"]["model_dir"]
     gold_set_path = project_root / cfg["rutas"]["gold_set"]
+    inference_config_path = Path(__file__).resolve().parent / cfg["rutas"]["inference_config"]
+    with open(inference_config_path, "r", encoding="utf-8") as f:
+        inference_cfg = yaml.safe_load(f)
+    predictions_path = project_root / inference_cfg["output_path"]
     output_dir = project_root / cfg["rutas"]["outputs_dir"]
     output_dir.mkdir(parents=True, exist_ok=True)
 
     rutas = {
-        "model_dir": model_dir,
         "gold_set_path": gold_set_path,
+        "predictions_path": predictions_path,
         "output_dir": output_dir,
         "dim1_path": output_dir / cfg["archivos_salida"]["dimension1"],
         "dim1b_path": output_dir / cfg["archivos_salida"]["dimension1b"],
@@ -26,10 +31,8 @@ def resolver_rutas(cfg: dict, project_root: Path) -> dict:
     }
 
     print("Proyecto en:", project_root)
-    print("Modelo (Drive):", rutas["model_dir"])
-    print("  adapter_config existe:", (rutas["model_dir"] / "adapter_config.json").exists())
-    print("  adapter_model existe: ", (rutas["model_dir"] / "adapter_model.safetensors").exists())
     print("Gold set:", rutas["gold_set_path"], "| existe:", rutas["gold_set_path"].exists())
+    print("Predicciones:", rutas["predictions_path"], "| existe:", rutas["predictions_path"].exists())
     print("Output:", rutas["output_dir"])
 
     return rutas
@@ -50,17 +53,30 @@ def cargar_gold_set(gold_set_path: Path) -> list[dict]:
                 gold_examples.append(json.loads(line))
 
     assert len(gold_examples) > 0, "El gold set esta vacio"
-    assert "input" in gold_examples[0], "Falta campo input en el gold set"
-    assert "esperado" in gold_examples[0], "Falta campo esperado en el gold set"
-    assert isinstance(gold_examples[0]["esperado"], list), (
-        f"esperado debe ser list[str], vino como {type(gold_examples[0]['esperado'])}"
-    )
 
-    print(f"Gold set cargado: {len(gold_examples)} ejemplos")
+    records = []
+    for i, ex in enumerate(gold_examples):
+        text = ex.get("input", ex.get("text", ""))
+        entities = ex.get("esperado", ex.get("entities_gold", []))
+        assert isinstance(entities, list), (
+            f"esperado/entities_gold debe ser list[str], vino como {type(entities)}"
+        )
+        records.append({
+            "doc_id": ex.get("doc_id", f"ex_{i}"),
+            "text": text,
+            "entities_gold": entities,
+            "criterio": ex.get("criterio", ""),
+        })
+
+    print(f"Gold set cargado: {len(records)} ejemplos")
     print("Formato valido")
     print("Primer ejemplo:")
-    print("  input[:120]:", gold_examples[0]["input"][:120], "...")
-    print("  esperado:", gold_examples[0]["esperado"])
-    print("  n_entidades:", len(gold_examples[0]["esperado"]))
+    print("  text[:120]:", records[0]["text"][:120], "...")
+    print("  entities_gold:", records[0]["entities_gold"])
+    print("  n_entidades:", len(records[0]["entities_gold"]))
 
-    return gold_examples
+    return records
+
+
+def cargar_eval_set(gold_set_path: Path) -> list[dict]:
+    return cargar_gold_set(gold_set_path)

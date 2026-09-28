@@ -206,14 +206,17 @@ def analizar_ambiguedad_gold(true_by_doc: dict, emb_sim: EmbeddingSimilarity, th
     }
 
 
-def run(cfg: dict, project_root) -> dict:
+def run(cfg: dict, project_root, dim1_result: dict | None = None) -> dict:
     rutas = resolver_rutas(cfg, project_root)
 
-    assert rutas["dim1_path"].exists(), (
-        f"No se encontro {rutas['dim1_path']}. Correr metrics_exact.py primero."
-    )
-    with open(rutas["dim1_path"], "r", encoding="utf-8") as f:
-        dim1 = json.load(f)
+    if dim1_result is None:
+        assert rutas["dim1_path"].exists(), (
+            f"No se encontro {rutas['dim1_path']}. Correr metrics_exact.py primero."
+        )
+        with open(rutas["dim1_path"], "r", encoding="utf-8") as f:
+            dim1 = json.load(f)
+    else:
+        dim1 = dim1_result
 
     true_by_doc = {k: set(v) for k, v in dim1["true_by_doc"].items()}
     pred_by_doc = {k: set(v) for k, v in dim1["pred_by_doc"].items()}

@@ -1,0 +1,27 @@
+{"consulta": "diabetes mellitus tipo 2", "tipo": "exacta", "relevantes": ["gpc_diabetes_mellitus_tipo_2_2025"]}
+{"consulta": "DM2", "tipo": "sigla", "relevantes": ["gpc_diabetes_mellitus_tipo_2_2025"]}
+{"consulta": "diabetes tipo 2", "tipo": "sinonimo", "relevantes": ["gpc_diabetes_mellitus_tipo_2_2025"]}
+{"consulta": "diabetis tipo 2", "tipo": "errata", "relevantes": ["gpc_diabetes_mellitus_tipo_2_2025"]}
+{"consulta": "diabetes mellitus tipo 2 con mal control glucémico", "tipo": "hiper_especifica", "relevantes": ["gpc_diabetes_mellitus_tipo_2_2025"]}
+{"consulta": "diabetes", "tipo": "confusion", "relevantes": ["gpc_diabetes_mellitus_tipo_2_2025"]}
+{"consulta": "sepsis", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "sífilis", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "anemia", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "síncope", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "EPOC", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "SIADH", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "WPW", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "GIST", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "lúes", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "etilismo", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "IR aguda", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "artritis séptica de tobillo derecho con cultivo de líquido sinovial positivo para Staphylococcus aureus", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "insuficiencia respiratoria refractaria secundaria a síndrome de distrés respiratorio agudo", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "peritonitis, causada por dos gérmenes (Staphilococcus epidermidis y Pseudomona aeruginosa)", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "lesión", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "tumor", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "amiloidosis", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "SPEE", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "diabetes gestacional", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "diabetes mellitus tipo 1", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
+{"consulta": "diabetes insípida", "tipo": "fuera_de_corpus", "relevantes": [], "fuera_de_corpus": true}
