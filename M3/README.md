@@ -303,15 +303,24 @@ harness(eval_set: list[dict], sistema: Sistema) -> dict   # precision, recall, f
 
 ### 5.1 Qué se implementó
 
-[COMPLETAR: técnicas implementadas (mínimo dos: hybrid search, reranking, query transformation),
-con la justificación de cada una.]
+Se implementaron tres técnicas sobre la misma colección Chroma (embeddings `intfloat/multilingual-e5-base`) y se compararon contra la búsqueda densa de S07.
+
+- **Búsqueda híbrida (BM25 + densa, fusión RRF).** Se eligió porque las entidades llegan con erratas, siglas y tildes faltantes, y BM25 cubre lo léxico donde el embedding es débil. BM25 lee "título de la guía. sección. texto" para que un chunk de tratamiento que no nombra la enfermedad igual pueda encontrarse.
+- **Reranking con cross-encoder** (`cross-encoder/mmarco-mMiniLMv2-L12-H384-v1`). Reordena los 30 mejores candidatos. Se eligió porque el embedding mide cercanía temática, no si el chunk *responde* la pregunta.
+- **Query transformation.** La entidad ("diabetes mellitus tipo 2") se reescribe en tres consultas de tratamiento que se fusionan con RRF, y el reranker recibe la pregunta "¿Cuál es el tratamiento de…?". Se eligió porque toda la guía menciona la enfermedad, y sin contexto el retrieval no distingue tratamiento de epidemiología o glosario.
+- **Filtro por tipo de sección (variante del sistema avanzado).** El reranker solo ordena chunks clasificados como tratamiento.
+
+**Aclaración importante sobre el filtro:** no usa el campo `categoria_seccion` de la ingesta. Usa un clasificador propio del retrieval: regex sobre el título de la sección y, si el título no es concluyente, similitud del embedding con descripciones de referencia. En este corpus, 32 de 64 chunks se clasificaron por similitud.
 
 ### 5.2 Entregables
 
 | Archivo | Descripción |
 |---|---|
-| [COMPLETAR] | `retrieve_naive` |
-| [COMPLETAR] | `retrieve_advanced` |
+| `M3/retrieval/retrieval.py` | `retrieve_naive` (búsqueda densa) y `retrieve_advanced` (modo configurable; por defecto `intencion`) |
+| `M3/retrieval/experimento_s08.py` | Experimento comparativo y calibración de umbrales |
+| `M3/retrieval/config_retrieval.yaml` | Parámetros del retrieval y de la orquestación |
+| `M3/retrieval/consultas_retrieval.jsonl` | Consultas de evaluación (33) |
+
 
 ### 5.3 Contrato
 
@@ -320,42 +329,98 @@ retrieve_naive(query: str, k: int) -> list[Fragment]
 retrieve_advanced(query: str, k: int) -> list[Fragment]
 ```
 
-[COMPLETAR: parámetros relevantes (k, pesos de la fusión, modelo de reranking, umbrales).]
+Cada fragmento trae `chunk_id`, `doc_id`, `texto`, `score`, `score_tipo`, `fuente`, `seccion` y `seccion_tipo`.
+
+| Parámetro | Valor |
+|---|---|
+| `k` | 5 |
+| Candidatos al reranker | 30 |
+| Constante RRF | 60 |
+| Pesos de fusión | **No hay.** RRF trabaja por rango y trata igual a BM25 y a la búsqueda densa |
+| Modelo de reranking | `mmarco-mMiniLMv2-L12-H384-v1` |
+| Umbral para normalizar | 0.177 (calibrado con este corpus) |
+| Umbral de evidencia | 0.148 (calibrado con este corpus) |
+
+Los umbrales provisionales del YAML (0.754 y 0.554) vienen del corpus de prueba y **no deben usarse** con el corpus real.
+
 
 ### 5.4 Gold set de relevancia
 
-[COMPLETAR: cómo se construyó, cuántos pares (entidad, chunk esperado), quién lo armó y con qué
-criterio. Incluir si se diseñó para probar el caso "la entidad se menciona pero no hay
-tratamiento en ese chunk".]
+**No existe un gold set a nivel de chunk.** Lo que hay son 33 consultas:
+
+- 12 dentro del corpus (6 de diabetes, 3 de depresión, 3 de falla cardíaca), etiquetadas con la **guía** correcta, no con el chunk esperado.
+- 21 fuera del corpus (etiquetadas sin guías relevantes).
+
+Consecuencias:
+
+- No se mide si llega el chunk de tratamiento, solo si llega *alguna* pieza de la guía correcta.
+- **No se diseñó ningún caso** para "la entidad se menciona pero no hay tratamiento en ese chunk", que es exactamente el caso que esta técnica debería resolver.
+
 
 ### 5.5 Delta medido contra RAG ingenuo
 
-| Métrica | Ingenuo | Avanzado | Delta | Fuente del número |
+**Lectura correcta de esta tabla:** el delta de 0.0 en MRR **no** significa "el avanzado no mejora" ni "el avanzado es igual de bueno". Significa que la evaluación no puede distinguirlos.
+
+| Métrica | Ingenuo | Avanzado (`intencion`) | Delta | Fuente del número |
 |---|---|---|---|---|
-| [COMPLETAR: recall@k / precision@k / nDCG] | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
+| MRR de la guía | 1.0 | 1.0 | 0.0 | `deltas_s08.csv` |
+| Precisión de guía en el top-5 | 0.967 | 1.0 | +0.033 | `deltas_s08.csv` |
+| Latencia por consulta (ms) | 24.2 | 351.7 | +327.5 | `deltas_s08.csv` |
+| Recall@k, precisión y nDCG **de tratamiento** | no medido | no medido | no medido | Falta el gold set de chunks |
 
-Desglose por técnica (aporte individual de cada una):
+La diferencia de precisión (0.967 → 1.0) equivale a **2 chunks de otra guía sobre 60 posiciones** (12 consultas × 5). Es una señal débil, no una mejora demostrada.
 
-| Configuración | Métrica | Valor |
-|---|---|---|
-| Ingenuo | [COMPLETAR] | [COMPLETAR] |
-| + query transformation | [COMPLETAR] | [COMPLETAR] |
-| + filtro por `categoria_seccion` | [COMPLETAR] | [COMPLETAR] |
-| + hybrid search | [COMPLETAR] | [COMPLETAR] |
-| + reranking | [COMPLETAR] | [COMPLETAR] |
+### Desglose por técnica
+
+El mapeo a los sistemas del experimento es aproximado y **la ablación no es limpia**: `intencion_sin_rerank` combina query transformation con búsqueda híbrida, así que no aísla el aporte de la transformación.
+
+| Configuración | Sistema del experimento | Precisión de guía top-5 | Latencia (ms) | Tratamiento |
+|---|---|---|---|---|
+| Ingenuo | `ingenuo` | 0.967 | 24.2 | no medido |
+| + query transformation (incluye híbrido, sin reranker) | `intencion_sin_reranker` | 0.933 | 40.6 | no medido |
+| + hybrid search | `hibrido` | 0.983 | 43.0 | no medido |
+| + reranking | `reranker` | 1.0 | 319.5 | no medido |
+| + filtro por sección | `intencion_seccion` | 1.0 | 290.3 | no medido |
+
 
 ### 5.6 Hallazgos (derivados de datos)
 
-- [COMPLETAR]
+1. **Evaluación saturada a nivel de guía.** Todos los sistemas obtienen MRR 1.0 en las 12 consultas del corpus. Con solo 3 guías de temas disjuntos y el título de la guía incluido en cada chunk, hasta BM25 solo acierta la guía. Este resultado es válido, pero no informativo.
+2. **El reranker fue la única técnica con diferencia medible en precisión de guía.** Con reranker no apareció ningún chunk de otra guía en el top-5. Sin reranker aparecieron 2 (denso), 1 (híbrido) y 4 (transformación sin reranker). Son muy pocos casos para concluir.
+3. **Evidencia cualitativa a favor de la transformación de consulta** (inspección de tres consultas, no una métrica):
+   - Para "falla cardiaca", el ingenuo devolvió resumen, glosario e índice; `intencion` devolvió los chunks 12, 16 y 20, de contenido terapéutico.
+   - Para "diabetes mellitus tipo 2", `intencion` todavía trae un chunk de diagnóstico (chunk 6) en segundo lugar; el filtro de sección lo elimina.
+4. **Compuerta de evidencia.** Rechaza 20 de 21 consultas fuera del corpus. La que pasa es "diabetes mellitus tipo 1", que comparte casi todo el vocabulario con diabetes tipo 2.
+5. **Los umbrales dependen de muy pocos casos.** El umbral para normalizar es exactamente el score de la consulta "diabetes" (el positivo más débil), y el de evidencia queda justo sobre el score de "diabetes mellitus tipo 1". Como todos los aciertos son aciertos, todas las consultas "incorrectas" son las de fuera del corpus, así que el umbral solo separa "dentro" de "fuera del corpus", no aciertos de errores.
+
 
 ### 5.7 Supuestos (no medidos)
 
-- [COMPLETAR]
+- Que devolver chunks de tratamiento mejora la respuesta final del sistema. No se midió; depende de la generación.
+- Que el clasificador de secciones acierta. La mitad de los chunks se clasificó por similitud y no se revisó a mano.
+- Que los umbrales calibrados con 3 guías se sostienen al agregar más guías.
+- Que la normalización terminológica real aporta valor al retrieval. En esta corrida no se observó.
+- Que las consultas de nombre de enfermedad representan el uso real. El sistema recibirá entidades extraídas por el NER, que pueden ser más ruidosas.
 
 ### 5.8 Limitaciones
 
-- [COMPLETAR: por ejemplo, casos donde el filtro por categoría deja el pool vacío, sensibilidad
-  a la query transformada, tamaño del gold set.]
+- **Sin gold set de chunks**, no hay métricas de tratamiento. Esto impide sostener la afirmación central de la sección.
+- **Conjunto de evaluación pequeño y fácil:** 12 consultas dentro del corpus, con un solo caso en los tipos sigla, hiperespecífica y "guías parecidas"; 64 chunks y 3 guías disjuntas.
+- **Ablación no aislada:** la fila de query transformation incluye búsqueda híbrida.
+- **Filtro de sección sin validar:** puede dejar el pool vacío o descartar chunks útiles. El campo `categoria_seccion` de la ingesta tampoco es una alternativa confiable: marca como tratamiento las portadas de dos guías y como "otro" varias tablas de fármacos y secciones de depresión leve/moderada, psicoterapias y TEC.
+- **Sensibilidad a la reescritura:** las tres plantillas de consulta y la pregunta son fijas; no se probó otra formulación.
+- **Un solo modelo de reranker evaluado** en este corpus (el alternativo, `bge-reranker-v2-m3`, no se corrió).
+- **Calibración frágil:** depende de un único negativo difícil ("diabetes mellitus tipo 1").
+
+## Qué falta para poder afirmar una mejora
+
+1. Etiquetar a mano los 64 chunks (relevancia 0/1/2), idealmente por dos personas, con un criterio escrito.
+2. Agregar consultas difíciles: por intención ("metformina", "betabloqueadores", "ISRS"), cruces entre guías (diabetes con falla cardíaca) y chunks que mencionan la entidad sin tratar (glosario, abreviaturas, índice).
+3. Medir recall@k, precisión@k y nDCG@k a nivel de chunk.
+4. Separar la ablación (transformación de consulta sin híbrido).
+5. Recalibrar los umbrales con más consultas.
+
+El análisis mostró que el pipeline de retrieval funciona técnicamente, pero que la evaluación actual no permite demostrar que el retrieval avanzado supere al RAG ingenuo. Sobre el índice real de 64 chunks y 3 guías, todos los sistemas acertaron la guía correcta en el primer lugar (MRR de 1.0), porque las consultas son nombres de enfermedad sobre guías de temas distintos, algo que hasta BM25 resuelve solo. Ese resultado es válido pero no informativo, y el delta de 0 frente al ingenuo refleja la falta de poder de la evaluación, no una equivalencia entre técnicas. La métrica que sí importaría, si llega el chunk de tratamiento y no solo la guía, no pudo medirse porque ninguna consulta tiene chunks_relevantes. Lo único con diferencia medible fue que el reranker eliminó los chunks de otra guía en el top-5 (2 casos en el denso, 1 en el híbrido y 4 en la transformación sin reranker, sobre 60 posiciones), una señal débil, junto con la prueba de humo, donde el ingenuo trajo resumen, glosario e índice y la transformación de consulta trajo chunks terapéuticos. También encontramos que el error de calibración se debía a etiquetas con un doc_id inexistente, que categoria_seccion se pierde en Chroma y tiene errores de clasificación, que los umbrales dependen de muy pocas consultas y que la normalización no encontró coincidencia en ningún caso. En síntesis, tenemos un sistema que se comporta de forma razonable, pero la afirmación de que mejora sobre el ingenuo sigue sin sustento hasta construir un gold set a nivel de chunk.
 
 ---
 
