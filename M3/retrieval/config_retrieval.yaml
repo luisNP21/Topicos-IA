@@ -5,19 +5,28 @@ corpus: mock                      # mock | real
 
 rutas:
   mock:
-    corpus_json: data/mock/corpus_mock.json
-    chroma_dir: /content/chroma_mock          # disco local de Colab: Chroma usa SQLite y falla sobre Drive
-    manifest: data/mock/corpus_manifest_mock.json
-    consultas: data/mock/consultas_mock.jsonl
-    mapa_normalizacion: data/mock/normalizacion_mock.json
+    corpus_json: M3/data/mock/corpus_mock.json
+    chroma_dir: /content/chroma_mock          # disco local de Colab: se reconstruye en cada sesión
+    manifest: M3/data/mock/corpus_manifest_mock.json
+    consultas: M3/data/mock/consultas_mock.jsonl
+    mapa_normalizacion: M3/data/mock/normalizacion_mock.json
     salida: M3/retrieval/outputs_mock
   real:
-    corpus_json: data/guias_clinicas/chunks
-    chroma_dir: data/chroma_guias             # copiar a /content antes de usarlo en Colab
-    manifest: data/guias_clinicas/corpus_manifest.json
+    # La ingesta guarda sus salidas en Drive (PROJECT_ROOT = .../Proyecto-Salud/M3).
+    corpus_json: /content/drive/MyDrive/TopicosIA/Proyecto-Salud/M3/data/guias_clinicas/chunks
+    chroma_origen: /content/drive/MyDrive/TopicosIA/Proyecto-Salud/M3/data/chroma_guias
+    chroma_dir: /content/chroma_guias         # copia local del índice; se crea desde chroma_origen
+    manifest: /content/drive/MyDrive/TopicosIA/Proyecto-Salud/M3/data/guias_clinicas/corpus_manifest.json
     consultas: M3/retrieval/consultas_retrieval.jsonl
-    mapa_normalizacion: null                  # con el corpus real se usa normalizacion.normalizar_entidad
+    mapa_normalizacion: null                  # null: se usa la herramienta de normalización real
     salida: M3/retrieval/outputs
+
+corpus_pipeline:
+  config: M3/corpus/config.yaml   # de aquí se verifica que el modelo de embeddings coincida
+
+normalizacion:
+  directorio: M3/tools            # contiene tool_normalizacion.py
+  config: M3/tools/config.yaml    # de aquí se lee la ontología
 
 modelos:
   embeddings: intfloat/multilingual-e5-base   # debe ser el mismo con el que se construyó el índice
@@ -43,6 +52,9 @@ orquestacion:
   forzar_por_sigla: true
   umbral: null                    # null: se usan los calibrados en <salida>/umbrales.json
   umbral_evidencia: null
+  umbrales_provisionales:         # solo si aún no hay umbrales calibrados (calibrados en el corpus de prueba)
+    umbral: 0.754
+    umbral_evidencia: 0.554
 
 calibracion:
   pliegues: 3

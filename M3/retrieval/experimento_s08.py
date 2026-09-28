@@ -347,19 +347,12 @@ def guardar(salida: Path, detalle: list[dict], resumen: list[dict], calibracion:
 def correr_desde_config(cfg: dict, indice: IndiceRAG | None = None, normalizar_fn=None,
                         guardar_resultados: bool = True) -> tuple[list[dict], list[dict], dict]:
     """Ejecuta el experimento con los parámetros del YAML. Si no se pasa un normalizador, usa el
-    mapa simulado de las rutas o, si no hay, normalizacion.normalizar_entidad."""
-    from config_retrieval import indice_desde_config, rutas
+    del YAML: el mapa simulado del corpus de prueba o la herramienta de normalización real."""
+    from config_retrieval import indice_desde_config, normalizador_desde_config, rutas
 
     r = rutas(cfg)
     indice = indice or indice_desde_config(cfg)
-    if normalizar_fn is None:
-        if r.get("mapa_normalizacion"):
-            from mocks import crear_normalizador_mock
-            mapa = json.loads(Path(r["mapa_normalizacion"]).read_text(encoding="utf-8"))
-            normalizar_fn = crear_normalizador_mock({k.strip().lower(): v for k, v in mapa.items()})
-        else:
-            from normalizacion import normalizar_entidad
-            normalizar_fn = normalizar_entidad
+    normalizar_fn = normalizar_fn or normalizador_desde_config(cfg)
     o, cal, k = cfg["orquestacion"], cfg["calibracion"], cfg["retrieval"]["k"]
     detalle, resumen, calibracion = correr_experimento(
         indice, cargar_consultas(r["consultas"]), k, normalizar_fn, o["sistema_base"], cal["pliegues"],

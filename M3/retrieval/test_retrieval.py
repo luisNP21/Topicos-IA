@@ -330,12 +330,58 @@ class TestConfiguracion(unittest.TestCase):
         cfg = cargar_config()
         with tempfile.TemporaryDirectory() as tmp:
             cfg["rutas"]["mock"]["salida"] = tmp
+            provisional = cfg["orquestacion"]["umbrales_provisionales"]["umbral"]
+            self.assertEqual(parametros_orquestacion(cfg)["umbral"], provisional)
+            cfg["orquestacion"]["umbrales_provisionales"] = None
             with self.assertRaises(FileNotFoundError):
                 parametros_orquestacion(cfg)
             (Path(tmp) / "umbrales.json").write_text(json.dumps({"final": {"umbral": .8, "umbral_evidencia": .3}}))
             self.assertEqual(parametros_orquestacion(cfg)["umbral"], .8)
         cfg["orquestacion"].update(umbral=.6, umbral_evidencia=.2)
         self.assertEqual(parametros_orquestacion(cfg)["umbral_evidencia"], .2)
+
+    def test_rutas_relativas_a_la_raiz_del_repositorio(self):
+        from config_retrieval import RAIZ_REPO, cargar_config, resolver, rutas
+        cfg = cargar_config()
+        self.assertEqual(Path(rutas(cfg)["consultas"]), RAIZ_REPO / "M3/data/mock/consultas_mock.jsonl")
+        self.assertEqual(resolver("/content/x"), str(Path("/content/x")))
+        self.assertIsNone(resolver(None))
+
+    def test_copia_el_indice_desde_el_origen(self):
+        from config_retrieval import cargar_config, preparar_indice
+        cfg = cargar_config()
+        with tempfile.TemporaryDirectory() as tmp:
+            origen = Path(tmp) / "drive_chroma"
+            origen.mkdir()
+            (origen / "chroma.sqlite3").write_text("x")
+            cfg["rutas"]["mock"].update(chroma_origen=str(origen), chroma_dir=str(Path(tmp) / "local"))
+            self.assertTrue((Path(preparar_indice(cfg)) / "chroma.sqlite3").exists())
+            cfg["rutas"]["mock"].update(chroma_origen=str(Path(tmp) / "no_existe"), chroma_dir=str(Path(tmp) / "otro"))
+            with self.assertRaises(FileNotFoundError):
+                preparar_indice(cfg)
+
+    def test_normalizador_simulado_y_real(self):
+        from config_retrieval import cargar_config, normalizador_desde_config
+        cfg = cargar_config()
+        self.assertFalse(normalizador_desde_config(cfg)("HTA")["normalization_failed"])
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "tool_normalizacion.py").write_text(
+                "def normalizar_entidad(entidad, ontologia='X'):\n"
+                "    return {'entidad_original': entidad, 'entidad_normalizada': ontologia,\n"
+                "            'source_terminology': ontologia, 'normalization_failed': False}\n")
+            (Path(tmp) / "config.yaml").write_text("tool_normalizacion:\n  ontologia: SNOMEDCT\n")
+            cfg["rutas"]["mock"]["mapa_normalizacion"] = None
+            cfg["normalizacion"] = {"directorio": tmp, "config": str(Path(tmp) / "config.yaml")}
+            self.assertEqual(normalizador_desde_config(cfg)("DM2")["entidad_normalizada"], "SNOMEDCT")
+
+    def test_verifica_el_modelo_del_corpus(self):
+        from config_retrieval import cargar_config, verificar_modelo_del_corpus
+        cfg = cargar_config()
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "config.yaml").write_text("embeddings:\n  model_name: otro-modelo\n")
+            cfg["corpus_pipeline"] = {"config": str(Path(tmp) / "config.yaml")}
+            with self.assertRaises(RuntimeError):
+                verificar_modelo_del_corpus(cfg)
 
 
 if __name__ == "__main__":

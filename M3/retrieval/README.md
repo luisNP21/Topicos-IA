@@ -12,7 +12,7 @@ y decide cuándo normalizar esa entidad con SNOMED CT / UMLS antes de buscar.
 | `retrieval.py` | Técnicas de búsqueda sobre el índice Chroma y las funciones `retrieve_naive` y `retrieve_advanced` |
 | `../generacion/orquestacion.py` | Criterio de invocación de la normalización y compuerta de evidencia (`resolver_query`) |
 | `experimento_s08.py` | Experimento controlado, calibración de umbrales con validación cruzada y tablas de resultados |
-| `construir_indice_mock.py` | Índice Chroma a partir del corpus de prueba (`data/mock/corpus_mock.json`) |
+| `construir_indice_mock.py` | Índice Chroma del corpus de prueba (`M3/data/mock/corpus_mock.json`), con el código de la ingesta (`M3/corpus`) |
 | `start_retrieval.ipynb` | Ejecución completa en Colab |
 | `test_retrieval.py` | Pruebas unitarias con modelos simulados |
 | `consultas_retrieval.jsonl` | Consultas para el corpus definitivo (pendientes de etiquetar) |
@@ -68,6 +68,19 @@ respuesta = generar_respuesta(q["query_final"], q["fragments"], generar_fn=gener
 
 Alternativamente, basta con definir `M3_RETRIEVAL_CONFIG` con la ruta del YAML: `retrieve_advanced`
 construye el índice con esa configuración la primera vez que se llama.
+
+## Integración con las otras partes
+
+| Parte | Cómo se conecta |
+|---|---|
+| Corpus (`M3/corpus`) | El perfil `real` lee de Drive el índice y el manifiesto que deja la ingesta (`chroma_origen`, `manifest`). El índice se copia la primera vez a `/content/chroma_guias`. Antes de construir el índice se verifica que `modelos.embeddings` coincida con `embeddings.model_name` de `M3/corpus/config.yaml`. |
+| Herramienta de normalización (`M3/tools`) | Con `mapa_normalizacion: null`, se usa `tool_normalizacion.normalizar_entidad` con la ontología de `M3/tools/config.yaml`. |
+| Generación (`M3/generacion`) | `run_generacion.py` carga este YAML, llama a `configurar_pipeline` y toma los umbrales de `parametros_orquestacion`. |
+
+Las rutas relativas del YAML se resuelven desde la raíz del repositorio, no desde el directorio de
+trabajo, así que funcionan igual desde el notebook, desde un script o desde la generación. Si todavía
+no hay umbrales calibrados en `<salida>/umbrales.json`, se usan `orquestacion.umbrales_provisionales`
+(calibrados sobre el corpus de prueba) y se muestra un aviso.
 
 ## Salidas del experimento
 

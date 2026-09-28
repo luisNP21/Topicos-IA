@@ -1,0 +1,119 @@
+[
+  {
+    "doc_id": "mock_diabetes",
+    "titulo": "Guía mock: Diabetes mellitus tipo 2",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  },
+  {
+    "doc_id": "mock_hipertension",
+    "titulo": "Guía mock: Hipertensión arterial",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  },
+  {
+    "doc_id": "mock_asma",
+    "titulo": "Guía mock: Asma",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  },
+  {
+    "doc_id": "mock_neumonia",
+    "titulo": "Guía mock: Neumonía adquirida en la comunidad",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  },
+  {
+    "doc_id": "mock_migrana",
+    "titulo": "Guía mock: Migraña",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  },
+  {
+    "doc_id": "mock_gastritis",
+    "titulo": "Guía mock: Gastritis",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  },
+  {
+    "doc_id": "mock_artritis_reumatoide",
+    "titulo": "Guía mock: Artritis reumatoide",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  },
+  {
+    "doc_id": "mock_hipotiroidismo",
+    "titulo": "Guía mock: Hipotiroidismo",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  },
+  {
+    "doc_id": "mock_infeccion_urinaria",
+    "titulo": "Guía mock: Infección del tracto urinario",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  },
+  {
+    "doc_id": "mock_depresion",
+    "titulo": "Guía mock: Trastorno depresivo",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  },
+  {
+    "doc_id": "mock_malaria",
+    "titulo": "Guía mock: Malaria",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  },
+  {
+    "doc_id": "mock_osteoporosis",
+    "titulo": "Guía mock: Osteoporosis",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  },
+  {
+    "doc_id": "mock_dm_gestacional",
+    "titulo": "Guía mock: Diabetes mellitus gestacional",
+    "fuente_url": "",
+    "licencia": "mock (solo desarrollo)",
+    "fecha_publicacion": "2026-01-01",
+    "fecha_indexado": "2026-09-26",
+    "responsable": "Equipo del proyecto (corpus de prueba)"
+  }
+]
