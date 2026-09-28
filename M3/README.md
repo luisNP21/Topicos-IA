@@ -92,7 +92,11 @@ Chunk = {
     "seccion": str, "categoria_seccion": str,   # tratamiento | diagnostico | epidemiologia | otro
 }
 
-Fragment = {"chunk_id": str, "doc_id": str, "texto": str, "score": float}
+Fragment = {
+    "chunk_id": str, "doc_id": str, "texto": str, "score": float,
+    "score_tipo": str,   # "cosine" | "rrf" | "reranker_prob"
+    "fuente": str, "seccion": str, "seccion_tipo": str,
+}
 
 NormalizationResult = {
     "entidad_original": str, "entidad_normalizada": str,
@@ -319,7 +323,11 @@ Se implementaron tres técnicas sobre la misma colección Chroma (embeddings `in
 | `M3/retrieval/retrieval.py` | `retrieve_naive` (búsqueda densa) y `retrieve_advanced` (modo configurable; por defecto `intencion`) |
 | `M3/retrieval/experimento_s08.py` | Experimento comparativo y calibración de umbrales |
 | `M3/retrieval/config_retrieval.yaml` | Parámetros del retrieval y de la orquestación |
-| `M3/retrieval/consultas_retrieval.jsonl` | Consultas de evaluación (33) |
+| `M3/retrieval/gold_set.py` | Carga y validación del gold set contra el índice (huella, nº de chunks, chunks por guía) |
+| `M3/retrieval/data/real/gold_consultas.jsonl` | Gold set del retrieval: 40 consultas (22 dentro del corpus, 18 fuera) |
+| `M3/retrieval/data/real/gold_anotaciones.csv` | Relevancia por chunk (`relevante_tratamiento_general` 0/1 + motivo) sobre los 64 chunks |
+| `M3/retrieval/data/real/gold_meta.json` | Descripción del corpus anotado (huella `e261c2e78ef60911`), para validar el gold set |
+| `M3/retrieval/data/real/normalizacion_simulada.json` | Vocabulario de normalización simulado para las guías |
 
 
 ### 5.3 Contrato
@@ -338,60 +346,62 @@ Cada fragmento trae `chunk_id`, `doc_id`, `texto`, `score`, `score_tipo`, `fuent
 | Constante RRF | 60 |
 | Pesos de fusión | **No hay.** RRF trabaja por rango y trata igual a BM25 y a la búsqueda densa |
 | Modelo de reranking | `mmarco-mMiniLMv2-L12-H384-v1` |
-| Umbral para normalizar | 0.177 (calibrado con este corpus) |
-| Umbral de evidencia | 0.148 (calibrado con este corpus) |
+| Umbral para normalizar | 0.174 (calibrado, validación cruzada de 3 pliegues) |
+| Umbral de evidencia | 0.174 |
 
 Los umbrales provisionales del YAML (0.754 y 0.554) vienen del corpus de prueba y **no deben usarse** con el corpus real.
 
 
 ### 5.4 Gold set de relevancia
 
-**No existe un gold set a nivel de chunk.** Lo que hay son 33 consultas:
+Sí hay un gold set **a nivel de chunk**, en `M3/retrieval/data/real/`:
 
-- 12 dentro del corpus (6 de diabetes, 3 de depresión, 3 de falla cardíaca), etiquetadas con la **guía** correcta, no con el chunk esperado.
-- 21 fuera del corpus (etiquetadas sin guías relevantes).
+- **`gold_consultas.jsonl`**: 40 consultas — 22 dentro del corpus (3 de nombre exacto, 3 de sigla, 3 de sinónimo, 3 de errata, 1 de "guías parecidas", 9 hiperespecíficas) y 18 fuera del corpus.
+- **`gold_anotaciones.csv`**: relevancia 0/1 de `relevante_tratamiento_general` para cada uno de los 64 chunks, con el motivo de la decisión. Anotado por IA (Claude) simulando un anotador humano y **sin revisión humana** (declarado en `gold_meta.json`).
+- **`gold_meta.json`**: huella del corpus anotado (`e261c2e78ef60911`); `gold_set.py` valida, antes de medir, que el gold set corresponda al índice cargado y, si no, se detiene con un mensaje.
 
-Consecuencias:
-
-- No se mide si llega el chunk de tratamiento, solo si llega *alguna* pieza de la guía correcta.
-- **No se diseñó ningún caso** para "la entidad se menciona pero no hay tratamiento en ese chunk", que es exactamente el caso que esta técnica debería resolver.
+Con esto sí se mide si llega el **chunk de tratamiento** (no solo la guía) y los casos en que la entidad se menciona pero el chunk no trata.
 
 
 ### 5.5 Delta medido contra RAG ingenuo
 
-**Lectura correcta de esta tabla:** el delta de 0.0 en MRR **no** significa "el avanzado no mejora" ni "el avanzado es igual de bueno". Significa que la evaluación no puede distinguirlos.
+El delta se mide sobre las 22 consultas dentro del corpus. La métrica central es **de tratamiento** (¿llega un chunk que trata?), que el gold set por chunk habilita.
 
-| Métrica | Ingenuo | Avanzado (`intencion`) | Delta | Fuente del número |
+| Métrica | Ingenuo (`densa`) | Avanzado (`intencion`) | Completo + siglas | Fuente del número |
 |---|---|---|---|---|
-| MRR de la guía | 1.0 | 1.0 | 0.0 | `deltas_s08.csv` |
-| Precisión de guía en el top-5 | 0.967 | 1.0 | +0.033 | `deltas_s08.csv` |
-| Latencia por consulta (ms) | 24.2 | 351.7 | +327.5 | `deltas_s08.csv` |
-| Recall@k, precisión y nDCG **de tratamiento** | no medido | no medido | no medido | Falta el gold set de chunks |
+| **MRR del tratamiento** | 0.161 | 0.784 | **0.875** | `deltas_s08.csv` |
+| Tratamiento en 1.er lugar | 0.045 | 0.682 | 0.773 | idem |
+| Precisión de tratamiento en el top-5 | 0.118 | 0.491 | 0.548 | idem |
+| MRR de la guía | 0.970 | 0.909 | 0.955 | idem |
+| Precisión de guía en el top-5 | 0.936 | 0.909 | 0.955 | idem |
+| Rechazo correcto fuera del corpus | 0.000 | 0.000 | 0.833 | idem |
+| Latencia por consulta (ms) | 13.8 | 340.3 | 415.4 | idem |
 
-La diferencia de precisión (0.967 → 1.0) equivale a **2 chunks de otra guía sobre 60 posiciones** (12 consultas × 5). Es una señal débil, no una mejora demostrada.
+El retrieval avanzado **sí mejora de forma clara cuando se mira el chunk de tratamiento** (MRR 0.161 → 0.784, +0.623), que es lo que le importa a la generación. La guía correcta, en cambio, ya la acertaba el ingenuo (MRR 0.970), así que ese eje está saturado y el avanzado incluso baja un poco (0.909) porque prioriza tratamiento sobre "cualquier chunk de la guía". El **sistema completo** añade la normalización y la compuerta de evidencia: mantiene el MRR de tratamiento alto y rechaza el 83.3% de las consultas fuera del corpus.
 
-### Desglose por técnica
+### Desglose por técnica (MRR del tratamiento)
 
-El mapeo a los sistemas del experimento es aproximado y **la ablación no es limpia**: `intencion_sin_rerank` combina query transformation con búsqueda híbrida, así que no aísla el aporte de la transformación.
+Cada fila añade una técnica sobre las anteriores; la métrica es el MRR del chunk de tratamiento sobre las 22 consultas dentro del corpus.
 
-| Configuración | Sistema del experimento | Precisión de guía top-5 | Latencia (ms) | Tratamiento |
+| Configuración | Sistema | MRR del tratamiento | Δ vs. ingenuo | Latencia (ms) |
 |---|---|---|---|---|
-| Ingenuo | `ingenuo` | 0.967 | 24.2 | no medido |
-| + query transformation (incluye híbrido, sin reranker) | `intencion_sin_reranker` | 0.933 | 40.6 | no medido |
-| + hybrid search | `hibrido` | 0.983 | 43.0 | no medido |
-| + reranking | `reranker` | 1.0 | 319.5 | no medido |
-| + filtro por sección | `intencion_seccion` | 1.0 | 290.3 | no medido |
+| Ingenuo | `ingenuo` | 0.161 | — | 13.8 |
+| + hybrid search | `hibrido` | 0.239 | +0.078 | 13.4 |
+| + reranking (sin transformación) | `reranker` | 0.502 | +0.341 | 306.2 |
+| + query transformation, sin reranker | `intencion_sin_reranker` | 0.340 | +0.179 | 60.3 |
+| + query transformation + reranker | `intencion` | 0.784 | +0.623 | 340.3 |
+| + filtro por sección | `intencion_seccion` | 0.805 | +0.644 | 269.7 |
+| Sistema completo (normalización + compuerta) | `completo` | 0.830 | +0.669 | 396.9 |
+| Sistema completo + regla de siglas | `completo_siglas` | **0.875** | **+0.714** | 415.4 |
 
 
 ### 5.6 Hallazgos (derivados de datos)
 
-1. **Evaluación saturada a nivel de guía.** Todos los sistemas obtienen MRR 1.0 en las 12 consultas del corpus. Con solo 3 guías de temas disjuntos y el título de la guía incluido en cada chunk, hasta BM25 solo acierta la guía. Este resultado es válido, pero no informativo.
-2. **El reranker fue la única técnica con diferencia medible en precisión de guía.** Con reranker no apareció ningún chunk de otra guía en el top-5. Sin reranker aparecieron 2 (denso), 1 (híbrido) y 4 (transformación sin reranker). Son muy pocos casos para concluir.
-3. **Evidencia cualitativa a favor de la transformación de consulta** (inspección de tres consultas, no una métrica):
-   - Para "falla cardiaca", el ingenuo devolvió resumen, glosario e índice; `intencion` devolvió los chunks 12, 16 y 20, de contenido terapéutico.
-   - Para "diabetes mellitus tipo 2", `intencion` todavía trae un chunk de diagnóstico (chunk 6) en segundo lugar; el filtro de sección lo elimina.
-4. **Compuerta de evidencia.** Rechaza 20 de 21 consultas fuera del corpus. La que pasa es "diabetes mellitus tipo 1", que comparte casi todo el vocabulario con diabetes tipo 2.
-5. **Los umbrales dependen de muy pocos casos.** El umbral para normalizar es exactamente el score de la consulta "diabetes" (el positivo más débil), y el de evidencia queda justo sobre el score de "diabetes mellitus tipo 1". Como todos los aciertos son aciertos, todas las consultas "incorrectas" son las de fuera del corpus, así que el umbral solo separa "dentro" de "fuera del corpus", no aciertos de errores.
+1. **La métrica que importa (tratamiento) sí separa a los sistemas.** Con el gold set por chunk, el MRR del tratamiento va de 0.161 (ingenuo) a 0.875 (sistema completo + siglas). Es la evidencia que antes faltaba.
+2. **La query transformation es la técnica que más aporta** al tratamiento: `intencion` (0.784) supera a `reranker` sin transformación (0.502) y a `intencion_sin_reranker` (0.340); el filtro de sección suma poco más (0.805).
+3. **El reranker, solo, no basta para el tratamiento** (0.502): reordena los 30 candidatos, pero si la consulta no expresa "tratamiento" trae chunks de otras secciones.
+4. **El eje de guía está saturado** (MRR 0.970 en el ingenuo): con 3 guías de temas disjuntos, hasta BM25 acierta la guía; por eso no sirve para comparar sistemas.
+5. **La compuerta de evidencia rechaza el 83.3% de las consultas fuera del corpus** (sin ella, el rechazo es 0), a costa de ~57 ms más por consulta.
 
 
 ### 5.7 Supuestos (no medidos)
@@ -404,23 +414,21 @@ El mapeo a los sistemas del experimento es aproximado y **la ablación no es lim
 
 ### 5.8 Limitaciones
 
-- **Sin gold set de chunks**, no hay métricas de tratamiento. Esto impide sostener la afirmación central de la sección.
-- **Conjunto de evaluación pequeño y fácil:** 12 consultas dentro del corpus, con un solo caso en los tipos sigla, hiperespecífica y "guías parecidas"; 64 chunks y 3 guías disjuntas.
-- **Ablación no aislada:** la fila de query transformation incluye búsqueda híbrida.
-- **Filtro de sección sin validar:** puede dejar el pool vacío o descartar chunks útiles. El campo `categoria_seccion` de la ingesta tampoco es una alternativa confiable: marca como tratamiento las portadas de dos guías y como "otro" varias tablas de fármacos y secciones de depresión leve/moderada, psicoterapias y TEC.
-- **Sensibilidad a la reescritura:** las tres plantillas de consulta y la pregunta son fijas; no se probó otra formulación.
-- **Un solo modelo de reranker evaluado** en este corpus (el alternativo, `bge-reranker-v2-m3`, no se corrió).
-- **Calibración frágil:** depende de un único negativo difícil ("diabetes mellitus tipo 1").
+- **Gold set anotado por IA y sin revisión humana** (`gold_meta.json` lo declara): la relevancia por chunk no está validada por una persona.
+- **Corpus pequeño (3 guías, 64 chunks) y eje de guía saturado:** solo el eje de tratamiento discrimina.
+- **Ablación no del todo aislada:** `intencion_sin_reranker` combina transformación de consulta con búsqueda híbrida.
+- **Filtro de sección sin validar**, y `categoria_seccion` de la ingesta con errores de clasificación (marca portadas como tratamiento).
+- **Calibración con 40 consultas** (22 dentro), validada en 3 pliegues; puede ser frágil al agregar guías.
+- **Un solo reranker evaluado** (el alternativo `bge-reranker-v2-m3` no se corrió).
 
-## Qué falta para poder afirmar una mejora
+## Qué falta
 
-1. Etiquetar a mano los 64 chunks (relevancia 0/1/2), idealmente por dos personas, con un criterio escrito.
-2. Agregar consultas difíciles: por intención ("metformina", "betabloqueadores", "ISRS"), cruces entre guías (diabetes con falla cardíaca) y chunks que mencionan la entidad sin tratar (glosario, abreviaturas, índice).
-3. Medir recall@k, precisión@k y nDCG@k a nivel de chunk.
-4. Separar la ablación (transformación de consulta sin híbrido).
-5. Recalibrar los umbrales con más consultas.
+Con el gold set por chunk, la afirmación central ya tiene sustento: el retrieval avanzado mejora el acceso al chunk de tratamiento (MRR 0.161 → 0.875). Queda por reforzar:
 
-El análisis mostró que el pipeline de retrieval funciona técnicamente, pero que la evaluación actual no permite demostrar que el retrieval avanzado supere al RAG ingenuo. Sobre el índice real de 64 chunks y 3 guías, todos los sistemas acertaron la guía correcta en el primer lugar (MRR de 1.0), porque las consultas son nombres de enfermedad sobre guías de temas distintos, algo que hasta BM25 resuelve solo. Ese resultado es válido pero no informativo, y el delta de 0 frente al ingenuo refleja la falta de poder de la evaluación, no una equivalencia entre técnicas. La métrica que sí importaría, si llega el chunk de tratamiento y no solo la guía, no pudo medirse porque ninguna consulta tiene chunks_relevantes. Lo único con diferencia medible fue que el reranker eliminó los chunks de otra guía en el top-5 (2 casos en el denso, 1 en el híbrido y 4 en la transformación sin reranker, sobre 60 posiciones), una señal débil, junto con la prueba de humo, donde el ingenuo trajo resumen, glosario e índice y la transformación de consulta trajo chunks terapéuticos. También encontramos que el error de calibración se debía a etiquetas con un doc_id inexistente, que categoria_seccion se pierde en Chroma y tiene errores de clasificación, que los umbrales dependen de muy pocas consultas y que la normalización no encontró coincidencia en ningún caso. En síntesis, tenemos un sistema que se comporta de forma razonable, pero la afirmación de que mejora sobre el ingenuo sigue sin sustento hasta construir un gold set a nivel de chunk.
+1. Revisión humana (o una segunda anotación) del gold set de chunks.
+2. Más consultas y más guías, para que el eje de guía deje de estar saturado.
+3. Separar del todo la ablación (transformación de consulta sin híbrido).
+4. Medir recall@k y nDCG@k además del MRR.
 
 ---
 
@@ -465,7 +473,7 @@ La herramienta implementa un diseño *fail-safe* para no interrumpir el pipeline
 
 | Métrica | Valor | Fuente del número |
 |---|---|---|
-| Frecuencia de invocación (% de casos) | ~46.7% (7/15 casos) | Medido en `eval_set_15_casos` (5 siglas forzadas + 2 entidades con score < 0.5) |
+| Frecuencia de invocación (% de casos) | 33.3% (5/15 casos) | `run_generacion.py` en `start_pipeline_M3_ejecutado.ipynb` sobre `M3/ejecucion/eval_set_casos.json` (siglas DM2, ICC, TFNA y entidades con score bajo) |
 | Tasa de normalización exitosa | 100% en términos cubiertos por SNOMED CT | Verificado en `start_tools.ipynb` sobre patologías del corpus |
 | Latencia media de normalización (primera llamada) | 480 ms | Medido vía requests a `data.bioontology.org` |
 | Latencia media con caché activo | 0.05 ms | Medido vía `@lru_cache` en repetición de consultas |
@@ -519,7 +527,7 @@ Se implementó el pipeline de evaluación automatizada de RAG mediante la librer
 
 ### 7.3 Eval set
 
-Se estructuró un conjunto de evaluación de **15 casos clínicos integrales** (`M3/data/eval_set_15_casos.json`), con la siguiente composición:
+Se estructuró un conjunto de evaluación de **15 casos clínicos integrales** (`M3/ejecucion/eval_set_casos.json`), con la siguiente composición:
 - **`input`:** Texto clínico real extraído del corpus de DisTEMIST (M1/M2).
 - **`entidad`:** Mención de enfermedad en texto libre o sigla clínica (`TFNA`, `EPOC`, `HTA`, `DM2`, `BRD`).
 - **`pregunta`:** Consulta clínica formulada sobre diagnóstico y tratamiento.
