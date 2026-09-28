@@ -111,7 +111,9 @@ def _piezas_reales(cfg: dict, project_root: Path) -> tuple[Callable, Callable, d
     retr_cfg_path = project_root / mod["retrieval_config"]
 
     sys.path.insert(0, str(retr_dir))
-    os.environ["M3_RETRIEVAL_CONFIG"] = str(retr_cfg_path)
+    # Si el entorno ya fijo M3_RETRIEVAL_CONFIG (por ejemplo, un override local que
+    # arma el notebook), se respeta; si no, se usa el YAML del repo.
+    os.environ.setdefault("M3_RETRIEVAL_CONFIG", str(retr_cfg_path))
 
     try:
         import retrieval

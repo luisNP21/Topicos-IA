@@ -104,7 +104,9 @@ def cargar_eval_set_de_generacion(ruta_generacion: Path) -> list[dict] | None:
             return None
         items = []
         for r in resultados:
-            q = r.get("entidad") or r.get("query_final", "")
+            # `question` es la pregunta real del caso (M3/generacion la incluye);
+            # se cae a `entidad`/`query_final` para salidas antiguas.
+            q = r.get("question") or r.get("entidad") or r.get("query_final", "")
             ctx = r.get("contexts", [])
             ans = r.get("answer", "")
             gt = r.get("ground_truth") or f"Manejo clínico y recomendaciones sobre {q}."
