@@ -123,7 +123,7 @@ M3/generacion/
 ├── config.yaml         # referencia los YAML de cada pieza
 ├── entidades_ejemplo.json
 ├── requirements.txt
-├── test_generacion.py  # 15 pruebas con mocks, sin llamar a la API
+├── test_generacion.py  # 16 pruebas con mocks, sin llamar a la API
 └── README.md
 ```
 
@@ -134,8 +134,9 @@ M3/generacion/
 ```bash
 pip install -r requirements.txt
 # .env con PROJECT_ROOT, GROQ_API_KEY (y BIOPORTAL_API_KEY para la tool de Luis)
-python run_generacion.py --config config.yaml            # piezas reales
+python run_generacion.py --config config.yaml            # piezas reales (usa el eval set del config)
 python run_generacion.py --config config.yaml --mocks    # sin dependencias
+python run_generacion.py --config config.yaml --entidades M3/ejecucion/eval_set_casos.json  # otro eval set
 python -m unittest test_generacion -v                    # pruebas (sin API)
 ```
 
@@ -145,23 +146,14 @@ Salida: `M3/outputs/resultado_generacion.json`, con la traza por entidad
 
 ---
 
-## 7. Estado y pendientes de coordinación
+## 7. Estado
 
-**Hecho**
-- [x] Contratos, orquestación (3 zonas), generación, mocks y tests (15/15).
+**Hecho y verificado en la corrida final** (`M3/ejecucion/start_pipeline_M3_ejecutado.ipynb`)
+- [x] Contratos, orquestación (3 zonas + siglas + compuerta de evidencia), generación, mocks y tests (**16/16**).
 - [x] Integración cableada a `M3/retrieval` (Pau) y `M3/tools` (Luis), con sus YAML.
-- [x] Salida consumible por RAGAS (`contexts`, `answer`, `ground_truth`).
+- [x] Salida consumible por RAGAS (`contexts`, `answer`, `ground_truth`): el eval set aporta el `esperado`.
+- [x] Corrida sobre el corpus real (3 guías): **13/15 con fragmentos**, tool invocada en **5/15** y `fallback_used` en **10/15**. Detalle en `M3/README.md` (sección 8).
 
 **Pendiente (equipo)**
-- [ ] `corpus_utils.py` no existe en ninguna rama todavía; `M3/retrieval` lo
-      importa para construir el índice. La corrida **real** espera ese detalle del
-      corpus/refactor (Isabella).
-- [ ] Instalar dependencias del retrieval (`chromadb`, `rank_bm25`) para la
-      corrida real.
-- [ ] **RAGAS (Luis)** quedó con `llm_model: "openai/gpt-oss-120b"`; el juez de M2
-      es `qwen/qwen3.8-27b`. Conviene unificar (gpt-oss no cabe en el cupo gratuito).
-- [ ] `M3/tools/orquestacion.py` (borrador de Luis) duplica este
-      `M3/generacion/orquestacion.py`, que Paula documenta como el canónico.
-      Conviene eliminar el borrador.
-- [ ] `ground_truth` para `context_recall`: hoy es `null`; hay que decidir la
-      referencia (respuesta esperada del eval set o el pasaje relevante).
+- [ ] `M3/tools/orquestacion.py` duplica este `M3/generacion/orquestacion.py`, que el README del retrieval documenta como el canónico. Conviene eliminar el borrador de `M3/tools`.
+- [ ] Decidir si la abstención alta (10/15, incluso con contexto recuperado) se mitiga ajustando la pregunta del caso o el prompt de generación.

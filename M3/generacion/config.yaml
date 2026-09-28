@@ -34,5 +34,7 @@ rutas:
   outputs_dir: "M3/outputs"
   # Nombre exacto que consume RAGAS (M3/ragas/evaluacion_ragas.py).
   archivo_salida: "resultado_generacion.json"
-  # Entidades a generar. Acepta .json (lista) o .jsonl (campo 'consulta').
-  entidades: "M3/generacion/entidades_ejemplo.json"
+  # Eval set del equipo (15 casos). Acepta .json (lista) o .jsonl (campo 'consulta').
+  # El notebook lo pasa con --entidades; este default hace que `run_generacion.py`
+  # a secas use el mismo conjunto que la corrida del pipeline.
+  entidades: "M3/ejecucion/eval_set_casos.json"
