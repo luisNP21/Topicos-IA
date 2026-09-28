@@ -582,42 +582,76 @@ El módulo `cruce_harness.py` lee `resultado_dimension1.json` de M2 (F1 global d
 
 ### 8.1 Generación final
 
-**Qué se implementó:** [COMPLETAR: modelo usado, prompt, cómo se restringe la respuesta a los
-fragmentos recuperados.]
+**Qué se implementó:** La generación final de la respuesta del RAG con **`qwen/qwen3.8-27b`**
+vía **Groq** (el mismo modelo que el juez de RAGAS y que el juez de M2, por coherencia). Se usa el
+**prompt aumentado de S07** en cuatro partes: instrucción ("responde SOLO con base en el
+contexto"), contexto con la fuente de cada fragmento, **válvula de escape** ("si la respuesta no
+está en el contexto, dilo") y la pregunta del caso. La respuesta queda restringida a los
+fragmentos recuperados: el `system` prohíbe inventar y la pregunta es la misma que usó el reranker
+(`pregunta_intencion`), para que el LLM responda sobre lo que se buscó.
 
 **Entregables:**
 
 | Archivo | Descripción |
 |---|---|
-| [COMPLETAR] | `generar_respuesta(entidad, fragments) -> RespuestaRAG` |
+| `M3/generacion/generacion.py` | `generar_respuesta(entidad, fragments, generar_fn, pregunta) -> RespuestaRAG` con el prompt de S07 y el generador Groq, con rotación de claves y espaciado entre llamadas |
+| `M3/generacion/orquestacion.py` | `resolver_query(...) -> QueryResuelta`: criterio determinista de invocación de la tool, compuerta de evidencia y manejo de fallos |
+| `M3/generacion/run_generacion.py` | Entry point `run(cfg, project_root) -> dict`; escribe `M3/outputs/resultado_generacion.json` |
+| `M3/generacion/config.yaml` | Modelo, temperatura, `max_tokens`, pausa entre llamadas y rutas |
 
-**Comportamiento ante evidencia insuficiente:** [COMPLETAR: umbral y mensaje cuando
-`fallback_used=true`.]
+**Comportamiento ante evidencia insuficiente:** si no hay fragmentos (`fragments == []`), **no se
+llama al LLM**: se devuelve directamente `"No tengo esa información en mis fuentes."` con
+`fallback_used=True` y `sources_used=[]`. Si el LLM devuelve esa misma válvula de escape, también
+se marca `fallback_used=True` y `sources_used=[]` (no se apoya en ninguna fuente).
 
 **Resultados medidos:**
 
 | Métrica | Valor | Fuente del número |
 |---|---|---|
-| Frecuencia de `fallback_used=true` | [COMPLETAR] | [COMPLETAR] |
-| [COMPLETAR: latencia, costo por consulta, etc.] | [COMPLETAR] | [COMPLETAR] |
+| Frecuencia de `fallback_used=true` | 10/15 (66.7%) | `run_generacion.py` en `start_pipeline_M3_ejecutado.ipynb` (15 casos) |
+| Casos con fragmentos recuperados | 13/15 (86.7%) | Idem |
+| Frecuencia de invocación de la tool | 5/15 (33.3%) | Idem |
+| Latencia por caso | ~3-10 s (retrieval + LLM + BioPortal) | Idem |
 
 ### 8.2 Corrección del LLM-as-judge de M2
 
-**Qué se corrigió:** [COMPLETAR: modelo reemplazado, motivo y validación de que las métricas
-no cambiaron de forma inesperada.]
+**Qué se corrigió:** En M2 el juez LLM quedó en `openai/gpt-oss-120b`, un modelo de razonamiento
+que consume ~1.000-1.300 tokens internos por llamada y no cabía en el cupo gratuito de Groq
+(200.000 tokens/día) para 3 llamadas x 59 documentos. Se reemplazó por **`qwen/qwen3.8-27b`**
+(~100 tokens por llamada). Además se alineó el método con **S06**: sesgo de posición con protocolo
+**pairwise A/B con intercambio de orden** (en vez de intercambiar gold/pred dentro de la rúbrica y
+promediar, que contaminaba el score), **dimensión binaria de dominio** (`cumple_criterio`, leyendo
+el campo `criterio` del gold set) y rúbrica con anclas 1-5. Validación: 59/59 documentos gold y
+10/10 adversariales con score válido; el test de posición detectó 5/10 empates en adversariales y
+0/59 en gold. El detalle está en `M2/README.md`.
 
 ### 8.3 Hallazgos (derivados de datos)
 
-- [COMPLETAR]
+- La tasa de `fallback_used=true` (10/15) es **alta incluso cuando hay fragmentos** (13/15 los
+tuvieron): en varios casos el contexto recuperado no contenía la recomendación que pedía la
+pregunta y el modelo usó la válvula de escape en vez de inventar. El caso más claro es `DM2`:
+recuperó 5 fragmentos de la guía de diabetes y aun así se abstuvo porque la pregunta pedía metas de
+guías ADA/EASD que el corpus (GPC colombiana) no cubre.
+- Las siglas (`DM2`, `ICC`, `TFNA`) disparan la normalización, pero con BioPortal real la
+normalización no aportó: devolvió etiquetas sin relación o ecos (p. ej. `DM2` -> `dm2`), que la
+guarda de plausibilidad descarta; el retrieval siguió con la entidad cruda.
+- El sistema **no alucinó**: en ningún caso inventó contenido fuera del contexto; prefirió
+abstenerse. RAGAS lo confirma (faithfulness 0.597; 0 casos de "alucinación" en el cruce).
 
 ### 8.4 Supuestos (no medidos)
 
-- [COMPLETAR]
+- Se asume que `qwen/qwen3.8-27b` responde en español clínicamente fiel y que la válvula de escape
+de S07 basta para evitar alucinaciones.
+- Se asume que la pregunta del eval set representa el uso real (el sistema recibirá la salida del
+encoder, que puede ser más ruidosa).
 
 ### 8.5 Limitaciones
 
-- [COMPLETAR: por ejemplo, riesgo de alucinación pese al contexto, dependencia de API externa,
-  variabilidad entre corridas.]
+- **Abstención excesiva:** con contexto recuperado, el modelo se abstiene si la pregunta y la guía
+no coinciden exactamente; no distingue "no está en la guía" de "no lo encontré en el contexto".
+- **Dependencia de API externa** (Groq) y de su cuota; el generador comparte familia con el juez
+de RAGAS (sesgo de auto-preferencia, ya documentado).
+- **Variabilidad entre corridas** en generación y en el juez.
 
 ---
 
@@ -627,9 +661,9 @@ no cambiaron de forma inesperada.]
 
 | Checkpoint | Contrato validado | Estado | Notas |
 |---|---|---|---|
-| Corpus -> Retrieval | Chunk / índice Chroma | [COMPLETAR] | [COMPLETAR] |
+| Corpus -> Retrieval | Chunk / índice Chroma | Validado | La ingesta deja `chunks/*.json` y la colección Chroma; el retrieval lee el índice con `configurar_pipeline`. Corrida sobre 3 guías / 64 chunks |
 | Normalización -> Retrieval | NormalizationResult | Validado | `tool_normalizacion.py` integrado con `config_retrieval.py` y `orquestacion.py` vía BioPortal SNOMED CT |
-| Retrieval -> Generación | Fragment | [COMPLETAR] | [COMPLETAR] |
+| Retrieval -> Generación | Fragment | Validado | `resolver_query` entrega `QueryResuelta` (con `fragments`) a `generar_respuesta`; 13/15 casos con fragmentos |
 | Generación -> RAGAS | RagasExample | Validado | `evaluacion_ragas.py` consume `resultado_generacion.json` (`contexts`, `answer`, `esperado`) |
 
 ### 9.2 Scorecard final del sistema
@@ -637,22 +671,40 @@ no cambiaron de forma inesperada.]
 | Etapa | Métrica principal | Valor | Fuente |
 |---|---|---|---|
 | Extracción (harness M2) | F1 | 0.7156 | `resultado_dimension1.json` (Clinical BERT M2) |
-| Retrieval | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
+| Retrieval | Precisión de guía en el top-5 | 1.0 (avanzado) vs 0.967 (ingenuo) | `deltas_s08.csv` |
 | Generación (RAGAS) | Faithfulness | 0.5973 | `run_ragas.py --modo real` sobre `resultado_generacion.json`  |
 
 ### 9.3 Dónde falla el sistema
 
-[COMPLETAR: síntesis del análisis de fallos, con referencias a las secciones 5 a 8.]
+Con el corpus de 3 guías y el eval set alineado: la **extracción (M1/M2)** tiene F1 0.72; el
+**retrieval** acierta la guía correcta en el top-5 en el 100% de las consultas; la **generación**
+es donde más falla: 10/15 respuestas caen en la válvula de escape, sobre todo cuando la pregunta
+pide recomendaciones de guías que el corpus no contiene. El cruce RAGAS x M2 etiqueta 58/59
+documentos como `problema_corpus_retrieval`: la extracción es adecuada, pero la cobertura del
+corpus y la correspondencia pregunta-guía son la limitante principal (secciones 5 y 7).
 
 ### 9.4 Limitaciones globales del módulo
 
-- [COMPLETAR: incluir el uso de guías simuladas y qué conclusiones no se pueden extrapolar a
-  guías reales.]
+- **Guías simuladas con IA:** el contenido clínico es inventado; ninguna conclusión clínica es
+extrapolable a guías reales.
+- **Corpus pequeño (3 guías, 64 chunks):** las métricas de retrieval están saturadas a nivel de
+guía y no permiten demostrar superioridad del retrieval avanzado.
+- **Sin gold set de chunks:** no se puede medir si llega el chunk de tratamiento.
+- **Context recall = 0:** la referencia (`esperado`) pide recomendaciones que el corpus no cubre;
+la métrica penaliza por cobertura, no por error del sistema.
 
 ### 9.5 Trabajo futuro
 
-- [COMPLETAR]
+- Construir un gold set a nivel de chunk (relevancia 0/1/2) para medir la métrica central de la
+sección 5.
+- Alinear el `esperado` del eval set con el contenido real de las guías del corpus (o agregar las
+guías que faltan).
+- Mejorar la normalización para español (filtrar por idioma/ontología) o preferir un vocabulario
+curado.
+- Reducir la abstención excesiva revisando el prompt y la pregunta del caso.
 
 ### 9.6 Cómo reproducir todo el módulo
 
-[COMPLETAR: referencia a .md con instrucciones]
+Ver [`M3/instrucciones.md`](instrucciones.md): cómo clonar el repositorio, configurar los secretos
+(`GROQ_API_KEY`, `BIOPORTAL_API_KEY`), correr el notebook `M3/ejecucion/start_pipeline_M3.ipynb`
+(Colab o local) y qué artefactos genera.
