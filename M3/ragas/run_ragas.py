@@ -12,7 +12,11 @@ import json
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 from config_utils import cargar_config
 from evaluacion_ragas import run as run_ragas
