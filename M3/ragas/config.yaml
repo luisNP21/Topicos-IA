@@ -1,0 +1,23 @@
+proyecto:
+  nombre: "M3 -- Evaluacion RAGAS + cruce con harness M2"
+  seed_global: 42
+
+ragas:
+  # "mock": calculo manual con embeddings, sin GROQ_API_KEY, sin datos reales
+  # "real": usa libreria ragas con LLM de Groq como juez
+  modo: "mock"
+  llm_provider: "groq"
+  # Mismo modelo juez que M2 Dimension 3 y M3 generacion (qwen/qwen3.8-27b via Groq)
+  llm_model: "qwen/qwen3.8-27b"
+  embedding_model: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+
+cruce_harness:
+  # Ruta relativa a PROJECT_ROOT
+  resultado_dimension1_path: "M2/ejecucion/outputs_gold/resultado_dimension1.json"
+  # Umbrales para clasificar F1 alto/bajo en el diagnostico
+  # (mismos umbrales que scorecard.py de M2 para consistencia)
+  umbral_f1_bajo: 0.4
+  umbral_f1_alto: 0.7
+  umbral_recall_bajo: 0.4
+  umbral_faithfulness_bajo: 0.4
+
