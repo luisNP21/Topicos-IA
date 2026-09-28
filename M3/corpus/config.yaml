@@ -1,0 +1,58 @@
+# config.yaml — configuración del pipeline de corpus, separada de las fuentes de datos
+
+embeddings:
+  model_name: "intfloat/multilingual-e5-base"
+
+chunking:
+  max_tokens: 500
+  overlap_tokens: 50
+
+paths:
+  chunks_dir: "data/guias_clinicas/chunks"
+  chroma_dir: "data/chroma_guias"
+  manifest_path: "data/guias_clinicas/corpus_manifest.json"
+
+front_matter:
+  min_palabras: 25
+  titulos_excluidos:
+    - portada
+    - resumen
+    - abstract
+    - índice
+    - indice
+    - tabla de contenido
+    - contenido
+    - agradecimientos
+    - prólogo
+    - prologo
+    - dedicatoria
+    - lista de figuras
+    - lista de tablas
+    - abreviaturas
+    - glosario
+    - autores
+    - créditos
+    - creditos
+
+categorias_seccion:
+  tratamiento:
+    - tratamiento
+    - manejo
+    - terapéutic
+    - terapeutic
+    - farmacológic
+    - farmacologic
+    - intervención
+    - intervencion
+  diagnostico:
+    - diagnóstico
+    - diagnostico
+    - criterios diagnósticos
+    - evaluación clínica
+    - evaluacion clinica
+  epidemiologia:
+    - epidemiología
+    - epidemiologia
+    - prevalencia
+    - incidencia
+    - factores de riesgo

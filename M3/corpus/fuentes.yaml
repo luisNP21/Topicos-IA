@@ -1,0 +1,25 @@
+fuentes:
+
+  - doc_id: "gpc_diabetes_mellitus_tipo_2"
+    titulo: "GPC para el tratamiento y seguimiento de la diabetes mellitus tipo 2 en la población colombiana mayor de 18 años"
+    fuente_url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/CA/gpc-profesionales-diabetes-mellitus-tipo2-poblacion-mayor-18-anos.pdf"
+    licencia: "ISBN: 978-958-8903-75-0 "
+    fecha_publicacion: "2025-01-01"
+    responsable: "Isabella Camacho"
+    archivo_local: "data/guias_clinicas/gpc_diabetes_mellitus_tipo2.pdf"
+  
+  - doc_id: "gpc_falla_cardiaca"
+    titulo: "GPC para la rehabilitación de la falla cardíaca en la población mayor de 18 años"
+    fuente_url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/CA/gpc-prof-rehabilitacion-falla-cardiaca-poblacion-mayor-18-anos-b-c-d.pdf"
+    licencia: "ISBN: 978-958-8903-33-0"
+    fecha_publicacion: "2025-01-01"
+    responsable: "Isabella Camacho"
+    archivo_local: "data/guias_clinicas/gpc_falla_cardiaca.pdf"
+
+  - doc_id: "gpc_depresion_adultos"
+    titulo: "GPC para el tratamiento y seguimiento de la depresión en adultos"
+    fuente_url: "https://www.salud.gob.ec/wp-content/uploads/2019/02/61069_MSP_Gui%CC%81a_DEPRESION_20180228_D.pdf#:~:text=Detecci%C3%B3n%20temprana%20y%20diagn%C3%B3stico%20del%20episodio%20depresivo%20y%20trastorno%20depresivo%20recurrente%20en%20adultos.%20Atenci%C3%B3n%20integral%20de%20los%20adultos%20con%20diagn%C3%B3stico%20de%20episodio%20depresivo%20o%20trastorno%20depresivo%20recurrente.%20Gu%C3%ADa%2022"
+    licencia: "ISBN: 978-9942-22-232-9"
+    fecha_publicacion: "2025-01-01"
+    responsable: "Isabella Camacho"
+    archivo_local: "data/guias_clinicas/gpc_depresion_adultos.pdf"

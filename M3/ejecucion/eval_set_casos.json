@@ -1,0 +1,122 @@
+[
+  {
+    "id": "caso_01",
+    "input": "Varón de 52 años, con sobrepeso (IMC 29.3 kg/m2) y vida sedentaria, que acude a consulta de medicina preventiva. En analíticas de control rutinario presenta glucemia plasmática en ayunas de 142 mg/dL y 138 mg/dL en dos tomas separadas, con una hemoglobina glicosilada (HbA1c) de 7.2%. No refiere antecedentes de enfermedad cardiovascular ni renal, y se encuentra asintomático, confirmándose el diagnóstico de diabetes mellitus tipo 2 de reciente comienzo.",
+    "entidad": "diabetes mellitus tipo 2",
+    "pregunta": "¿Cuál es la recomendación farmacológica y no farmacológica de primera línea para el inicio del tratamiento de la diabetes mellitus tipo 2 según la guía clínica?",
+    "tipo_caso": "estandar",
+    "esperado": "La guía clínica recomienda como primera línea la intervención intensiva sobre el estilo de vida (alimentación saludable, reducción ponderal y actividad física aeróbica de al menos 150 minutos semanales) junto con el inicio temprano de monoterapia con metformina oral con titulación progresiva de dosis para mejorar la tolerancia gastrointestinal."
+  },
+  {
+    "id": "caso_02",
+    "input": "Mujer de 64 años con diagnóstico de DM2 desde hace 7 años en tratamiento con metformina 1000 mg cada 12 horas. Presenta antecedentes de hipertensión arterial y un infarto agudo de miocardio hace dos años. En su control periódico registra HbA1c de 8.1% y una tasa de filtración glomerular estimada de 55 mL/min/1.73m2 con microalbuminuria persistente.",
+    "entidad": "DM2",
+    "pregunta": "¿Qué grupo de fármacos antidiabéticos orales con beneficio cardiorrenal demostrado se recomienda adicionar a la metformina en pacientes con DM2 y enfermedad cardiovascular establecida?",
+    "tipo_caso": "abreviatura",
+    "esperado": "En pacientes con DM2 y enfermedad cardiovascular aterosclerótica o enfermedad renal crónica establecida, la guía clínica recomienda adicionar a la metformina un inhibidor del cotransportador sodio-glucosa tipo 2 (iSGLT2 como empagliflozina o dapagliflozina) o un agonista del receptor GLP-1 con beneficio cardiovascular demostrado, independientemente de la meta basal de HbA1c."
+  },
+  {
+    "id": "caso_03",
+    "input": "Paciente de 49 años que acude a urgencias por astenia marcada, polidipsia intensa, poliuria y pérdida involuntaria de 6 kg de peso en el último mes. Al examen físico presenta signos leves de deshidratación, con glucemia capilar al ingreso de 340 mg/dL y una HbA1c de 10.8%, sin datos de cetoacidosis diabética ni estado hiperosmolar en la gasometría arterial.",
+    "entidad": "diabetes mellitus tipo 2",
+    "pregunta": "¿Cuál es la indicación de inicio de insulinoterapia basal en pacientes con diabetes mellitus tipo 2 que presentan síntomas cardinales graves e hiperglucemia marcada?",
+    "tipo_caso": "urgencia",
+    "esperado": "Se recomienda iniciar de inmediato terapia con insulina basal (como insulina glargina o NPH) asociada o no a metformina cuando el paciente presenta hiperglucemia sintomática grave con glucemias superiores a 300 mg/dL, HbA1c mayor al 10% o pérdida de peso involuntaria con síntomas de catabolismo."
+  },
+  {
+    "id": "caso_04",
+    "input": "Varón de 78 años con antecedentes de DM2 de 15 años de evolución, hipertensión y artrosis moderada. Vive solo y ha presentado dos episodios de mareo matutino asociados a glucemias capilares de 60 mg/dL bajo tratamiento con glibenclamida. En su analítica actual presenta HbA1c de 6.8% y aclaramiento de creatinina de 45 mL/min.",
+    "entidad": "DM2",
+    "pregunta": "¿Cuáles son las metas individualizadas de control glucémico y la recomendación sobre sulfonilureas en adultos mayores con DM2 para prevenir hipoglucemias?",
+    "tipo_caso": "multimorbilidad",
+    "esperado": "En adultos mayores se recomienda flexibilizar las metas de HbA1c (entre 7.5% y 8.0% según comorbilidad y fragilidad) y suspender o evitar el uso de sulfonilureas de vida media larga como la glibenclamida debido al alto riesgo de hipoglucemias graves y prolongadas, prefiriendo fármacos con bajo riesgo hipoglucémico."
+  },
+  {
+    "id": "caso_05",
+    "input": "Paciente femenina de 56 años con diabetes mellitus tipo 2 diagnosticada hace 5 años, con regular control glucémico (última HbA1c 7.6%) en monoterapia con metformina. Acude a su control anual de prevención de complicaciones crónicas microvasculares sin síntomas visuales ni edemas periféricos.",
+    "entidad": "diabetes mellitus tipo 2",
+    "pregunta": "¿Qué pruebas periódicas de tamizaje y seguimiento establece la guía clínica para la detección temprana de nefropatía y retinopatía en diabetes mellitus tipo 2?",
+    "tipo_caso": "estandar",
+    "esperado": "La guía clínica establece realizar al menos una vez al año el tamizaje de nefropatía diabética mediante la medición de la relación albúmina/creatinina en orina ocasional junto con la estimación de la tasa de filtración glomerular, así como un examen de fondo de ojo o retinografía con pupila dilatada para la detección precoz de retinopatía diabética."
+  },
+  {
+    "id": "caso_06",
+    "input": "Varón de 63 años con antecedentes de cardiopatía isquémica que consulta por disnea progresiva de esfuerzo clase funcional II-III según la NYHA, ortopnea de dos almohadas y edemas vespertinos en miembros inferiores. El ecocardiograma transtorácico confirma dilatación ventricular izquierda con fracción de eyección reducida del 34% (FEVI reducida), diagnosticándose falla cardíaca crónica.",
+    "entidad": "falla cardíaca",
+    "pregunta": "¿Cuáles son los pilares farmacológicos fundamentales recomendados por la guía clínica para reducir la mortalidad en falla cardíaca con fracción de eyección reducida?",
+    "tipo_caso": "estandar",
+    "esperado": "El tratamiento farmacológico fundamental para reducir la morbimortalidad en falla cardíaca con FEVI reducida consiste en la cuádruple terapia: un inhibidor del eje renina-angiotensina (preferentemente sacubitril-valsartán o en su defecto un IECA/ARA-II), un betabloqueante con evidencia probada (carvedilol, bisoprolol o metoprolol succinato), un antagonista de receptores de mineralocorticoides (espironolactona o eplerenona) y un inhibidor de SGLT2 (dapagliflozina o empagliflozina)."
+  },
+  {
+    "id": "caso_07",
+    "input": "Paciente femenina de 71 años con antecedente conocido de ICC que acude al servicio de urgencias por empeoramiento clínico de 4 días caracterizado por aumento de 4 kg de peso, disnea paroxística nocturna, ingurgitación yugular a 45 grados y crepitantes basales bilaterales en la auscultación pulmonar.",
+    "entidad": "ICC",
+    "pregunta": "¿Cuál es el manejo diurético inicial prioritario para el alivio de la sobrecarga hídrica y congestión pulmonar en la descompensación aguda de ICC?",
+    "tipo_caso": "urgencia",
+    "esperado": "El manejo inicial prioritario consiste en la administración intravenosa de diuréticos de asa (furosemida en bolo o infusión continua), monitorizando la diuresis horaria, la pérdida de peso diaria y la función renal y electrolitos séricos, con el fin de resolver rápidamente los síntomas de congestión venosa y sobrecarga de volumen."
+  },
+  {
+    "id": "caso_08",
+    "input": "Varón de 58 años diagnosticado de falla cardíaca compensada de etiología no isquémica en clase funcional II de la NYHA, clínicamente estable y con tratamiento médico óptimo. Es derivado al programa multidisciplinario de cardiología preventiva para mejorar su capacidad funcional y calidad de vida.",
+    "entidad": "falla cardíaca",
+    "pregunta": "¿Qué papel y recomendaciones de ejercicio físico supervisado establece la guía de rehabilitación de la falla cardíaca en pacientes ambulatorios estables?",
+    "tipo_caso": "estandar",
+    "esperado": "La guía de rehabilitación en falla cardíaca recomienda la participación en programas de ejercicio físico aeróbico regular y entrenamiento de fuerza muscular supervisados, individualizados según la prueba de esfuerzo previa, demostrando mejoras significativas en la capacidad funcional, reducción de hospitalizaciones por descompensación y mejoría en la calidad de vida."
+  },
+  {
+    "id": "caso_09",
+    "input": "Paciente de 69 años con insuficiencia cardíaca crónica por cardiopatía hipertensiva que asiste a consulta de enfermería y seguimiento clínico. Manifiesta dudas sobre las medidas no farmacológicas de estilo de vida que debe mantener en su domicilio para evitar ingresos hospitalarios repetidos.",
+    "entidad": "insuficiencia cardíaca",
+    "pregunta": "¿Cuáles son las medidas no farmacológicas clave de autocuidado, control de peso y restricción de sodio recomendadas para pacientes con insuficiencia cardíaca?",
+    "tipo_caso": "estandar",
+    "esperado": "Se recomienda la educación continua en autocuidado enfocada en la restricción moderada de sal en la dieta (menos de 2 a 3 gramos de sodio al día), control diario del peso corporal por la mañana en ayunas (consultando si se incrementan más de 2 kg en 3 días), reconocimiento temprano de signos de descompensación (edemas, disnea) y adherencia estricta al tratamiento farmacológico."
+  },
+  {
+    "id": "caso_10",
+    "input": "Varón de 60 años con diagnóstico reciente de falla cardíaca con FEVI del 32%, normotenso y con frecuencia cardíaca en reposo de 82 lpm en ritmo sinusal, actualmente recibiendo dosis bajas de enalapril y espironolactona, sin signos de congestión periférica ni pulmonar.",
+    "entidad": "falla cardíaca",
+    "pregunta": "¿Cómo debe realizarse el inicio y la titulación de betabloqueantes en un paciente con falla cardíaca estable según las pautas de la guía clínica?",
+    "tipo_caso": "estandar",
+    "esperado": "El inicio de betabloqueantes (carvedilol, bisoprolol o metoprolol succinato) debe realizarse en pacientes clínicamente estables y euvolémicos, comenzando con dosis muy bajas y titulando progresivamente al alza cada 2 a 4 semanas según tolerancia de presión arterial y frecuencia cardíaca hasta alcanzar la dosis máxima objetivo tolerada."
+  },
+  {
+    "id": "caso_11",
+    "input": "Mujer de 42 años sin antecedentes somáticos relevantes que acude a consulta médica por un cuadro de 2 meses de evolución consistente en tristeza persistente, anhedonia marcada, fatiga extrema, insomnio de despertar precoz y sentimientos recurrentes de culpa que interfieren en su ámbito laboral y familiar, cumpliendo criterios de episodio depresivo mayor.",
+    "entidad": "depresión en adultos",
+    "pregunta": "¿Cuál es la recomendación terapéutica de primera línea para el manejo farmacológico y psicoterapéutico de la depresión en adultos con episodio depresivo moderado a grave?",
+    "tipo_caso": "estandar",
+    "esperado": "Para episodios depresivos moderados a graves en adultos, la guía clínica recomienda el tratamiento combinado de psicoterapia estructurada (como terapia cognitivo-conductual o interpersonal) junto con un antidepresivo de primera línea, preferentemente un inhibidor selectivo de la recaptación de serotonina (ISRS como sertralina, escitalopram o fluoxetina) debido a su favorable perfil de eficacia y seguridad."
+  },
+  {
+    "id": "caso_12",
+    "input": "Varón de 74 años, jubilado, con antecedentes de hipertrofia prostática benigna e hipertensión arterial, que acude acompañado por sus familiares debido a pérdida progresiva del interés por sus actividades cotidianas, apatía, aislamiento social y pérdida de peso de 6 semanas de evolución, diagnosticándose trastorno depresivo.",
+    "entidad": "trastorno depresivo",
+    "pregunta": "¿Qué precauciones y selección de fármacos antidepresivos se recomiendan para el manejo del trastorno depresivo en el adulto mayor según la guía clínica?",
+    "tipo_caso": "multimorbilidad",
+    "esperado": "En adultos mayores con trastorno depresivo se recomienda iniciar con un ISRS (como sertralina o escitalopram) a dosis iniciales bajas con titulación lenta, evitando antidepresivos tricíclicos por sus efectos anticolinérgicos (retención urinaria, confusión) y riesgo de cardiotoxicidad, prestando especial atención a las interacciones farmacológicas y al riesgo de hiponatremia."
+  },
+  {
+    "id": "caso_13",
+    "input": "Mujer de 29 años que consulta por decaimiento anímico leve, dificultades de concentración y desánimo transitorio tras una separación de pareja hace 4 semanas. Conserva la capacidad funcional básica en su trabajo y no presenta ideación autolítica ni síntomas psicóticos, orientándose como episodio depresivo leve.",
+    "entidad": "depresión",
+    "pregunta": "¿Cuál es el enfoque terapéutico inicial recomendado en guías clínicas para el abordaje de la depresión leve en adultos?",
+    "tipo_caso": "estandar",
+    "esperado": "En la depresión leve se recomienda como primera opción el abordaje no farmacológico basado en intervenciones psicosociales, psicoterapia breve o de baja intensidad (como resolución de problemas o psicoeducación) y seguimiento clínico activo, reservando los fármacos antidepresivos para casos en los que los síntomas persistan o no respondan a las medidas psicológicas iniciales."
+  },
+  {
+    "id": "caso_14",
+    "input": "Paciente de 46 años que completó 3 meses de tratamiento con sertralina 100 mg/día por un episodio depresivo mayor, logrando una remisión completa de los síntomas anímicos y recuperación total de su funcionalidad previa. Pregunta si ya puede suspender definitivamente el antidepresivo.",
+    "entidad": "depresión en adultos",
+    "pregunta": "¿Cuál es la duración mínima recomendada del tratamiento farmacológico de mantenimiento con antidepresivos tras alcanzar la remisión de un episodio depresivo mayor?",
+    "tipo_caso": "estandar",
+    "esperado": "La guía clínica recomienda mantener el tratamiento antidepresivo a la misma dosis terapéutica durante al menos 6 a 9 meses después de haber alcanzado la remisión clínica completa del episodio para consolidar la mejoría y prevenir recaídas tempranas antes de considerar una reducción gradual y pautada del fármaco."
+  },
+  {
+    "id": "caso_15",
+    "input": "Recién nacida de 36 semanas de gestación que presenta hematomas difusos y trombocitopenia grave con plaquetas de 8 x 10^9/L tras el parto, confirmándose sospecha de trombocitopenia fetal y neonatal aloinmune (TFNA) por incompatibilidad de antígenos plaquetarios materno-fetales.",
+    "entidad": "TFNA",
+    "pregunta": "¿Existe evidencia o recomendaciones específicas en las guías clínicas de práctica del corpus sobre el manejo de la trombocitopenia fetal y neonatal aloinmune (TFNA)?",
+    "tipo_caso": "sin_evidencia",
+    "esperado": "No se dispone de evidencia ni recomendaciones terapéuticas para la trombocitopenia fetal y neonatal aloinmune en las guías clínicas disponibles en el corpus, por lo que el sistema debe abstenerse de generar recomendaciones farmacológicas sin sustento documental directo."
+  }
+]

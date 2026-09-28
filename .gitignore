@@ -18,6 +18,7 @@ M1/saved_models/
 
 # Salidas locales de la corrida (los results versionados viven en M2/ejecucion/)
 M2/outputs/
+M3/outputs/
 
 # Estado de reanudacion del juez (intermedio, no es entregable)
 checkpoint_*.json
