@@ -124,7 +124,7 @@ fuentes:
   - doc_id: "gpc_diabetes_2023"
     titulo: "Guía de práctica clínica para diabetes tipo 2"
     fuente_url: "https://..."
-    licencia: "CC BY-NC 4.0"
+    licencia: "ISBN: ..."
     fecha_publicacion: "2023-05-01"
     responsable: "Isabella Camacho"
     archivo_local: "data/guias_clinicas/GPC_diabetes_mellitus_tipo_2.pdf"  # relativo a PROJECT_ROOT, no absoluto
