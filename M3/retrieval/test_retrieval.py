@@ -306,10 +306,20 @@ class TestConfiguracion(unittest.TestCase):
         import retrieval
         retrieval.configurar_intencion(*self.original)
 
+    def _cfg(self, corpus="mock"):
+        """Config forzada a un perfil. Las pruebas de configuracion no deben depender
+        del perfil por defecto del YAML (que hoy es 'real' para la corrida real)."""
+        from config_retrieval import cargar_config
+        cfg = cargar_config()
+        cfg["corpus"] = corpus
+        return cfg
+
     def test_yaml_por_defecto(self):
         from config_retrieval import cargar_config, rutas
         cfg = cargar_config()
-        self.assertEqual(cfg["corpus"], "mock")
+        # El perfil por defecto puede ser mock o real segun la corrida; lo que se
+        # verifica es que sea un perfil valido y que exponga las rutas esperadas.
+        self.assertIn(cfg["corpus"], cfg["rutas"])
         self.assertIn("chroma_dir", rutas(cfg))
         self.assertEqual(pregunta_intencion("asma"), cfg["intencion"]["pregunta"].format(e="asma"))
 
@@ -327,7 +337,7 @@ class TestConfiguracion(unittest.TestCase):
     def test_parametros_de_orquestacion(self):
         import json
         from config_retrieval import cargar_config, parametros_orquestacion
-        cfg = cargar_config()
+        cfg = self._cfg()
         with tempfile.TemporaryDirectory() as tmp:
             cfg["rutas"]["mock"]["salida"] = tmp
             provisional = cfg["orquestacion"]["umbrales_provisionales"]["umbral"]
@@ -342,14 +352,16 @@ class TestConfiguracion(unittest.TestCase):
 
     def test_rutas_relativas_a_la_raiz_del_repositorio(self):
         from config_retrieval import RAIZ_REPO, cargar_config, resolver, rutas
-        cfg = cargar_config()
+        cfg = self._cfg()
         self.assertEqual(Path(rutas(cfg)["consultas"]), RAIZ_REPO / "M3/retrieval/data/mock/consultas_mock.jsonl")
-        self.assertEqual(resolver("/content/x"), str(Path("/content/x")))
+        # Ruta absoluta valida en cualquier SO (en Windows "/content/x" no es absoluta).
+        absolut = str(Path.cwd() / "x")
+        self.assertEqual(resolver(absolut), absolut)
         self.assertIsNone(resolver(None))
 
     def test_copia_el_indice_desde_el_origen(self):
         from config_retrieval import cargar_config, preparar_indice
-        cfg = cargar_config()
+        cfg = self._cfg()
         with tempfile.TemporaryDirectory() as tmp:
             origen = Path(tmp) / "drive_chroma"
             origen.mkdir()
@@ -362,7 +374,7 @@ class TestConfiguracion(unittest.TestCase):
 
     def test_normalizador_simulado_y_real(self):
         from config_retrieval import cargar_config, normalizador_desde_config
-        cfg = cargar_config()
+        cfg = self._cfg()
         self.assertFalse(normalizador_desde_config(cfg)("HTA")["normalization_failed"])
         with tempfile.TemporaryDirectory() as tmp:
             (Path(tmp) / "tool_normalizacion.py").write_text(
