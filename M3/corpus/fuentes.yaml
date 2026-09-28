@@ -1,13 +1,5 @@
 fuentes:
 
-  - doc_id: "gpc_cancer_colorrectal"
-    titulo: "GPC para el tamizaje de cáncer colorrectal adultos"
-    fuente_url: "https://revistagastrocol.com/index.php/rcg/article/view/1451/2235"
-    licencia: "DOI: https://doi.org/10.22516/25007440.1451 (no reporta ISBN)"
-    fecha_publicacion: "2025-01-01"
-    responsable: "Isabella Camacho"
-    archivo_local: "data/guias_clinicas/gpc_cancer_colorrectal.pdf"
-
   - doc_id: "gpc_diabetes_mellitus_tipo_2"
     titulo: "GPC para el tratamiento y seguimiento de la diabetes mellitus tipo 2 en la población colombiana mayor de 18 años"
     fuente_url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/CA/gpc-profesionales-diabetes-mellitus-tipo2-poblacion-mayor-18-anos.pdf"
@@ -15,14 +7,6 @@ fuentes:
     fecha_publicacion: "2025-01-01"
     responsable: "Isabella Camacho"
     archivo_local: "data/guias_clinicas/gpc_diabetes_mellitus_tipo2.pdf"
-
-  - doc_id: "gpc_cancer_mama"
-    titulo: "GPC para la detección temprana, tratamiento integral, seguimiento y rehabilitación del cáncer de mama"
-    fuente_url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/INEC/IETS/GPC_Ptes_Mama-3.pdf#:~:text=Gu%C3%ADa%20de%20pr%C3%A1ctica%20cl%C3%ADnica%20(GPC)%20para%20la%20detecci%C3%B3n%20temprana,%20tratamiento%20integral%20seguimiento%20y%20rehabilitaci%C3%B3n%20del%20c%C3%A1ncer%20de%20mama%20|%20Gu%C3%ADa%20No.%20GPC-2013-19"
-    licencia: "ISBN: 978-958-8838-09-0"
-    fecha_publicacion: "2025-01-01"
-    responsable: "Isabella Camacho"
-    archivo_local: "data/guias_clinicas/gpc_cancer_mama.pdf"
   
   - doc_id: "gpc_falla_cardiaca"
     titulo: "GPC para la rehabilitación de la falla cardíaca en la población mayor de 18 años"
