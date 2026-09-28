@@ -38,7 +38,7 @@ clínicas mediante un pipeline RAG, evaluado con RAGAS y con el harness propio d
 ### 1.3 Tareas realizadas
 
 | Tarea | Sección |
-|---|---|---|
+|---|---|
 | Corpus: procedencia y responsabilidad | 3 |
 | Adaptación del harness de M2 | 4 |
 | Retrieval avanzado + comparación contra RAG ingenuo | 5 |
