@@ -1,7 +1,7 @@
 # Configuración del retrieval y de la orquestación de la normalización.
 # Las rutas relativas se resuelven desde la raíz del repositorio.
 
-corpus: mock                      # mock | real
+corpus: real                      # mock | real
 
 rutas:
   mock:
