@@ -530,26 +530,27 @@ Adicionalmente, el evaluador cuenta con respaldo automático de los 59 documento
 
 ### 7.4 Resultados medidos
 
-Valores obtenidos en la evaluación del pipeline sobre las salidas de generación:
+Valores obtenidos en la evaluación del pipeline sobre las salidas de generación (15 casos del eval set evaluados en `start_pipeline_M3_ejecutado.ipynb`):
 
-| Métrica | Modo Mock (Local) | Modo Real (RAGAS + Groq Qwen) | Fuente del número |
+| Métrica | Modo Mock (Local) | Modo Real (RAGAS + LLM Judge) | Fuente del número |
 |---|---|---|---|
-| **Faithfulness** | 0.884 | 0.892 | `evaluacion_ragas.py` sobre `resultado_generacion.json` |
-| **Context precision** | 0.812 | 0.835 | `evaluacion_ragas.py` sobre `resultado_generacion.json` |
-| **Context recall** | 0.745 | 0.768 | `evaluacion_ragas.py` (calculado contra campo `esperado`) |
-| **Answer relevancy** | 0.831 | 0.854 | `evaluacion_ragas.py` (calculado contra `pregunta`) |
+| **Faithfulness (Fidelidad)** | 0.884 | 0.5973 (59.73%) | `run_ragas.py --modo real` sobre `resultado_generacion.json`  |
+| **Context precision (Precisión)** | 0.812 | 0.0833 (8.33%) | `run_ragas.py --modo real` sobre `resultado_generacion.json`  |
+| **Context recall (Cobertura)** | 0.745 | 0.0000 (0.00%) | `run_ragas.py --modo real` sobre `resultado_generacion.json`  |
+| **Answer relevancy (Relevancia)** | 0.831 | 0.2772 (27.72%) | `run_ragas.py --modo real` sobre `resultado_generacion.json`  |
 
 ### 7.5 Cruce con el harness de M2
 
-El módulo `cruce_harness.py` lee `resultado_dimension1.json` de M2 (F1 exacto de extracción de Clinical BERT) y lo cruza con las métricas RAGAS correspondientes a cada documento o caso clínico, aplicando las reglas de diagnóstico de `scorecard.py`:
+El módulo `cruce_harness.py` lee `resultado_dimension1.json` de M2 (F1 global de extracción M2 = 0.7156 de Clinical BERT) y lo cruza con las métricas RAGAS correspondientes a cada documento o caso clínico del conjunto de evaluación (59 documentos en total), aplicando las reglas de diagnóstico de debilidades de `scorecard.py`:
 
-| F1 Extracción M2 | Context Recall RAG | Faithfulness RAG | Diagnóstico Emitido | Proporción Observada |
-| :---: | :---: | :---: | :--- | :---: |
-| $\ge 0.70$ (Alto) | $\ge 0.60$ (Alto) | $\ge 0.60$ (Alto) | `funcionamiento_correcto` | 55.9% (33 docs) |
-| $< 0.40$ (Bajo) | $\ge 0.60$ (Alto) | $\ge 0.60$ (Alto) | `problema_extraccion` | 1.7% (1 doc) |
-| $\ge 0.70$ (Alto) | $< 0.40$ (Bajo) | - | `problema_corpus_retrieval` | 0.0% (con guías cubiertas) |
-| - | - | $< 0.40$ (Bajo) | `alucinacion_generacion` | 0.0% (gracias a válvula de escape) |
-| Intermedio | Intermedio | Intermedio | `caso_mixto` | 42.4% (25 docs) |
+| Diagnóstico Emitido | Criterio de Decisión | Proporción Observada | Conteo | Observación Clínica / Sistémica |
+|---|---|:---:|:---:|---|
+| `problema_corpus_retrieval` | F1 extracción $\ge 0.40$, Context Recall $< 0.40$ | 98.3% | 58 docs | Extracción adecuada en M2 pero el corpus (3 guías clínicas) no cubre la patología o retrieval no recupera evidencia suficiente |
+| `caso_mixto` | F1 extracción intermedio/bajo con métricas intermedias | 1.7% | 1 doc | Documento `ex_56` (F1 extracción = 0.316) |
+| `alucinacion_pura` / `alucinacion_generacion` | Faithfulness $< 0.40$ | 0.0% | 0 docs | No se observaron alucinaciones; el sistema activa abstención segura ante falta de contexto |
+| `extraccion_perfecta_ragas_bajo` | F1 extracción $\ge 0.90$, Faithfulness $< 0.40$ | 0.0% | 0 docs | Ningún caso presentó alucinación tras extracción perfecta |
+| `funcionamiento_correcto` | F1 $\ge 0.70$, Recall $\ge 0.60$, Faithfulness $\ge 0.60$ | 0.0% | 0 docs | No alcanzado globalmente debido al límite de cobertura del corpus de 3 guías |
+| `problema_extraccion` | F1 $< 0.40$, Recall $\ge 0.60$, Faithfulness $\ge 0.60$ | 0.0% | 0 docs | No aplica en la corrida real |
 
 ### 7.6 Análisis de fallos
 
@@ -635,9 +636,9 @@ no cambiaron de forma inesperada.]
 
 | Etapa | Métrica principal | Valor | Fuente |
 |---|---|---|---|
-| Extracción (harness M2) | F1 | [COMPLETAR] | [COMPLETAR] |
+| Extracción (harness M2) | F1 | 0.7156 | `resultado_dimension1.json` (Clinical BERT M2) |
 | Retrieval | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
-| Generación (RAGAS) | Faithfulness | 0.892 | `evaluacion_ragas.py` con juez Groq Qwen sobre eval set |
+| Generación (RAGAS) | Faithfulness | 0.5973 | `run_ragas.py --modo real` sobre `resultado_generacion.json`  |
 
 ### 9.3 Dónde falla el sistema
 

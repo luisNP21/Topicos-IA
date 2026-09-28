@@ -76,6 +76,30 @@ Resumen de diagnosticos:
   problema_corpus_retrieval: 3 documentos
 ```
 
+### Salida de la corrida real (modo real end-to-end)
+
+Ejecución sobre los 15 casos del pipeline integrado en `start_pipeline_M3_ejecutado.ipynb`:
+
+```
+[ragas] Cargados 15 casos reales desde M3/outputs/resultado_generacion.json
+[ragas] Modo: 'real' | Casos: 15
+
+--- Metricas RAGAS calculadas ---
+  Faithfulness (Fidelidad)     : 0.5973 (59.73%)
+  Context Precision (Precision): 0.0833 (8.33%)
+  Context Recall (Cobertura)   : 0.0000 (0.00%)
+  Answer Relevancy (Relevancia): 0.2772 (27.72%)
+
+============================================================
+TABLA DE CRUCE RAGAS x HARNESS M2 (F1 global M2 = 0.7156)
+============================================================
+Resumen de diagnósticos (59 documentos evaluados):
+  problema_corpus_retrieval      : 58 documentos (98.3%)
+  caso_mixto                     : 1 documento (ex_56, F1 = 0.316) (1.7%)
+  alucinacion_pura / generacion  : 0 documentos (0.0%)
+  extraccion_perfecta_ragas_bajo : 0 documentos (0.0%)
+```
+
 ---
 
 ## Cómo conectar con los datos reales de 
