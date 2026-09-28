@@ -347,18 +347,25 @@ def guardar(salida: Path, detalle: list[dict], resumen: list[dict], calibracion:
 def correr_desde_config(cfg: dict, indice: IndiceRAG | None = None, normalizar_fn=None,
                         guardar_resultados: bool = True) -> tuple[list[dict], list[dict], dict]:
     """Ejecuta el experimento con los parámetros del YAML. Si no se pasa un normalizador, usa el
-    del YAML: el mapa simulado del corpus de prueba o la herramienta de normalización real."""
+    del YAML: el mapa simulado o la herramienta de normalización real. Antes de medir valida el
+    gold set contra el índice y se detiene si no corresponde."""
     from config_retrieval import indice_desde_config, normalizador_desde_config, rutas
+    from gold_set import cargar_gold, validar_gold
 
     r = rutas(cfg)
     indice = indice or indice_desde_config(cfg)
+    gold = cargar_gold(cfg)
+    validar_gold(indice, gold)
     normalizar_fn = normalizar_fn or normalizador_desde_config(cfg)
     o, cal, k = cfg["orquestacion"], cfg["calibracion"], cfg["retrieval"]["k"]
     detalle, resumen, calibracion = correr_experimento(
-        indice, cargar_consultas(r["consultas"]), k, normalizar_fn, o["sistema_base"], cal["pliegues"],
+        indice, gold["consultas"], k, normalizar_fn, o["sistema_base"], cal["pliegues"],
         o["umbral"], o["umbral_evidencia"], semilla=cal["semilla"], tolerancia_fuera=cal["tolerancia_fuera_de_corpus"])
     if guardar_resultados:
         guardar(Path(r["salida"]), detalle, resumen, calibracion, k, indice, cfg["experimento"]["sistema_advanced"])
+        if gold["meta"]:
+            (Path(r["salida"]) / "gold_meta.json").write_text(
+                json.dumps(gold["meta"], indent=2, ensure_ascii=False), encoding="utf-8")
     return detalle, resumen, calibracion
 
 
