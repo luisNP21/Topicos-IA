@@ -1,0 +1,15 @@
+proyecto:
+  nombre: "M3 -- Tool de normalizacion terminologica"
+  seed_global: 42
+
+tool_normalizacion:
+  ontologia: "SNOMEDCT"
+  # Umbral de score de retrieval por debajo del cual se invoca la tool.
+  # Si el retrieval ya devuelve un score >= umbral con la entidad cruda,
+  # no se hace ninguna llamada a BioPortal.
+  umbral_score_retrieval: 0.5
+  # Entidades de prueba para smoke-test con run_tools.py
+  entidades_prueba:
+    - "diabetes tipo 2"
+    - "hipertension"
+    - "una enfermedad rarisima inventada"
