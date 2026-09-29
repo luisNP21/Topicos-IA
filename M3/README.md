@@ -4,16 +4,6 @@ Documento único del módulo M3. Cada responsable completa **su propia sección*
 hallazgos y limitaciones encontrados al ejecutar su parte. Las secciones 1 y 2 son de contexto
 común; las secciones 3 a 8 son una por área; la sección 9 se completa entre todos al final.
 
-**Convenciones para completar el documento (léanlas antes de escribir):**
-
-- Todo número reportado debe indicar de dónde sale (archivo, celda, comando o corrida). Si no se
-  puede rastrear, no se reporta.
-- Separen siempre **Hallazgos** (derivados de datos medidos) de **Supuestos** (cosas que
-  asumimos sin haberlas medido). No mezclarlos en el mismo bullet.
-- Una limitación se documenta con su impacto observado, no solo con su descripción teórica.
-- Los bloques marcados con `[COMPLETAR]` son los que debe llenar cada responsable. Borren las
-  instrucciones entre paréntesis al completar.
-
 ---
 
 ## 1. Contexto y decisiones de diseño
@@ -108,9 +98,6 @@ RespuestaRAG = {"answer": str, "sources_used": list[str], "fallback_used": bool}
 Sistema = Callable[[str], set[str]]      # texto -> entidades detectadas
 ```
 
-[COMPLETAR entre todos: si algún contrato cambió durante el desarrollo, actualizarlo aquí y
-avisar a los módulos que dependen de él.]
-
 ---
 
 ## 3. Corpus: procedencia y responsabilidad
@@ -156,7 +143,6 @@ con otro nombre. Detalle técnico completo en `README_corpus.md`.
 | `data/guias_clinicas/chunks/*.json` | Chunks, fuente de verdad |
 | `data/chroma_guias/` | Índice ChromaDB (colección `guias_clinicas`) |
 | `data/guias_clinicas/corpus_manifest.json` | Procedencia por documento indexado |
-| [COMPLETAR: ubicación en el repo] | Prompt usado para generar las guías simuladas |
 
 **Estructura del chunk:**
 
