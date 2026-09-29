@@ -264,42 +264,58 @@ en principio, mejores resultados. Líneas de escalamiento:
 
 ### 4.1 Qué se implementó
 
-[COMPLETAR: refactor a `harness(eval_set, sistema)` desacoplado del adaptador LoRA, y separación
-de la inferencia en `run_inference/`.]
+Se separó la inferencia del modelo NER y su adaptador LoRA de la evaluación. `run_inference/`
+carga el encoder y el adaptador, procesa los documentos por ventanas de 277 palabras con 50 de
+solapamiento, agrega las entidades por `doc_id` original y escribe un cache JSON. Después,
+`harness/` carga el gold set y ese cache, construye una función `sistema(texto) -> set[str]` y
+ejecuta las métricas sin cargar el modelo NER.
+
+El harness conserva las dimensiones de exact-match, similitud semántica y LLM-as-judge, además
+del scorecard. El CLI permite ejecutar dimensiones seleccionadas con `--solo`. La variante
+configurada actualmente es `encoder_solo`; la normalización terminológica de M3 se aplica en el
+flujo de retrieval y no constituye una variante `encoder + normalización` evaluada por este
+harness.
 
 ### 4.2 Entregables
 
 | Archivo / carpeta | Descripción |
 |---|---|
-| `harness/` | [COMPLETAR] |
-| `run_inference/` | [COMPLETAR] |
+| `M2/harness/harness.py` | Orquesta las métricas a partir de `eval_set` y `sistema`; no carga el modelo NER |
+| `M2/harness/cached_system.py` | Adapta el cache `{doc_id: [entidades]}` a la interfaz `sistema(texto)` y valida que los ids coincidan con el eval set |
+| `M2/harness/gold_loader.py` | Carga y normaliza los registros del gold set y resuelve las rutas de entrada y salida |
+| `M2/harness/metrics_exact.py`, `metrics_semantic.py`, `metrics_judge.py` | Implementan las tres dimensiones de evaluación |
+| `M2/harness/run_harness.py` | CLI que carga el cache, ejecuta el harness y construye el scorecard |
+| `M2/harness/config.yaml` | Gold set, configuración de métricas y rutas de salida; obtiene la ruta del cache del YAML de inferencia |
+| `M2/run_inference/model_loader.py`, `inference.py`, `run_inference.py` | Carga el encoder + LoRA, ejecuta inferencia por chunks y guarda predicciones agregadas por documento |
+| `M2/run_inference/config.yaml` | Modelo, chunking, gold set, variante y ruta del cache |
+| `M2/ejecucion/start_inference_harness.ipynb` | Launcher de Colab para ejecutar ambas fases en orden |
 
 ### 4.3 Contrato
 
 ```python
-harness(eval_set: list[dict], sistema: Sistema) -> dict   # precision, recall, f1
+Sistema = Callable[[str], set[str]]  # texto completo -> entidades predichas
+
+eval_set: list[dict] = [{
+  "doc_id": str,
+  "text": str,
+  "entities_gold": list[str],
+  "criterio": str,  # usado por el juez; puede estar vacío
+}]
+
+# Cache JSON escrito por run_inference:
+dict[str, list[str]]  # doc_id -> entidades predichas, agregadas por documento
+
+harness(
+  eval_set: list[dict], sistema: Sistema, cfg: dict,
+  project_root: Path, solo: str | None = None,
+) -> dict[str, float]
 ```
 
-[COMPLETAR: forma exacta del `eval_set` y del cache de predicciones.]
-
-### 4.4 Resultados medidos
-
-| Comparación | Precision | Recall | F1 | Fuente del número |
-|---|---|---|---|---|
-| Encoder solo | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
-| Encoder + normalización | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
-
-### 4.5 Hallazgos (derivados de datos)
-
-- [COMPLETAR]
-
-### 4.6 Supuestos (no medidos)
-
-- [COMPLETAR]
-
-### 4.7 Limitaciones
-
-- [COMPLETAR]
+El harness compara entidades normalizadas por documento y calcula micro precision, recall y F1
+para exact-match. Siempre ejecuta exact-match; según `solo`, también puede ejecutar similitud
+semántica y/o juez. El adaptador de cache verifica que sus `doc_id` coincidan exactamente con
+los del eval set, que no haya textos duplicados asociados a ids diferentes y que cada valor del
+cache sea `list[str]`.
 
 ---
 
