@@ -9,6 +9,7 @@ No cargan VLM, Docling ni Tesseract: usan `BackendFake` y mocks. Correr con:
 from __future__ import annotations
 
 import json
+import os
 import sys
 import tempfile
 import types
@@ -22,7 +23,7 @@ DIR = Path(__file__).resolve().parent
 if str(DIR) not in sys.path:
     sys.path.insert(0, str(DIR))
 
-from backends import BackendFake, crear_backend  # noqa: E402
+from backends import BackendFake, BackendOCRTesseract, crear_backend  # noqa: E402
 from cache import (  # noqa: E402
     cache_desde_transcripciones,
     cargar_cache_transcripciones,
@@ -150,6 +151,38 @@ class TestBackendFakeYVer(unittest.TestCase):
     def test_crear_backend_desconocido(self):
         with self.assertRaises(ValueError):
             crear_backend("no_existe", {})
+
+    def test_tesseract_configura_cmd_y_tessdata(self):
+        fake = types.ModuleType("pytesseract")
+
+        class TesseractNotFoundError(Exception):
+            pass
+
+        fake.TesseractNotFoundError = TesseractNotFoundError
+        fake.pytesseract = types.SimpleNamespace(tesseract_cmd=None)
+
+        def image_to_string(imagen, lang, config):
+            return f"lang={lang};config={config};cmd={fake.pytesseract.tesseract_cmd}"
+
+        fake.image_to_string = image_to_string
+        with patch.dict(sys.modules, {"pytesseract": fake}), patch.dict(
+            os.environ, {}, clear=False
+        ):
+            backend = BackendOCRTesseract(
+                {
+                    "lang": "spa+eng",
+                    "psm": 6,
+                    "oem": 3,
+                    "tesseract_cmd": "C:/Tesseract/tesseract.exe",
+                    "tessdata_dir": "C:/tessdata",
+                }
+            )
+            salida = backend.transcribir(Image.new("RGB", (10, 10)))
+            self.assertEqual(os.environ.get("TESSDATA_PREFIX"), "C:/tessdata")
+
+        self.assertIn("lang=spa+eng", salida)
+        self.assertIn("--psm 6 --oem 3", salida)
+        self.assertIn("cmd=C:/Tesseract/tesseract.exe", salida)
 
 
 class TestCache(unittest.TestCase):

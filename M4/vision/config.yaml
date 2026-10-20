@@ -43,9 +43,13 @@ ocr:
     configurar_ocr: true
     lang: "es"              # EasyOCR usa 'es'; Tesseract usa 'spa'
   tesseract:
-    lang: "spa+eng"         # requiere tesseract-ocr-spa
+    lang: "spa+eng"         # requiere tesseract-ocr-spa (o spa.traineddata)
     psm: 6
     oem: 3
+    # null -> usa TESSERACT_CMD o el PATH del sistema.
+    tesseract_cmd: null
+    # null -> usa TESSDATA_PREFIX o el tessdata por defecto de Tesseract.
+    tessdata_dir: null
 
 rutas:
   # Eval set con imágenes: lo construyen Luis (set sintético) y Pau (casos

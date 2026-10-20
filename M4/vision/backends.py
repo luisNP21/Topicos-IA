@@ -258,17 +258,37 @@ class BackendOCRTesseract:
                 "y el binario tesseract-ocr (+ tesseract-ocr-spa en Colab/Linux)."
             ) from exc
 
+        # Permite un binario/tessdata fuera del PATH (Windows, instalación local,
+        # Colab con otra ruta). Si no se configura, se usa el comportamiento
+        # estándar de pytesseract.
+        cmd = self.cfg.get("tesseract_cmd") or os.environ.get("TESSERACT_CMD")
+        if cmd:
+            pytesseract.pytesseract.tesseract_cmd = cmd
+
         lang = self.cfg.get("lang", "spa+eng")
         psm = int(self.cfg.get("psm", 6))
         oem = int(self.cfg.get("oem", 3))
         config = f"--psm {psm} --oem {oem}"
+
+        # TESSDATA_PREFIX es más robusto que --tessdata-dir cuando la ruta
+        # tiene espacios (p. ej. C:\Program Files).
+        tessdata = self.cfg.get("tessdata_dir") or os.environ.get("TESSDATA_PREFIX")
+        if tessdata:
+            os.environ["TESSDATA_PREFIX"] = str(tessdata)
+
         try:
             return pytesseract.image_to_string(imagen, lang=lang, config=config)
-        except Exception as exc:  # pragma: no cover - binario ausente
-            if "tesseract" in str(exc).lower() or "TesseractNotFound" in type(exc).__name__:
+        except pytesseract.TesseractNotFoundError as exc:
+            raise BackendError(
+                "El binario de Tesseract no está disponible. En Colab/Linux: "
+                "apt-get install -y tesseract-ocr tesseract-ocr-spa"
+            ) from exc
+        except Exception as exc:  # pragma: no cover - datos de idioma
+            mensaje = str(exc)
+            if "traineddata" in mensaje.lower() or "TESSDATA_PREFIX" in mensaje:
                 raise BackendError(
-                    "El binario de Tesseract no está disponible. En Colab/Linux: "
-                    "apt-get install -y tesseract-ocr tesseract-ocr-spa"
+                    "Tesseract no pudo cargar el idioma solicitado. "
+                    f"Verificar TESSDATA_PREFIX y los archivos .traineddata: {mensaje[:300]}"
                 ) from exc
             raise
 

@@ -91,7 +91,7 @@ M4/vision/
 ├── run_vision.py       # run(cfg, project_root) + CLI
 ├── config.yaml
 ├── requirements.txt
-├── test_vision.py      # 28 pruebas con backend falso (sin GPU/API)
+├── test_vision.py      # 29 pruebas con backend falso (sin GPU/API)
 └── README.md
 ```
 
@@ -197,6 +197,15 @@ pip install pytesseract
 python M4/vision/run_vision.py --config M4/vision/config.yaml --demo --backend ocr_tesseract
 ```
 
+Si Tesseract no está en el `PATH` o el `tessdata` está en otra ruta
+(por ejemplo, una instalación local en Windows sin permisos de administrador):
+
+```bash
+export TESSERACT_CMD="C:/Program Files/Tesseract-OCR/tesseract.exe"
+export TESSDATA_PREFIX="C:/Users/Public/tessdata-m4"
+python M4/vision/run_vision.py --config M4/vision/config.yaml --demo --backend ocr_tesseract
+```
+
 ### 5.2 Local / tests
 
 ```bash
@@ -204,7 +213,7 @@ python M4/vision/test_vision.py
 # o: python -m unittest M4.vision.test_vision -v
 ```
 
-Las 28 pruebas usan `BackendFake`: no descargan modelos, no llaman APIs y no
+Las 29 pruebas usan `BackendFake`: no descargan modelos, no llaman APIs y no
 necesitan Docling/Tesseract.
 
 ### 5.3 Manifiesto de casos
@@ -305,6 +314,37 @@ silencioso se vería como una caída de F1 y sería deshonesto.
 
 ---
 
+## 8.1 Validación local realizada (OCR real)
+
+El 2026-10-20 se corrió el backend OCR clásico en Windows (CPU) con
+**Tesseract 5.4.0** y `spa.traineddata`:
+
+```bash
+export TESSERACT_CMD="C:/Program Files/Tesseract-OCR/tesseract.exe"
+export TESSDATA_PREFIX="C:/Users/Public/tessdata-m4"
+python M4/vision/run_vision.py --config M4/vision/config.yaml   --demo --backend ocr_tesseract --ner
+```
+
+Resultado real:
+
+| Métrica | Valor |
+|---|---|
+| Casos | 1 (nota sintética) |
+| `n_ok` / `n_error` / `n_valvula` | 1 / 0 / 0 |
+| Latencia OCR | **1.899 s** |
+| Cache de transcripciones | `M4/vision/predictions/transcripciones_ocr_tesseract.json` |
+| Cache NER | `M2/predictions/vision_ocr_tesseract.json` |
+| Entidades NER | `{"demo_01": ["dm2", "epoc", "hta"]}` |
+
+La transcripción fue correcta en contenido clínico (tildes, ñ, DM2, HTA, EPOC,
+TFNA, cifras y HbA1c). Se observó un error de OCR: `FC 84 Ipm` en vez de
+`lpm`. Es exactamente el tipo de fallo que la auditoría de Luis debe medir.
+
+> Es una **prueba de humo** sobre la nota sintética, no el eval set del equipo.
+> No se reportan CER/WER ni F1 porque esos números dependen del eval set real
+> (Luis/Isabella). El VLM real sigue pendiente de Colab/GPU; Docling no se
+> instaló, así que Tesseract validó el baseline OCR clásico.
+
 ## 9. Estado de la Tarea 1
 
 | Entregable | Estado |
@@ -317,8 +357,11 @@ silencioso se vería como una caída de F1 y sería deshonesto.
 | Cache NER compatible con `run_inference/` | Hecho |
 | Puente NER opcional (reutiliza M2) | Hecho |
 | Primitivo de juez visual (apoyo a Luis) | Hecho |
-| Pruebas sin GPU/API | **28/28 OK** (backend falso) |
-| Corrida real VLM/Docling | Pendiente de Colab + dependencias |
+| Pruebas sin GPU/API | **29/29 OK** (backend falso) |
+| Corrida real OCR (Tesseract local) | **Hecha**: 1/1, 1.899 s, cache NER generado |
+| Corrida real VLM (Qwen2-VL) | Pendiente de Colab/GPU |
+| Corrida real Docling | Pendiente (no instalado; Tesseract validó el baseline OCR) |
+| Cache NER consumido por el harness | Pendiente (Isabella) |
 | Eval set con imágenes y delta | Fuera de esta tarea (Luis/Pau/Isabella) |
 | App Gradio/Streamlit | Fuera de esta tarea (Pau) |
 
