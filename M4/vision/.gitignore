@@ -1,0 +1,9 @@
+# Caches y salidas locales de la visión (no son entregables versionados)
+__pycache__/
+*.py[cod]
+predictions/
+outputs/
+data/demo/
+
+# El eval set con imágenes vive en M4/eval_set/ (dueños: Luis y Pau).
+# Aquí no se versionan fotos ni documentos con datos personales.
