@@ -4,16 +4,6 @@ Documento único del módulo M3. Cada responsable completa **su propia sección*
 hallazgos y limitaciones encontrados al ejecutar su parte. Las secciones 1 y 2 son de contexto
 común; las secciones 3 a 8 son una por área; la sección 9 se completa entre todos al final.
 
-**Convenciones para completar el documento (léanlas antes de escribir):**
-
-- Todo número reportado debe indicar de dónde sale (archivo, celda, comando o corrida). Si no se
-  puede rastrear, no se reporta.
-- Separen siempre **Hallazgos** (derivados de datos medidos) de **Supuestos** (cosas que
-  asumimos sin haberlas medido). No mezclarlos en el mismo bullet.
-- Una limitación se documenta con su impacto observado, no solo con su descripción teórica.
-- Los bloques marcados con `[COMPLETAR]` son los que debe llenar cada responsable. Borren las
-  instrucciones entre paréntesis al completar.
-
 ---
 
 ## 1. Contexto y decisiones de diseño
@@ -92,7 +82,11 @@ Chunk = {
     "seccion": str, "categoria_seccion": str,   # tratamiento | diagnostico | epidemiologia | otro
 }
 
-Fragment = {"chunk_id": str, "doc_id": str, "texto": str, "score": float}
+Fragment = {
+    "chunk_id": str, "doc_id": str, "texto": str, "score": float,
+    "score_tipo": str,   # "cosine" | "rrf" | "reranker_prob"
+    "fuente": str, "seccion": str, "seccion_tipo": str,
+}
 
 NormalizationResult = {
     "entidad_original": str, "entidad_normalizada": str,
@@ -103,9 +97,6 @@ RespuestaRAG = {"answer": str, "sources_used": list[str], "fallback_used": bool}
 
 Sistema = Callable[[str], set[str]]      # texto -> entidades detectadas
 ```
-
-[COMPLETAR entre todos: si algún contrato cambió durante el desarrollo, actualizarlo aquí y
-avisar a los módulos que dependen de él.]
 
 ---
 
@@ -152,7 +143,6 @@ con otro nombre. Detalle técnico completo en `README_corpus.md`.
 | `data/guias_clinicas/chunks/*.json` | Chunks, fuente de verdad |
 | `data/chroma_guias/` | Índice ChromaDB (colección `guias_clinicas`) |
 | `data/guias_clinicas/corpus_manifest.json` | Procedencia por documento indexado |
-| [COMPLETAR: ubicación en el repo] | Prompt usado para generar las guías simuladas |
 
 **Estructura del chunk:**
 
@@ -260,67 +250,115 @@ en principio, mejores resultados. Líneas de escalamiento:
 
 ### 4.1 Qué se implementó
 
-[COMPLETAR: refactor a `harness(eval_set, sistema)` desacoplado del adaptador LoRA, y separación
-de la inferencia en `run_inference/`.]
+Se separó la inferencia del modelo NER y su adaptador LoRA de la evaluación. `run_inference/`
+carga el encoder y el adaptador, procesa los documentos por ventanas de 277 palabras con 50 de
+solapamiento, agrega las entidades por `doc_id` original y escribe un cache JSON. Después,
+`harness/` carga el gold set y ese cache, construye una función `sistema(texto) -> set[str]` y
+ejecuta las métricas sin cargar el modelo NER.
+
+El harness conserva las dimensiones de exact-match, similitud semántica y LLM-as-judge, además
+del scorecard. El CLI permite ejecutar dimensiones seleccionadas con `--solo`. La variante
+configurada actualmente es `encoder_solo`; la normalización terminológica de M3 se aplica en el
+flujo de retrieval y no constituye una variante `encoder + normalización` evaluada por este
+harness.
 
 ### 4.2 Entregables
 
 | Archivo / carpeta | Descripción |
 |---|---|
-| `harness/` | [COMPLETAR] |
-| `run_inference/` | [COMPLETAR] |
+| `M2/harness/harness.py` | Orquesta las métricas a partir de `eval_set` y `sistema`; no carga el modelo NER |
+| `M2/harness/cached_system.py` | Adapta el cache `{doc_id: [entidades]}` a la interfaz `sistema(texto)` y valida que los ids coincidan con el eval set |
+| `M2/harness/gold_loader.py` | Carga y normaliza los registros del gold set y resuelve las rutas de entrada y salida |
+| `M2/harness/metrics_exact.py`, `metrics_semantic.py`, `metrics_judge.py` | Implementan las tres dimensiones de evaluación |
+| `M2/harness/run_harness.py` | CLI que carga el cache, ejecuta el harness y construye el scorecard |
+| `M2/harness/config.yaml` | Gold set, configuración de métricas y rutas de salida; obtiene la ruta del cache del YAML de inferencia |
+| `M2/run_inference/model_loader.py`, `inference.py`, `run_inference.py` | Carga el encoder + LoRA, ejecuta inferencia por chunks y guarda predicciones agregadas por documento |
+| `M2/run_inference/config.yaml` | Modelo, chunking, gold set, variante y ruta del cache |
+| `M2/ejecucion/start_inference_harness.ipynb` | Launcher de Colab para ejecutar ambas fases en orden |
 
 ### 4.3 Contrato
 
 ```python
-harness(eval_set: list[dict], sistema: Sistema) -> dict   # precision, recall, f1
+Sistema = Callable[[str], set[str]]  # texto completo -> entidades predichas
+
+eval_set: list[dict] = [{
+  "doc_id": str,
+  "text": str,
+  "entities_gold": list[str],
+  "criterio": str,  # usado por el juez; puede estar vacío
+}]
+
+# Cache JSON escrito por run_inference:
+dict[str, list[str]]  # doc_id -> entidades predichas, agregadas por documento
+
+harness(
+  eval_set: list[dict], sistema: Sistema, cfg: dict,
+  project_root: Path, solo: str | None = None,
+) -> dict[str, float]
 ```
 
-[COMPLETAR: forma exacta del `eval_set` y del cache de predicciones.]
-
-### 4.4 Resultados medidos
-
-| Comparación | Precision | Recall | F1 | Fuente del número |
-|---|---|---|---|---|
-| Encoder solo | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
-| Encoder + normalización | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
-
-### 4.5 Hallazgos (derivados de datos)
-
-- [COMPLETAR]
-
-### 4.6 Supuestos (no medidos)
-
-- [COMPLETAR]
-
-### 4.7 Limitaciones
-
-- [COMPLETAR]
+El harness compara entidades normalizadas por documento y calcula micro precision, recall y F1
+para exact-match. Siempre ejecuta exact-match; según `solo`, también puede ejecutar similitud
+semántica y/o juez. El adaptador de cache verifica que sus `doc_id` coincidan exactamente con
+los del eval set, que no haya textos duplicados asociados a ids diferentes y que cada valor del
+cache sea `list[str]`.
 
 ---
 
 ## 5. Retrieval avanzado y comparación contra RAG ingenuo
 
+Todos los números de esta sección salen de una misma corrida de `M3/retrieval/start_retrieval.ipynb`
+sobre el corpus real, hecha el 2026-09-28: 64 chunks, 3 guías y huella del índice `e261c2e78ef60911`
+(`indice_info.json`). Los archivos de resultados (`deltas_s08.csv`, `detalle_por_consulta.csv`,
+`umbrales.json`, `delta_naive_vs_advanced.json`, `indice_info.json` y `gold_meta.json`) quedan en
+`M3/retrieval/outputs/` y se descargan desde la última celda del notebook; no están versionados.
+
 ### 5.1 Qué se implementó
 
-Se implementaron tres técnicas sobre la misma colección Chroma (embeddings `intfloat/multilingual-e5-base`) y se compararon contra la búsqueda densa de S07.
+Sobre la misma colección Chroma (embeddings `intfloat/multilingual-e5-base`) se implementaron varias
+técnicas y se compararon contra la búsqueda densa de S07, que es el RAG ingenuo:
 
-- **Búsqueda híbrida (BM25 + densa, fusión RRF).** Se eligió porque las entidades llegan con erratas, siglas y tildes faltantes, y BM25 cubre lo léxico donde el embedding es débil. BM25 lee "título de la guía. sección. texto" para que un chunk de tratamiento que no nombra la enfermedad igual pueda encontrarse.
-- **Reranking con cross-encoder** (`cross-encoder/mmarco-mMiniLMv2-L12-H384-v1`). Reordena los 30 mejores candidatos. Se eligió porque el embedding mide cercanía temática, no si el chunk *responde* la pregunta.
-- **Query transformation.** La entidad ("diabetes mellitus tipo 2") se reescribe en tres consultas de tratamiento que se fusionan con RRF, y el reranker recibe la pregunta "¿Cuál es el tratamiento de…?". Se eligió porque toda la guía menciona la enfermedad, y sin contexto el retrieval no distingue tratamiento de epidemiología o glosario.
-- **Filtro por tipo de sección (variante del sistema avanzado).** El reranker solo ordena chunks clasificados como tratamiento.
+- **Búsqueda híbrida (BM25 + densa, fusión RRF).** Las entidades llegan con erratas, siglas y tildes
+  faltantes, y BM25 cubre lo léxico donde el embedding es débil. BM25 lee "título de la guía. sección.
+  texto", para que un chunk de tratamiento que no nombra la enfermedad también pueda encontrarse.
+- **Reranking con cross-encoder** (`cross-encoder/mmarco-mMiniLMv2-L12-H384-v1`) sobre los 30 mejores
+  candidatos. El embedding mide cercanía temática, no si el chunk responde la pregunta.
+- **Query transformation por intención de tratamiento.** La entidad se reescribe en tres consultas de
+  tratamiento que se fusionan con RRF, y el reranker recibe la pregunta "¿Cuál es el tratamiento de…?".
+  Hace falta porque toda la guía menciona la enfermedad, y sin ese contexto el retrieval no distingue
+  el tratamiento de la epidemiología o del glosario.
+- **Filtro por tipo de sección** (variante): el reranker solo ordena chunks clasificados como de
+  tratamiento. El clasificador es propio del retrieval, no el campo `categoria_seccion` de la ingesta:
+  usa el título de la sección y, si no es concluyente, la similitud del embedding con descripciones de
+  referencia. En este corpus clasificó 40 de los 64 chunks como de tratamiento, 32 de ellos por
+  similitud (`indice_info.json`).
+- **Criterio para invocar la normalización y compuerta de evidencia** (`orquestacion.py`, compartido
+  con la generación). Si el score del primer fragmento es bajo, se normaliza la entidad y se conserva
+  el mejor intento; si ningún fragmento supera el umbral de evidencia, no se entrega nada. Las siglas se
+  normalizan siempre.
 
-**Aclaración importante sobre el filtro:** no usa el campo `categoria_seccion` de la ingesta. Usa un clasificador propio del retrieval: regex sobre el título de la sección y, si el título no es concluyente, similitud del embedding con descripciones de referencia. En este corpus, 32 de 64 chunks se clasificaron por similitud.
+Además, en esta versión se resolvieron dos problemas de reproducibilidad del corpus real:
+
+- **El índice se reconstruye desde los chunks JSON.** Antes se copiaba el índice Chroma desde Drive. Ahora el índice se
+  construye en el disco local de Colab a partir de los chunks JSON, con el mismo código de la ingesta, y
+  se verifica que número, ids y textos coincidan antes de usarlo.
+- **El gold set se valida contra el índice antes de medir.** Como los `chunk_id` son posicionales, una
+  nueva ingesta los cambia. Si el corpus de Drive ya no es el que se anotó, o si el gold set menciona un
+  chunk que no existe, el notebook se detiene y dice qué comparación falló.
 
 ### 5.2 Entregables
 
 | Archivo | Descripción |
 |---|---|
 | `M3/retrieval/retrieval.py` | `retrieve_naive` (búsqueda densa) y `retrieve_advanced` (modo configurable; por defecto `intencion`) |
-| `M3/retrieval/experimento_s08.py` | Experimento comparativo y calibración de umbrales |
-| `M3/retrieval/config_retrieval.yaml` | Parámetros del retrieval y de la orquestación |
-| `M3/retrieval/consultas_retrieval.jsonl` | Consultas de evaluación (33) |
+| `M3/retrieval/experimento_s08.py` | Experimento comparativo, métricas por guía y por chunk de tratamiento, y calibración de umbrales |
+| `M3/retrieval/gold_set.py` | Carga, validación contra el índice y resumen del gold set |
+| `M3/retrieval/config_retrieval.py` / `.yaml` | Parámetros, reconstrucción y verificación del índice, perfiles `mock` y `real` |
+| `M3/retrieval/data/real/` | Gold set del corpus real (`gold_consultas.jsonl`, `gold_anotaciones.csv`, `gold_meta.json`) y mapa de normalización simulado |
+| `M3/retrieval/start_retrieval.ipynb` | Ejecución completa en Colab |
+| `M3/retrieval/test_retrieval.py` | 51 pruebas unitarias con modelos simulados |
 
+El detalle de uso está en [`M3/retrieval/README.md`](retrieval/README.md).
 
 ### 5.3 Contrato
 
@@ -329,98 +367,183 @@ retrieve_naive(query: str, k: int) -> list[Fragment]
 retrieve_advanced(query: str, k: int) -> list[Fragment]
 ```
 
-Cada fragmento trae `chunk_id`, `doc_id`, `texto`, `score`, `score_tipo`, `fuente`, `seccion` y `seccion_tipo`.
+Cada fragmento trae `chunk_id`, `doc_id`, `texto`, `score`, `score_tipo`, `fuente`, `seccion` y
+`seccion_tipo`. La generación no llama al retrieval directamente, sino a
+`resolver_query(entidad, retrieve_fn=retrieve_advanced, normalizar_fn=..., **parametros_orquestacion(cfg))`,
+que decide la normalización y aplica la compuerta.
 
 | Parámetro | Valor |
 |---|---|
 | `k` | 5 |
 | Candidatos al reranker | 30 |
 | Constante RRF | 60 |
-| Pesos de fusión | **No hay.** RRF trabaja por rango y trata igual a BM25 y a la búsqueda densa |
+| Pesos de fusión | No hay: RRF trabaja por rango y trata igual a BM25 y a la búsqueda densa |
 | Modelo de reranking | `mmarco-mMiniLMv2-L12-H384-v1` |
-| Umbral para normalizar | 0.177 (calibrado con este corpus) |
-| Umbral de evidencia | 0.148 (calibrado con este corpus) |
+| Umbral para normalizar | 0.174 (`umbrales.json`, calibración final) |
+| Umbral de evidencia | 0.174 (`umbrales.json`, calibración final) |
 
-Los umbrales provisionales del YAML (0.754 y 0.554) vienen del corpus de prueba y **no deben usarse** con el corpus real.
-
+Los umbrales provisionales del YAML (0.754 y 0.554) vienen del corpus de prueba; con el corpus real se
+usan los calibrados en `outputs/umbrales.json`.
 
 ### 5.4 Gold set de relevancia
 
-**No existe un gold set a nivel de chunk.** Lo que hay son 33 consultas:
+Ahora sí hay un gold set a nivel de chunk. Está versionado en `M3/retrieval/data/real/` y se validó
+contra los 64 chunks del corpus actual:
 
-- 12 dentro del corpus (6 de diabetes, 3 de depresión, 3 de falla cardíaca), etiquetadas con la **guía** correcta, no con el chunk esperado.
-- 21 fuera del corpus (etiquetadas sin guías relevantes).
+- **40 consultas** (`gold_consultas.jsonl`): 22 dentro del corpus y 18 fuera. Las de dentro cubren
+  nombre exacto, sigla, sinónimo y errata (3 de cada una), una de guías parecidas ("diabetes") y 9
+  hiperespecíficas ("falla cardíaca aguda", "depresión leve"…). Cada una indica la guía correcta y los
+  chunks que responden. Las 18 de fuera incluyen enfermedades vecinas (diabetes tipo 1, infarto,
+  ansiedad), dos que las propias guías excluyen (prediabetes, depresión posparto) y temas lejanos.
+- **Anotación de los 64 chunks** (`gold_anotaciones.csv`): si cada uno responde a "cuál es el
+  tratamiento" de su enfermedad, con el motivo. 27 de los 64 chunks quedaron marcados como relevantes.
+- **Descripción del corpus anotado** (`gold_meta.json`): número de chunks, chunks por guía y huella.
+  Es lo que permite detectar que el corpus cambió.
 
-Consecuencias:
-
-- No se mide si llega el chunk de tratamiento, solo si llega *alguna* pieza de la guía correcta.
-- **No se diseñó ningún caso** para "la entidad se menciona pero no hay tratamiento en ese chunk", que es exactamente el caso que esta técnica debería resolver.
-
+**Importante:** el gold set lo anotó una IA simulando a un anotador humano y no tuvo revisión
+humana. Así consta en `gold_meta.json` y en cada consulta.
 
 ### 5.5 Delta medido contra RAG ingenuo
 
-**Lectura correcta de esta tabla:** el delta de 0.0 en MRR **no** significa "el avanzado no mejora" ni "el avanzado es igual de bueno". Significa que la evaluación no puede distinguirlos.
+El contrato del proyecto compara el ingenuo con `intencion` (consultas de tratamiento + reranker),
+que es el modo de `retrieve_advanced`. Las métricas de "tratamiento" exigen que llegue uno de los chunks
+relevantes del gold set, no solo la guía correcta. Hay 22 consultas dentro del corpus.
 
-| Métrica | Ingenuo | Avanzado (`intencion`) | Delta | Fuente del número |
+| Métrica | Ingenuo | Avanzado (`intencion`) | Delta | Fuente |
 |---|---|---|---|---|
-| MRR de la guía | 1.0 | 1.0 | 0.0 | `deltas_s08.csv` |
-| Precisión de guía en el top-5 | 0.967 | 1.0 | +0.033 | `deltas_s08.csv` |
-| Latencia por consulta (ms) | 24.2 | 351.7 | +327.5 | `deltas_s08.csv` |
-| Recall@k, precisión y nDCG **de tratamiento** | no medido | no medido | no medido | Falta el gold set de chunks |
+| Tratamiento en 1.er lugar | 0.045 (1/22) | 0.682 (15/22) | +0.637 | `delta_naive_vs_advanced.json` |
+| Tratamiento en el top-5 | 0.409 | 0.909 | +0.500 | `deltas_s08.csv` |
+| MRR del tratamiento | 0.161 | 0.784 | +0.623 | `delta_naive_vs_advanced.json` |
+| Precisión de tratamiento en el top-5 | 0.118 | 0.491 | +0.373 | `delta_naive_vs_advanced.json` |
+| Guía correcta en 1.er lugar | 0.955 | 0.909 | −0.046 | `delta_naive_vs_advanced.json` |
+| MRR de la guía | 0.970 | 0.909 | −0.061 | `delta_naive_vs_advanced.json` |
+| Latencia por consulta (ms) | 13.8 | 340.3 | +326.5 | `delta_naive_vs_advanced.json` |
 
-La diferencia de precisión (0.967 → 1.0) equivale a **2 chunks de otra guía sobre 60 posiciones** (12 consultas × 5). Es una señal débil, no una mejora demostrada.
+En resumen, el avanzado pasa de traer el tratamiento en primer lugar en 1 de 22 consultas a traerlo
+en 15 de 22, a cambio de perder la guía correcta en dos siglas y de multiplicar la latencia por 25.
 
-### Desglose por técnica
+#### Desglose por técnica
 
-El mapeo a los sistemas del experimento es aproximado y **la ablación no es limpia**: `intencion_sin_rerank` combina query transformation con búsqueda híbrida, así que no aísla el aporte de la transformación.
+La tabla muestra todos los sistemas del experimento, en el orden en que se agregan las piezas. La
+columna de rechazo solo aplica a los dos sistemas con compuerta de evidencia; los demás siempre
+entregan fragmentos.
 
-| Configuración | Sistema del experimento | Precisión de guía top-5 | Latencia (ms) | Tratamiento |
+| Sistema | Guía en 1.er lugar | Tratamiento en 1.er lugar | MRR del tratamiento | Precisión de tratamiento top-5 | Rechazo fuera del corpus | Latencia (ms) |
+|---|---|---|---|---|---|---|
+| Denso (RAG ingenuo) | 0.955 | 0.045 | 0.161 | 0.118 | — | 13.8 |
+| Híbrido BM25 + denso | 0.955 | 0.136 | 0.239 | 0.127 | — | 13.4 |
+| Híbrido + reranker (con la entidad) | 0.909 | 0.273 | 0.502 | 0.255 | — | 306.2 |
+| Híbrido + reranker con pregunta de tratamiento | 0.909 | 0.636 | 0.761 | 0.473 | — | 309.2 |
+| Consultas de tratamiento, sin reranker | 0.909 | 0.182 | 0.340 | 0.227 | — | 60.3 |
+| Consultas de tratamiento + reranker (`intencion`) | 0.909 | 0.682 | 0.784 | 0.491 | — | 340.3 |
+| … + filtro de sección | 0.909 | 0.727 | 0.805 | 0.555 | — | 269.7 |
+| Sistema completo (normalización + compuerta) | 0.955 | 0.727 | 0.830 | 0.545 | 0.833 | 396.9 |
+| Sistema completo + regla de siglas | 1.000 | 0.773 | 0.875 | 0.548 | 0.833 | 415.4 |
+
+Fuente: `deltas_s08.csv`. El sistema completo usa umbrales calibrados con validación cruzada de 3
+pliegues: cada consulta se evalúa con umbrales calibrados sin ella. El último sistema es el que usa
+la generación.
+
+#### Por tipo de consulta
+
+Tratamiento en 1.er lugar (`detalle_por_consulta.csv`):
+
+| Tipo de consulta | Consultas | Ingenuo | `intencion` | Sistema completo + regla de siglas |
 |---|---|---|---|---|
-| Ingenuo | `ingenuo` | 0.967 | 24.2 | no medido |
-| + query transformation (incluye híbrido, sin reranker) | `intencion_sin_reranker` | 0.933 | 40.6 | no medido |
-| + hybrid search | `hibrido` | 0.983 | 43.0 | no medido |
-| + reranking | `reranker` | 1.0 | 319.5 | no medido |
-| + filtro por sección | `intencion_seccion` | 1.0 | 290.3 | no medido |
-
+| Nombre exacto | 3 | 0/3 | 3/3 | 3/3 |
+| Sigla | 3 | 0/3 | 1/3 | 3/3 |
+| Sinónimo | 3 | 0/3 | 2/3 | 2/3 |
+| Errata o sin tildes | 3 | 0/3 | 3/3 | 3/3 |
+| Guías parecidas | 1 | 0/1 | 1/1 | 1/1 |
+| Hiperespecífica | 9 | 1/9 | 5/9 | 5/9 |
 
 ### 5.6 Hallazgos (derivados de datos)
 
-1. **Evaluación saturada a nivel de guía.** Todos los sistemas obtienen MRR 1.0 en las 12 consultas del corpus. Con solo 3 guías de temas disjuntos y el título de la guía incluido en cada chunk, hasta BM25 solo acierta la guía. Este resultado es válido, pero no informativo.
-2. **El reranker fue la única técnica con diferencia medible en precisión de guía.** Con reranker no apareció ningún chunk de otra guía en el top-5. Sin reranker aparecieron 2 (denso), 1 (híbrido) y 4 (transformación sin reranker). Son muy pocos casos para concluir.
-3. **Evidencia cualitativa a favor de la transformación de consulta** (inspección de tres consultas, no una métrica):
-   - Para "falla cardiaca", el ingenuo devolvió resumen, glosario e índice; `intencion` devolvió los chunks 12, 16 y 20, de contenido terapéutico.
-   - Para "diabetes mellitus tipo 2", `intencion` todavía trae un chunk de diagnóstico (chunk 6) en segundo lugar; el filtro de sección lo elimina.
-4. **Compuerta de evidencia.** Rechaza 20 de 21 consultas fuera del corpus. La que pasa es "diabetes mellitus tipo 1", que comparte casi todo el vocabulario con diabetes tipo 2.
-5. **Los umbrales dependen de muy pocos casos.** El umbral para normalizar es exactamente el score de la consulta "diabetes" (el positivo más débil), y el de evidencia queda justo sobre el score de "diabetes mellitus tipo 1". Como todos los aciertos son aciertos, todas las consultas "incorrectas" son las de fuera del corpus, así que el umbral solo separa "dentro" de "fuera del corpus", no aciertos de errores.
-
+1. **El ingenuo encuentra la guía, pero no el tratamiento.** Acierta la guía en primer lugar en 21 de
+   22 consultas, pero el tratamiento solo en 1. En 13 de las 22, su primer fragmento fue la sección de
+   abreviaturas (8), el glosario (3) o el índice (2): chunks que nombran la enfermedad muchas veces
+   sin decir nada del tratamiento (`detalle_por_consulta.csv` cruzado con
+   `gold_anotaciones.csv`). Este es el problema que anticipaba la sección 1.4, ahora medido.
+2. **La mejora viene sobre todo de darle al reranker la pregunta de tratamiento.** El reranker con la
+   entidad sola sube el tratamiento en 1.er lugar de 0.045 a 0.273. Con la pregunta "¿Cuál es el
+   tratamiento de…?" llega a 0.636. Las tres reformulaciones agregan poco encima (0.682) y, sin
+   reranker, apenas mejoran (0.182). El híbrido solo pasa de 0.045 a 0.136.
+3. **El filtro de sección ayuda un poco:** 0.682 → 0.727 en tratamiento en primer lugar, con menos
+   latencia. Gana un caso: en "trastorno depresivo mayor", `intencion` puso primero el chunk de
+   epidemiología y el filtro lo descarta.
+4. **Las siglas son el punto débil del retrieval sin normalización.** Las dos consultas en que el
+   avanzado pierde la guía correcta son "ICC" (trajo diabetes y depresión) y "TDM" (trajo diabetes).
+   El ingenuo también falla "ICC". Con la regla de siglas, las tres siglas del corpus (DM2, ICC, TDM) se
+   normalizan y llegan al tratamiento: la guía en 1.er lugar sube a 22/22.
+5. **La normalización se invoca en 21 de 40 consultas** (sistema completo + regla de siglas), pero 17
+   de esas 21 son consultas fuera del corpus con score bajo, que terminan rechazadas igual. Dentro del
+   corpus la usan 4 consultas (DM2, ICC, TDM e "insuficiencia cardíaca") y en las 4 lleva al tratamiento
+   en primer lugar.
+6. **La compuerta rechaza 15 de 18 consultas fuera del corpus y ninguna de dentro.** Pasan "diabetes
+   mellitus tipo 1", "prediabetes" y "depresión posparto", que comparten casi todo el vocabulario con
+   guías del corpus. "Depresión posparto" obtuvo 0.235, más que dos consultas válidas: "diabetes"
+   (0.177) e "insuficiencia cardíaca" (0.174). Ningún umbral puede separarlas. Por eso el umbral de
+   evidencia terminó igual al de normalización (0.174): la regla de no dejar pasar ninguna consulta de
+   fuera habría rechazado consultas válidas.
+7. **Los fallos de las hiperespecíficas son casi aciertos.** En 4 de las 9 el primer fragmento no es el
+   esperado, pero en 3 de ellas el correcto está en segundo lugar. En fracción de eyección reducida y
+   preservada, el primero es el chunk vecino de la misma sección, que comparte el título, y el reranker
+   los intercambia.
+8. **Un score alto no garantiza el tratamiento.** "Trastorno depresivo mayor" obtuvo 0.710, muy por
+   encima del umbral, así que no se normalizó. Aun así, su primer fragmento fue epidemiología: el
+   criterio detecta búsquedas dudosas, no chunks de la sección equivocada.
+9. **Costo en latencia.** El reranker lleva la consulta de unos 14 ms a entre 270 y 415 ms. Las
+   variantes sin reranker se quedan en 13–60 ms (`deltas_s08.csv`).
 
 ### 5.7 Supuestos (no medidos)
 
-- Que devolver chunks de tratamiento mejora la respuesta final del sistema. No se midió; depende de la generación.
-- Que el clasificador de secciones acierta. La mitad de los chunks se clasificó por similitud y no se revisó a mano.
-- Que los umbrales calibrados con 3 guías se sostienen al agregar más guías.
-- Que la normalización terminológica real aporta valor al retrieval. En esta corrida no se observó.
-- Que las consultas de nombre de enfermedad representan el uso real. El sistema recibirá entidades extraídas por el NER, que pueden ser más ruidosas.
+- Que las etiquetas del gold set son correctas. Las puso una IA sin revisión humana, y los resultados
+  valen lo que valgan esas etiquetas.
+- Que traer el chunk de tratamiento mejora la respuesta final. Esta sección mide retrieval; el efecto
+  en la generación corresponde a las secciones 7 y 8.
+- Que la herramienta de normalización real se comportaría como el mapa simulado. En esta evaluación se
+  usó `data/real/normalizacion_simulada.json`, no BioPortal.
+- Que el clasificador de secciones acierta en los 32 chunks que clasificó por similitud. No se revisó
+  chunk por chunk.
+- Que las consultas del gold set representan las entidades que entregará el NER, que pueden ser más
+  ruidosas.
+- Que los resultados y los umbrales se sostienen con más guías.
 
 ### 5.8 Limitaciones
 
-- **Sin gold set de chunks**, no hay métricas de tratamiento. Esto impide sostener la afirmación central de la sección.
-- **Conjunto de evaluación pequeño y fácil:** 12 consultas dentro del corpus, con un solo caso en los tipos sigla, hiperespecífica y "guías parecidas"; 64 chunks y 3 guías disjuntas.
-- **Ablación no aislada:** la fila de query transformation incluye búsqueda híbrida.
-- **Filtro de sección sin validar:** puede dejar el pool vacío o descartar chunks útiles. El campo `categoria_seccion` de la ingesta tampoco es una alternativa confiable: marca como tratamiento las portadas de dos guías y como "otro" varias tablas de fármacos y secciones de depresión leve/moderada, psicoterapias y TEC.
-- **Sensibilidad a la reescritura:** las tres plantillas de consulta y la pregunta son fijas; no se probó otra formulación.
-- **Un solo modelo de reranker evaluado** en este corpus (el alternativo, `bge-reranker-v2-m3`, no se corrió).
-- **Calibración frágil:** depende de un único negativo difícil ("diabetes mellitus tipo 1").
+- **Gold set anotado por IA.** Una etiqueta equivocada cambia directamente las
+  métricas de tratamiento. Además, las consultas y las etiquetas las produjo la misma fuente.
+- **Normalización simulada y a favor del sistema.** El mapa se escribió a partir de las siglas y los
+  sinónimos del gold set, así que la mejora de la regla de siglas (DM2, ICC, TDM) se da por
+  construcción. Con la herramienta real, que no siempre encuentra el término en español, puede ser
+  menor.
+- **Pocas consultas.** Son 22 dentro del corpus, 3 por tipo y 1 de guías parecidas.
+- **Corpus pequeño y de temas disjuntos:** 64 chunks y 3 guías. A nivel de guía la evaluación sigue
+  saturada: el ingenuo acierta la guía en el top-5 en 22/22.
+- **Umbrales sin zona dudosa y con poco margen.** La calibración final dejó un solo umbral de 0.174, y
+  dos consultas válidas quedaron a menos de 0.003 de él. La calibración cambió entre pliegues (el pliegue 2 dejó
+  el de evidencia en 0.115), lo que muestra que depende de pocos casos (`umbrales.json`).
+- **Plantillas de consulta fijas.** Las tres reformulaciones y la pregunta no se variaron.
 
-## Qué falta para poder afirmar una mejora
+### 5.9 Qué falta y conclusión
 
-1. Etiquetar a mano los 64 chunks (relevancia 0/1/2), idealmente por dos personas, con un criterio escrito.
-2. Agregar consultas difíciles: por intención ("metformina", "betabloqueadores", "ISRS"), cruces entre guías (diabetes con falla cardíaca) y chunks que mencionan la entidad sin tratar (glosario, abreviaturas, índice).
-3. Medir recall@k, precisión@k y nDCG@k a nivel de chunk.
-4. Separar la ablación (transformación de consulta sin híbrido).
-5. Recalibrar los umbrales con más consultas.
+Lo que falta para que la conclusión sea firme:
 
-El análisis mostró que el pipeline de retrieval funciona técnicamente, pero que la evaluación actual no permite demostrar que el retrieval avanzado supere al RAG ingenuo. Sobre el índice real de 64 chunks y 3 guías, todos los sistemas acertaron la guía correcta en el primer lugar (MRR de 1.0), porque las consultas son nombres de enfermedad sobre guías de temas distintos, algo que hasta BM25 resuelve solo. Ese resultado es válido pero no informativo, y el delta de 0 frente al ingenuo refleja la falta de poder de la evaluación, no una equivalencia entre técnicas. La métrica que sí importaría, si llega el chunk de tratamiento y no solo la guía, no pudo medirse porque ninguna consulta tiene chunks_relevantes. Lo único con diferencia medible fue que el reranker eliminó los chunks de otra guía en el top-5 (2 casos en el denso, 1 en el híbrido y 4 en la transformación sin reranker, sobre 60 posiciones), una señal débil, junto con la prueba de humo, donde el ingenuo trajo resumen, glosario e índice y la transformación de consulta trajo chunks terapéuticos. También encontramos que el error de calibración se debía a etiquetas con un doc_id inexistente, que categoria_seccion se pierde en Chroma y tiene errores de clasificación, que los umbrales dependen de muy pocas consultas y que la normalización no encontró coincidencia en ningún caso. En síntesis, tenemos un sistema que se comporta de forma razonable, pero la afirmación de que mejora sobre el ingenuo sigue sin sustento hasta construir un gold set a nivel de chunk.
+1. Revisión humana del gold set.
+2. Más consultas por tipo, y consultas por intención ("metformina", "betabloqueadores") y cruzadas
+   entre guías.
+3. Más guías en el corpus, para que la evaluación a nivel de guía deje de estar saturada y para
+   recalibrar los umbrales con más negativos difíciles.
+
+Conclusión: con el gold set a nivel de chunk, la ventaja del retrieval avanzado sobre el ingenuo ya se
+puede medir, y es grande en lo que importa. El ingenuo casi siempre llega a la guía correcta, pero en
+primer lugar entrega abreviaturas, glosario o índice. El avanzado trae el chunk de tratamiento
+primero en 15 de 22 consultas, y el sistema completo con la regla de siglas en 17 de 22, con MRR del
+tratamiento de 0.161 a 0.875. Casi toda la ganancia viene de que el reranker juzgue los chunks contra
+la pregunta de tratamiento. La compuerta rechaza 15 de 18 consultas sin guía sin rechazar ninguna
+válida, pero no separa bien las enfermedades vecinas. Estos resultados dependen de un gold set anotado 
+por IA sin revisión humana y de una normalización simulada, así que deben leerse como una mejora fuertemente 
+sugerida, no como una demostración definitiva.
 
 ---
 
@@ -465,7 +588,7 @@ La herramienta implementa un diseño *fail-safe* para no interrumpir el pipeline
 
 | Métrica | Valor | Fuente del número |
 |---|---|---|
-| Frecuencia de invocación (% de casos) | ~46.7% (7/15 casos) | Medido en `eval_set_15_casos` (5 siglas forzadas + 2 entidades con score < 0.5) |
+| Frecuencia de invocación (% de casos) | 33.3% (5/15 casos) | `run_generacion.py` en `start_pipeline_M3_ejecutado.ipynb` sobre `M3/ejecucion/eval_set_casos.json` (siglas DM2, ICC, TFNA y entidades con score bajo) |
 | Tasa de normalización exitosa | 100% en términos cubiertos por SNOMED CT | Verificado en `start_tools.ipynb` sobre patologías del corpus |
 | Latencia media de normalización (primera llamada) | 480 ms | Medido vía requests a `data.bioontology.org` |
 | Latencia media con caché activo | 0.05 ms | Medido vía `@lru_cache` en repetición de consultas |
@@ -519,7 +642,7 @@ Se implementó el pipeline de evaluación automatizada de RAG mediante la librer
 
 ### 7.3 Eval set
 
-Se estructuró un conjunto de evaluación de **15 casos clínicos integrales** (`M3/data/eval_set_15_casos.json`), con la siguiente composición:
+Se estructuró un conjunto de evaluación de **15 casos clínicos integrales** (`M3/ejecucion/eval_set_casos.json`), con la siguiente composición:
 - **`input`:** Texto clínico real extraído del corpus de DisTEMIST (M1/M2).
 - **`entidad`:** Mención de enfermedad en texto libre o sigla clínica (`TFNA`, `EPOC`, `HTA`, `DM2`, `BRD`).
 - **`pregunta`:** Consulta clínica formulada sobre diagnóstico y tratamiento.
@@ -582,42 +705,76 @@ El módulo `cruce_harness.py` lee `resultado_dimension1.json` de M2 (F1 global d
 
 ### 8.1 Generación final
 
-**Qué se implementó:** [COMPLETAR: modelo usado, prompt, cómo se restringe la respuesta a los
-fragmentos recuperados.]
+**Qué se implementó:** La generación final de la respuesta del RAG con **`qwen/qwen3.8-27b`**
+vía **Groq** (el mismo modelo que el juez de RAGAS y que el juez de M2, por coherencia). Se usa el
+**prompt aumentado de S07** en cuatro partes: instrucción ("responde SOLO con base en el
+contexto"), contexto con la fuente de cada fragmento, **válvula de escape** ("si la respuesta no
+está en el contexto, dilo") y la pregunta del caso. La respuesta queda restringida a los
+fragmentos recuperados: el `system` prohíbe inventar y la pregunta es la misma que usó el reranker
+(`pregunta_intencion`), para que el LLM responda sobre lo que se buscó.
 
 **Entregables:**
 
 | Archivo | Descripción |
 |---|---|
-| [COMPLETAR] | `generar_respuesta(entidad, fragments) -> RespuestaRAG` |
+| `M3/generacion/generacion.py` | `generar_respuesta(entidad, fragments, generar_fn, pregunta) -> RespuestaRAG` con el prompt de S07 y el generador Groq, con rotación de claves y espaciado entre llamadas |
+| `M3/generacion/orquestacion.py` | `resolver_query(...) -> QueryResuelta`: criterio determinista de invocación de la tool, compuerta de evidencia y manejo de fallos |
+| `M3/generacion/run_generacion.py` | Entry point `run(cfg, project_root) -> dict`; escribe `M3/outputs/resultado_generacion.json` |
+| `M3/generacion/config.yaml` | Modelo, temperatura, `max_tokens`, pausa entre llamadas y rutas |
 
-**Comportamiento ante evidencia insuficiente:** [COMPLETAR: umbral y mensaje cuando
-`fallback_used=true`.]
+**Comportamiento ante evidencia insuficiente:** si no hay fragmentos (`fragments == []`), **no se
+llama al LLM**: se devuelve directamente `"No tengo esa información en mis fuentes."` con
+`fallback_used=True` y `sources_used=[]`. Si el LLM devuelve esa misma válvula de escape, también
+se marca `fallback_used=True` y `sources_used=[]` (no se apoya en ninguna fuente).
 
 **Resultados medidos:**
 
 | Métrica | Valor | Fuente del número |
 |---|---|---|
-| Frecuencia de `fallback_used=true` | [COMPLETAR] | [COMPLETAR] |
-| [COMPLETAR: latencia, costo por consulta, etc.] | [COMPLETAR] | [COMPLETAR] |
+| Frecuencia de `fallback_used=true` | 10/15 (66.7%) | `run_generacion.py` en `start_pipeline_M3_ejecutado.ipynb` (15 casos) |
+| Casos con fragmentos recuperados | 13/15 (86.7%) | Idem |
+| Frecuencia de invocación de la tool | 5/15 (33.3%) | Idem |
+| Latencia por caso | ~3-10 s (retrieval + LLM + BioPortal) | Idem |
 
 ### 8.2 Corrección del LLM-as-judge de M2
 
-**Qué se corrigió:** [COMPLETAR: modelo reemplazado, motivo y validación de que las métricas
-no cambiaron de forma inesperada.]
+**Qué se corrigió:** En M2 el juez LLM quedó en `openai/gpt-oss-120b`, un modelo de razonamiento
+que consume ~1.000-1.300 tokens internos por llamada y no cabía en el cupo gratuito de Groq
+(200.000 tokens/día) para 3 llamadas x 59 documentos. Se reemplazó por **`qwen/qwen3.8-27b`**
+(~100 tokens por llamada). Además se alineó el método con **S06**: sesgo de posición con protocolo
+**pairwise A/B con intercambio de orden** (en vez de intercambiar gold/pred dentro de la rúbrica y
+promediar, que contaminaba el score), **dimensión binaria de dominio** (`cumple_criterio`, leyendo
+el campo `criterio` del gold set) y rúbrica con anclas 1-5. Validación: 59/59 documentos gold y
+10/10 adversariales con score válido; el test de posición detectó 5/10 empates en adversariales y
+0/59 en gold. El detalle está en `M2/README.md`.
 
 ### 8.3 Hallazgos (derivados de datos)
 
-- [COMPLETAR]
+- La tasa de `fallback_used=true` (10/15) es **alta incluso cuando hay fragmentos** (13/15 los
+tuvieron): en varios casos el contexto recuperado no contenía la recomendación que pedía la
+pregunta y el modelo usó la válvula de escape en vez de inventar. El caso más claro es `DM2`:
+recuperó 5 fragmentos de la guía de diabetes y aun así se abstuvo porque la pregunta pedía metas de
+guías ADA/EASD que el corpus (GPC colombiana) no cubre.
+- Las siglas (`DM2`, `ICC`, `TFNA`) disparan la normalización, pero con BioPortal real la
+normalización no aportó: devolvió etiquetas sin relación o ecos (p. ej. `DM2` -> `dm2`), que la
+guarda de plausibilidad descarta; el retrieval siguió con la entidad cruda.
+- El sistema **no alucinó**: en ningún caso inventó contenido fuera del contexto; prefirió
+abstenerse. RAGAS lo confirma (faithfulness 0.597; 0 casos de "alucinación" en el cruce).
 
 ### 8.4 Supuestos (no medidos)
 
-- [COMPLETAR]
+- Se asume que `qwen/qwen3.8-27b` responde en español clínicamente fiel y que la válvula de escape
+de S07 basta para evitar alucinaciones.
+- Se asume que la pregunta del eval set representa el uso real (el sistema recibirá la salida del
+encoder, que puede ser más ruidosa).
 
 ### 8.5 Limitaciones
 
-- [COMPLETAR: por ejemplo, riesgo de alucinación pese al contexto, dependencia de API externa,
-  variabilidad entre corridas.]
+- **Abstención excesiva:** con contexto recuperado, el modelo se abstiene si la pregunta y la guía
+no coinciden exactamente; no distingue "no está en la guía" de "no lo encontré en el contexto".
+- **Dependencia de API externa** (Groq) y de su cuota; el generador comparte familia con el juez
+de RAGAS (sesgo de auto-preferencia, ya documentado).
+- **Variabilidad entre corridas** en generación y en el juez.
 
 ---
 
@@ -627,9 +784,9 @@ no cambiaron de forma inesperada.]
 
 | Checkpoint | Contrato validado | Estado | Notas |
 |---|---|---|---|
-| Corpus -> Retrieval | Chunk / índice Chroma | [COMPLETAR] | [COMPLETAR] |
+| Corpus -> Retrieval | Chunk / índice Chroma | Validado | La ingesta deja `chunks/*.json` y la colección Chroma; el retrieval lee el índice con `configurar_pipeline`. Corrida sobre 3 guías / 64 chunks |
 | Normalización -> Retrieval | NormalizationResult | Validado | `tool_normalizacion.py` integrado con `config_retrieval.py` y `orquestacion.py` vía BioPortal SNOMED CT |
-| Retrieval -> Generación | Fragment | [COMPLETAR] | [COMPLETAR] |
+| Retrieval -> Generación | Fragment | Validado | `resolver_query` entrega `QueryResuelta` (con `fragments`) a `generar_respuesta`; 13/15 casos con fragmentos |
 | Generación -> RAGAS | RagasExample | Validado | `evaluacion_ragas.py` consume `resultado_generacion.json` (`contexts`, `answer`, `esperado`) |
 
 ### 9.2 Scorecard final del sistema
@@ -637,22 +794,43 @@ no cambiaron de forma inesperada.]
 | Etapa | Métrica principal | Valor | Fuente |
 |---|---|---|---|
 | Extracción (harness M2) | F1 | 0.7156 | `resultado_dimension1.json` (Clinical BERT M2) |
-| Retrieval | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
+| Retrieval | Tratamiento en 1.er lugar | 0.773 (sistema completo) y 0.682 (avanzado) vs 0.045 (ingenuo) | `deltas_s08.csv` (sección 5.5) |
 | Generación (RAGAS) | Faithfulness | 0.5973 | `run_ragas.py --modo real` sobre `resultado_generacion.json`  |
 
 ### 9.3 Dónde falla el sistema
 
-[COMPLETAR: síntesis del análisis de fallos, con referencias a las secciones 5 a 8.]
+Con el corpus de 3 guías y el eval set alineado: la **extracción (M1/M2)** tiene F1 0.72; el
+**retrieval** acierta la guía correcta en el top-5 en el 100% de las consultas; la **generación**
+es donde más falla: 10/15 respuestas caen en la válvula de escape, sobre todo cuando la pregunta
+pide recomendaciones de guías que el corpus no contiene. El cruce RAGAS x M2 etiqueta 58/59
+documentos como `problema_corpus_retrieval`: la extracción es adecuada, pero la cobertura del
+corpus y la correspondencia pregunta-guía son la limitante principal (secciones 5 y 7).
 
 ### 9.4 Limitaciones globales del módulo
 
-- [COMPLETAR: incluir el uso de guías simuladas y qué conclusiones no se pueden extrapolar a
-  guías reales.]
+- **Guías simuladas con IA:** el contenido clínico de las guías es tomado de guías médicas reales pero como eran documentos tan extensos (casi 1000 páginas) se tomo la desición de resumirlos y estructurarlos con IA.
+- **Corpus pequeño (3 guías, 64 chunks):** las métricas de retrieval están saturadas a nivel de
+guía y no permiten demostrar superioridad del retrieval avanzado.
+- **Gold set de chunks anotado por IA, y normalización simulada en la
+evaluación del retrieval:** la mejora medida en la sección 5 depende de esas etiquetas. El mapa
+simulado se escribió a partir de las siglas del gold set, así que favorece al sistema en esas
+consultas.
+- **Context recall = 0:** la referencia (`esperado`) pide recomendaciones que el corpus no cubre;
+la métrica penaliza por cobertura, no por error del sistema.
 
 ### 9.5 Trabajo futuro
 
-- [COMPLETAR]
+- Revisar a mano el gold set de chunks.
+- Agregar guías al corpus, para que la evaluación a nivel de guía deje de estar saturada y los
+umbrales se calibren con más enfermedades vecinas.
+- Alinear el `esperado` del eval set con el contenido real de las guías del corpus (o agregar las
+guías que faltan).
+- Mejorar la normalización para español (filtrar por idioma/ontología) o preferir un vocabulario
+curado.
+- Reducir la abstención excesiva revisando el prompt y la pregunta del caso.
 
 ### 9.6 Cómo reproducir todo el módulo
 
-[COMPLETAR: referencia a .md con instrucciones]
+Ver [`M3/instrucciones.md`](instrucciones.md): cómo clonar el repositorio, configurar los secretos
+(`GROQ_API_KEY`, `BIOPORTAL_API_KEY`), correr el notebook `M3/ejecucion/start_pipeline_M3.ipynb`
+(Colab o local) y qué artefactos genera.
