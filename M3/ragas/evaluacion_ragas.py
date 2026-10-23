@@ -15,9 +15,9 @@ import json
 import os
 import re
 from pathlib import Path
+from math import isfinite
+from numbers import Real
 import numpy as np
-from dotenv import load_dotenv
-
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -107,13 +107,15 @@ def cargar_eval_set_de_generacion(ruta_generacion: Path) -> list[dict] | None:
         if not resultados:
             return None
         items = []
-        for r in resultados:
+        for i, r in enumerate(resultados):
             # Soporte completo para pregunta y esperado
             q = r.get("pregunta") or r.get("question") or r.get("consulta") or r.get("entidad") or r.get("query_final", "")
             ctx = r.get("contexts", [])
             ans = r.get("answer", "")
-            gt = r.get("esperado") or r.get("ground_truth") or f"Manejo clínico y recomendaciones sobre {q}."
+            gt = r.get("esperado") or r.get("ground_truth")
             items.append({
+                "id": r.get("id", f"fila_{i:04d}"),
+                "fallback_used": r.get("fallback_used"),
                 "question": q,
                 "contexts": ctx if isinstance(ctx, list) else [str(ctx)],
                 "answer": ans,
@@ -130,40 +132,28 @@ def cargar_eval_set_de_generacion(ruta_generacion: Path) -> list[dict] | None:
 # Calculo de metricas en modo Mock
 
 
-def _es_abstencion_segura(ans: str) -> bool:
-    t = ans.lower()
-    return any(p in t for p in [
-        "no se encontr", "insuficiente", "no contiene", "no hay evidencia",
-        "no se dispone", "fuera del alcance", "no es posible responder"
-    ])
-
-
-def _faithfulness_mock(caso: dict, model) -> float:
+def _faithfulness_mock(caso: dict, model) -> float | None:
     contexto = " ".join(caso["contexts"])
     afirmaciones = [s.strip() for s in re.split(r"[.\n]", caso["answer"]) if len(s.strip()) > 10]
-    if not afirmaciones:
-        return 1.0
-    if not contexto:
-        # Si no hay contexto y la respuesta fue una abstencion legitima, es 100% fiel (no alucina)
-        if _es_abstencion_segura(caso.get("answer", "")):
-            return 1.0
-        return 0.0
+    if not afirmaciones or not contexto.strip():
+        # Convención del proxy: sin base de comparación no asignar una nota.
+        # N/D no significa respuesta segura; la abstención se registra aparte.
+        return None
     ok = sum(1 for a in afirmaciones if _sim(a, contexto, model) >= 0.4)
     return ok / len(afirmaciones)
 
 
-def _context_precision_mock(caso: dict, model) -> float:
-    if not caso["contexts"]:
-        # Si el retriever no trajo contextos porque no habia guias, no contamino con ruido
-        if _es_abstencion_segura(caso.get("answer", "")):
-            return 0.85
-        return 0.0
+def _context_precision_mock(caso: dict, model) -> float | None:
+    if not caso["contexts"] or not " ".join(caso["contexts"]).strip():
+        return None
     relevantes = sum(1 for ch in caso["contexts"] if _sim(caso["question"], ch, model) >= 0.3)
     return relevantes / len(caso["contexts"])
 
 
-def _context_recall_mock(caso: dict, model) -> float:
+def _context_recall_mock(caso: dict, model) -> float | None:
     contexto = " ".join(caso["contexts"])
+    if not caso.get("ground_truth"):
+        return None
     if not contexto:
         # No se recupero evidencia de guia: cobertura nula (problema de corpus/retrieval)
         return 0.0
@@ -174,28 +164,63 @@ def _answer_relevancy_mock(caso: dict, model) -> float:
     return min(1.0, _sim(caso["question"], caso["answer"], model) + 0.20)
 
 
-def _calcular_mock(eval_set: list[dict], embedding_model: str) -> dict:
+METRICAS = ("faithfulness", "context_precision", "context_recall", "answer_relevancy")
+
+
+def _resumir_filas(filas: list[dict], eval_set: list[dict]) -> dict:
+    """Conserva valores finitos y explicita el denominador de cada media.
+
+    Null representa ausencia, resultado no finito o tipo no numérico: no cero.
+    Cada estado queda registrado. No se deduce la causa de un NaN.
+    Los índices vinculan el resultado al orden de ESTA corrida, no a M2.
+    """
+    if not isinstance(filas, list) or not filas or len(filas) != len(eval_set):
+        raise ValueError("Se requieren resultados por muestra, alineados con esta corrida.")
+    por_caso = []
+    for i, (fila, caso) in enumerate(zip(filas, eval_set)):
+        if not isinstance(fila, dict):
+            raise TypeError("Cada resultado debe ser un diccionario de métricas.")
+        valores, estados = {}, {}
+        for nombre in METRICAS:
+            valor = fila.get(nombre)
+            if isinstance(valor, Real) and not isinstance(valor, bool) and isfinite(float(valor)):
+                valores[nombre], estados[nombre] = float(valor), "calculado"
+            else:
+                valores[nombre] = None
+                estados[nombre] = "ausente" if valor is None else "no_finito_o_invalido"
+        # Es una declaración del generador, no una certificación de seguridad.
+        flag = caso.get("fallback_used")
+        por_caso.append({"indice_evaluacion": i, "id": caso.get("id", f"fila_{i:04d}"),
+                         "abstencion_declarada": flag if isinstance(flag, bool) else None,
+                         "metricas": valores, "estado_metricas": estados})
+    metricas, cobertura = {}, {}
+    for nombre in METRICAS:
+        validos = [r["metricas"][nombre] for r in por_caso if r["metricas"][nombre] is not None]
+        metricas[nombre] = sum(validos) / len(validos) if validos else None
+        cobertura[nombre] = {"n_validos": len(validos), "n_total": len(filas),
+                             "n_no_calculados": len(filas) - len(validos)}
+    total_validos = sum(v["n_validos"] for v in cobertura.values())
+    estado = ("sin_metricas_validas" if total_validos == 0 else
+              "completo" if total_validos == len(filas) * len(METRICAS) else "parcial")
+    return {"metricas": metricas, "cobertura": cobertura, "por_caso": por_caso, "estado": estado}
+
+
+def _calcular_mock(eval_set: list[dict], embedding_model: str, *, detalle: dict | None = None) -> dict:
     model = _get_emb_model(embedding_model)
-    metricas = {
-        "faithfulness": [],
-        "context_precision": [],
-        "context_recall": [],
-        "answer_relevancy": [],
-    }
-    for caso in eval_set:
-        metricas["faithfulness"].append(_faithfulness_mock(caso, model))
-        metricas["context_precision"].append(_context_precision_mock(caso, model))
-        metricas["context_recall"].append(_context_recall_mock(caso, model))
-        metricas["answer_relevancy"].append(_answer_relevancy_mock(caso, model))
-
-    return {k: float(np.mean(v)) for k, v in metricas.items()}
-
+    filas = [{"faithfulness": _faithfulness_mock(caso, model),
+              "context_precision": _context_precision_mock(caso, model),
+              "context_recall": _context_recall_mock(caso, model),
+              "answer_relevancy": _answer_relevancy_mock(caso, model)} for caso in eval_set]
+    reporte = _resumir_filas(filas, eval_set)
+    if detalle is not None:
+        detalle.update(reporte)
+    return reporte["metricas"]
 
 
 # Calculo de metricas en modo Real (Libreria Ragas + Groq LLM)
 
 
-def _calcular_real(eval_set: list[dict], llm_model: str, embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2") -> dict:
+def _calcular_real(eval_set: list[dict], llm_model: str, embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2", *, detalle: dict | None = None) -> dict:
     try:
         from ragas import evaluate
         from ragas.metrics import (
@@ -266,77 +291,26 @@ def _calcular_real(eval_set: list[dict], llm_model: str, embedding_model: str = 
         except TypeError:
             resultado = evaluate(ds, metrics=metricas_lista, llm=llm, embeddings=embeddings_wrapped)
 
-        df = None
-        if hasattr(resultado, "to_pandas"):
-            try:
-                df = resultado.to_pandas()
-            except Exception:
-                df = None
-
-        if df is not None:
-            # Calibracion ante abstenciones clinicas seguras en filas sin contexto
-            for idx, row in df.iterrows():
-                ans = str(row.get("answer", "")).lower()
-                ctx = row.get("contexts", [])
-                ctx_len = len(ctx) if isinstance(ctx, list) else len(str(ctx).strip())
-                if ctx_len == 0 and _es_abstencion_segura(ans):
-                    if "faithfulness" in df.columns:
-                        df.at[idx, "faithfulness"] = 1.0
-                    if "context_precision" in df.columns:
-                        df.at[idx, "context_precision"] = 0.85
-
-        def _extraer_score(val) -> float:
-            if isinstance(val, (int, float)):
-                return float(val) if not (isinstance(val, float) and np.isnan(val)) else 0.0
-            if hasattr(val, "dropna"):
-                try:
-                    s = val.dropna()
-                    return float(s.mean()) if not s.empty else 0.0
-                except Exception:
-                    pass
-            if hasattr(val, "tolist"):
-                val = val.tolist()
-            if isinstance(val, (list, tuple)):
-                validos = [float(x) for x in val if x is not None and not (isinstance(x, float) and np.isnan(x))]
-                return float(np.mean(validos)) if validos else 0.0
-            try:
-                f = float(val)
-                return f if not np.isnan(f) else 0.0
-            except Exception:
-                return 0.0
-
-        scores = {}
-        for m_name in ["faithfulness", "context_precision", "context_recall", "answer_relevancy"]:
-            val = None
-            if df is not None and m_name in df.columns:
-                val = df[m_name]
-            elif hasattr(resultado, "scores") and isinstance(resultado.scores, list):
-                val = [row.get(m_name) for row in resultado.scores if isinstance(row, dict)]
-            elif hasattr(resultado, m_name):
-                val = getattr(resultado, m_name)
-            elif isinstance(resultado, dict) and m_name in resultado:
-                val = resultado[m_name]
-            else:
-                try:
-                    val = resultado[m_name]
-                except Exception:
-                    val = 0.0
-
-            scores[m_name] = _extraer_score(val) if val is not None else 0.0
-
-        if all(v == 0.0 for v in scores.values()):
-            print("[ragas] Aviso: evaluacion real devolvio 0.0. Empleando calculo local de respaldo.")
-            return _calcular_mock(eval_set, embedding_model)
-
-        return scores
+        filas = getattr(resultado, "scores", None)
+        if not isinstance(filas, list) and hasattr(resultado, "to_pandas"):
+            filas = resultado.to_pandas().to_dict(orient="records")
+        reporte = _resumir_filas(filas, eval_set)
+        if detalle is not None:
+            detalle.update(reporte)
+        return reporte["metricas"]
     except Exception as e:
-        print(f"[ragas] Error en evaluacion real ({type(e).__name__}: {e}). Empleando calculo local de respaldo.")
-        return _calcular_mock(eval_set, embedding_model)
+        # No etiquetar un proxy como RAGAS. La causa se conserva en el traceback.
+        raise RuntimeError(
+            "No se completó la evaluación RAGAS; no se sustituyeron las métricas. "
+            "Para una aproximación local, ejecutar explícitamente --modo mock."
+        ) from e
 
 
 def run(cfg: dict, project_root: str = "") -> dict:
     ragas_cfg = cfg.get("ragas", {})
     modo = ragas_cfg.get("modo", "mock")
+    if modo not in {"real", "mock"}:
+        raise ValueError("modo debe ser real o mock")
     embedding_model = ragas_cfg.get("embedding_model", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
     llm_model = ragas_cfg.get("llm_model", "qwen/qwen3.8-27b")
     archivo_gen = ragas_cfg.get("archivo_generacion", "M3/outputs/resultado_generacion.json")
@@ -361,28 +335,39 @@ def run(cfg: dict, project_root: str = "") -> dict:
 
     # C) Fallback a EVAL_SET_MOCK
     if not eval_set:
+        if modo == "real":
+            raise FileNotFoundError("No hay salidas de generación; no se evaluará el set de ejemplo como entrega.")
         eval_set = EVAL_SET_MOCK
         origen = "EVAL_SET_MOCK (simulado integrado)"
 
     print(f"[ragas] Modo: '{modo}' | Fuente de datos: {origen} | Casos: {len(eval_set)}")
 
     if modo == "real":
-        metricas = _calcular_real(eval_set, llm_model, embedding_model)
+        for i, caso in enumerate(eval_set):
+            for clave in ("question", "answer", "ground_truth"):
+                if not isinstance(caso.get(clave), str) or not caso[clave].strip():
+                    raise ValueError(f"Caso {i}: falta {clave}; no se inventan referencias de evaluación.")
+            if not isinstance(caso.get("contexts"), list) or not all(isinstance(c, str) for c in caso["contexts"]):
+                raise ValueError(f"Caso {i}: contexts debe ser una lista de textos.")
+
+    detalle = {}
+    if modo == "real":
+        metricas = _calcular_real(eval_set, llm_model, embedding_model, detalle=detalle)
+        backend = "ragas"
     else:
-        metricas = _calcular_mock(eval_set, embedding_model)
+        metricas = _calcular_mock(eval_set, embedding_model, detalle=detalle)
+        # _sim mantiene su respaldo léxico: no garantizar embeddings en cada llamada.
+        backend = "proxy_local_con_respaldo_lexico"
 
-    print("\n--- Metricas RAGAS calculadas ---")
-    print(f"  Faithfulness (Fidelidad)     : {metricas['faithfulness']:.4f}")
-    print(f"  Context Precision (Precision): {metricas['context_precision']:.4f}")
-    print(f"  Context Recall (Cobertura)   : {metricas['context_recall']:.4f}")
-    print(f"  Answer Relevancy (Relevancia): {metricas['answer_relevancy']:.4f}")
+    print(f"\n--- Evaluación: {backend} ({detalle['estado']}) ---")
+    for nombre, valor in metricas.items():
+        texto = "N/D" if valor is None else f"{valor:.4f}"
+        c = detalle["cobertura"][nombre]
+        print(f"  {nombre}: {texto} ({c['n_validos']}/{c['n_total']} valores calculados)")
 
-    return {
-        "modo": modo,
-        "fuente": origen,
-        "n_casos": len(eval_set),
-        "metricas": metricas,
-    }
+    return {"modo": modo, "backend": backend, "fuente": origen,
+            "n_casos": len(eval_set), "modelo_juez": llm_model if modo == "real" else None,
+            "modelo_embeddings_configurado": embedding_model, **detalle}
 
 
 if __name__ == "__main__":
