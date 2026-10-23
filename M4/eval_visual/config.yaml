@@ -1,0 +1,60 @@
+# config.yaml -- set sintetico de imagenes (M4, tarea 3a)
+# Renderiza los documentos del gold set como paginas de imagen y aplica
+# degradaciones reproducibles. El gold sigue siendo el texto original.
+
+proyecto:
+  seed_global: 42
+
+entrada:
+  # Se resuelve relativo a la raiz del repo (archivo versionado en git).
+  gold_set: "M2/examples/gold_examples.jsonl"
+
+salida:
+  # Se resuelven relativo a PROJECT_ROOT (fuera de git).
+  imagenes_dir: "M4/data/imagenes"
+  manifest_path: "M4/data/imagenes/manifest.json"
+
+render:
+  # Pagina tipo A4 a 150 dpi.
+  ancho_px: 1240
+  alto_px: 1754
+  margen_px: 100
+  tamano_fuente: 28
+  interlineado: 1.45
+  # Se usa la primera fuente que exista. Debe cubrir tildes y enie.
+  fuentes_candidatas:
+    - "C:/Windows/Fonts/arial.ttf"
+    - "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    - "/usr/share/fonts/dejavu/DejaVuSans.ttf"
+    - "/Library/Fonts/Arial.ttf"
+    - "/System/Library/Fonts/Supplemental/Arial.ttf"
+  # Si ninguna existe, se usa la DejaVuSans que trae matplotlib (si esta instalado).
+  fuente_matplotlib_fallback: true
+
+# Niveles de degradacion. "limpio" es el techo visual (sin degradar).
+# Cada nivel guarda sus parametros en el manifiesto.
+niveles:
+  limpio:
+    formato: "png"
+    params: {}
+  jpeg_bajo:
+    formato: "jpg"
+    params:
+      escala: 0.5          # reduce la resolucion a la mitad
+      calidad_jpeg: 20
+  rotacion:
+    formato: "png"
+    params:
+      angulo_min: 2.0      # grados, signo aleatorio
+      angulo_max: 3.0
+  desenfoque:
+    formato: "png"
+    params:
+      radio: 1.5           # Gaussian blur
+  sombra_celular:
+    formato: "jpg"
+    params:
+      oscuridad_max: 0.45  # fraccion de oscurecimiento en la zona de sombra
+      vineta: 0.20
+      ruido_sigma: 6.0
+      calidad_jpeg: 75
