@@ -1,0 +1,50 @@
+# Config de run_inference para la FUENTE VISUAL (M4).
+#
+# Mismo NER (Clinical BERT + LoRA) y mismo chunking que el baseline de texto,
+# pero el texto que entra al NER sale de transcribir imágenes de notas clínicas
+# con el módulo M4/vision. El resultado es un cache {doc_id: [entidades]} en el
+# formato que el harness ya consume, más un sidecar con los metadatos de visión
+# (backend, latencia, válvulas, errores).
+#
+# Uso:
+#   python M2/run_inference/run_inference.py --config M2/run_inference/config_vision.yaml
+#   # luego, para evaluar con el harness:
+#   python M2/harness/run_harness.py --config M2/harness/config_vision.yaml
+#
+# El gold set sigue siendo el TEXTO ORIGINAL (es el techo). Lo que cambia es de
+# dónde vienen las entidades predichas: imagen -> OCR/VLM -> NER.
+
+# Nombre del sistema evaluado (aparece en el scorecard). Cambie el sufijo según
+# el backend que use (vision_vlm, vision_ocr_docling, vision_ocr_tesseract).
+sistema: "vision_vlm"
+
+modelo:
+  checkpoint: "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es"
+  adapter_path: "M1/saved_models/clinical_bert-distemist-lora"
+
+chunking:
+  window_words: 277
+  overlap_words: 50
+
+# El gold set del harness. Para M4 debe tener los mismos doc_id que el
+# manifiesto de imágenes (el gold es el texto original anotado).
+eval_set_path: "M2/eval_harness/gold_examples_20.jsonl"
+
+normalizacion:
+  activa: false
+
+fuente:
+  tipo: "vision"
+  # Backend de transcripción: vlm | ocr_docling | ocr_tesseract | auto.
+  # null -> usa vision.backend de M4/vision/config.yaml.
+  backend: "vlm"
+  # Config del módulo de visión (backends, prompts, idioma OCR).
+  vision_config: "M4/vision/config.yaml"
+  # Manifiesto de imágenes con doc_id que coincidan con el gold set.
+  # null -> usa rutas.manifest de M4/vision/config.yaml.
+  manifest: "M4/eval_set/casos_imagen.csv"
+
+# Cache de predicciones específico de la fuente visual. El harness de visión
+# apunta aquí. El sidecar de metadatos queda en el mismo directorio como
+# vision_vlm.vision_meta.json.
+output_path: "M2/predictions/vision_vlm.json"

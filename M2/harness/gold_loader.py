@@ -16,12 +16,16 @@ def resolver_rutas(cfg: dict, project_root: Path) -> dict:
     with open(inference_config_path, "r", encoding="utf-8") as f:
         inference_cfg = yaml.safe_load(f)
     predictions_path = project_root / inference_cfg["output_path"]
+    # Sidecar opcional con los metadatos de visión (backend, latencia, válvulas,
+    # errores). Solo existe cuando run_inference corrió con fuente.tipo=vision.
+    vision_meta_path = predictions_path.with_name(predictions_path.stem + ".vision_meta.json")
     output_dir = project_root / cfg["rutas"]["outputs_dir"]
     output_dir.mkdir(parents=True, exist_ok=True)
 
     rutas = {
         "gold_set_path": gold_set_path,
         "predictions_path": predictions_path,
+        "vision_meta_path": vision_meta_path,
         "output_dir": output_dir,
         "dim1_path": output_dir / cfg["archivos_salida"]["dimension1"],
         "dim1b_path": output_dir / cfg["archivos_salida"]["dimension1b"],

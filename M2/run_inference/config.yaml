@@ -12,5 +12,13 @@ eval_set_path: "M2/eval_harness/gold_examples_20.jsonl"
 
 normalizacion:
   activa: false
-  
+
+# Fuente del texto que alimenta el NER.
+#   tipo: texto  -> usa el texto del gold set (comportamiento histórico).
+#   tipo: vision -> transcribe las imágenes del manifiesto de M4 y usa ese
+#                   texto. Reutiliza M4/vision (backends VLM/OCR) sin tocar el NER.
+# Para evaluar visión en el harness, use M2/run_inference/config_vision.yaml.
+fuente:
+  tipo: "texto"
+
 output_path: "M2/predictions/encoder_solo.json"

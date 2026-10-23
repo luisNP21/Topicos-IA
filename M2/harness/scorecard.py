@@ -80,9 +80,36 @@ def build(cfg: dict, project_root) -> dict:
 
     distribucion_debilidad = Counter(row["debilidad"] for row in filas_scorecard)
 
+    # Metadatos de visión (M4): solo presentes si run_inference usó
+    # fuente.tipo=vision. Registran los hiperparámetros del componente visual
+    # (backend, modelo, latencia, válvulas, errores) junto a las métricas.
+    vision_meta = None
+    vision_meta_path = rutas.get("vision_meta_path")
+    if vision_meta_path is not None and vision_meta_path.exists():
+        with open(vision_meta_path, "r", encoding="utf-8") as f:
+            vm = json.load(f)
+        vision_meta = {
+            "backend": vm.get("backend"),
+            "modelo": vm.get("modelo"),
+            "manifest": vm.get("manifest"),
+            "n_casos": vm.get("n_casos"),
+            "n_ok": vm.get("n_ok"),
+            "n_error": vm.get("n_error"),
+            "n_valvula": vm.get("n_valvula"),
+            "latencia_media_s": vm.get("latencia_media_s"),
+            "latencia_total_s": vm.get("latencia_total_s"),
+            "por_doc": vm.get("por_doc", {}),
+        }
+        print(
+            f"Visión (M4) detectada: backend={vision_meta['backend']} | "
+            f"latencia media={vision_meta['latencia_media_s']}s | "
+            f"válvulas={vision_meta['n_valvula']} | errores={vision_meta['n_error']}"
+        )
+
     scorecard = {
         "proyecto": cfg["proyecto"]["nombre"],
         "n_ejemplos": len(filas_scorecard),
+        "vision": vision_meta,
         "metricas_globales": {
             "exact_match": dim1["metrics"],
             "similitud_semantica": {
@@ -119,6 +146,31 @@ def _generar_markdown(scorecard: dict, path):
     lineas = [
         f"# Scorecard -- {scorecard['proyecto']}\n",
         f"**Ejemplos evaluados:** {scorecard['n_ejemplos']}\n",
+    ]
+
+    vision = scorecard.get("vision")
+    if vision:
+        lineas += [
+            "## Componente visual (M4)\n",
+            "Las entidades de este sistema se obtuvieron transcribiendo imágenes de notas",
+            "clínicas antes del NER (patrón *input*). Hiperparámetros de la corrida de visión:\n",
+            "| Hiperparámetro | Valor |",
+            "|---|---|",
+            f"| Backend | {vision.get('backend')} |",
+            f"| Modelo | {vision.get('modelo')} |",
+            f"| Casos | {vision.get('n_casos')} |",
+            f"| Transcripciones OK | {vision.get('n_ok')} |",
+            f"| Errores de backend | {vision.get('n_error')} |",
+            f"| Válvulas (sin texto legible) | {vision.get('n_valvula')} |",
+            f"| Latencia media (s/caso) | {vision.get('latencia_media_s')} |",
+            f"| Latencia total (s) | {vision.get('latencia_total_s')} |",
+            "",
+            "> La latencia y la tasa de válvulas/errores son el costo de operar el componente",
+            "> visual; van junto al delta de F1 para decidir si la variante aporta.",
+            "",
+        ]
+
+    lineas += [
         "## Metricas globales\n",
         "| Dimension | Precision | Recall | F1 |",
         "|---|---|---|---|",
