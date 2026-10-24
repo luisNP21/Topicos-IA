@@ -229,9 +229,6 @@ agregó al harness y cómo se corre.*
 
 *CER y WER (normalización adoptada) y protocolo de auditoría de entidades inventadas por el
 VLM.*
-*CER y WER (normalización adoptada) y protocolo de auditoría de entidades inventadas por el
-VLM.*
-
 
 El F1 de la sección 3.5 dice cuánto cae el sistema con imágenes. Estas métricas dicen por qué:
 porque la visión leyó mal, porque inventó texto, porque el texto no estaba en la imagen o porque
@@ -298,7 +295,9 @@ del sistema.**
 `candidatos_juez.jsonl`, qué modelo juzga y cómo se agregan los veredictos.]
 
 **Resultados.** [COMPLETAR – Luis, cuando existan las transcripciones reales: tabla de CER, WER,
-lectura de entidades e inventadas por sistema y nivel, con fuente.]ima entrega
+lectura de entidades e inventadas por sistema y nivel, con fuente.]
+
+### 3.4 Línea base de la última entrega
 
 *Sistema de referencia, versión, valores por dimensión y archivo de resultados.*
 
