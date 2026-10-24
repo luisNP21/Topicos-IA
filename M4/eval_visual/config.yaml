@@ -1,0 +1,513 @@
+# config.yaml -- set sintetico de imagenes (M4, tarea 3a)
+#
+# Renderiza los documentos del gold set como paginas de imagen (impresas o a mano)
+# y les aplica efectos reproducibles. El gold sigue siendo el texto original.
+#
+# Valores de parametros:
+#   numero             -> se usa tal cual
+#   [min, max]         -> se sortea uniforme por pagina (queda en el manifiesto)
+#   [op1, op2, ...]    -> se sortea una opcion
+#   prob: p            -> el efecto se aplica con probabilidad p (por pagina)
+
+proyecto:
+  seed_global: 42
+
+entrada:
+  gold_set: "M2/examples/gold_examples.jsonl"     # relativo a la raiz del repo
+
+salida:                                           # relativo a PROJECT_ROOT (fuera de git)
+  imagenes_dir: "M4/data/imagenes"
+  manifest_path: "M4/data/imagenes/manifest.json"
+  casos_dir: "M4/data/imagenes/casos"             # un CSV por nivel, formato de M4/vision
+
+# Subconjuntos de documentos. "todos" = los 59. Los barridos de severidad usan un
+# subconjunto fijo (el mismo para todos los niveles) para limitar llamadas al VLM.
+subconjuntos:
+  barrido: 20
+
+visibilidad:
+  umbral_token: 0.5       # fraccion de puntos de la palabra que debe sobrevivir
+
+# --------------------------------------------------------------------------- #
+# Render impreso
+# --------------------------------------------------------------------------- #
+render:
+  ancho_px: 1240          # A4 a 150 dpi
+  alto_px: 1754
+  margen_px: 100
+  tamano_fuente: 28
+  interlineado: 1.45
+  fuentes_candidatas:     # primera que exista; debe cubrir tildes y enie
+    - "C:/Windows/Fonts/arial.ttf"
+    - "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    - "/usr/share/fonts/dejavu/DejaVuSans.ttf"
+    - "/Library/Fonts/Arial.ttf"
+    - "/System/Library/Fonts/Supplemental/Arial.ttf"
+  fuente_matplotlib_fallback: true
+
+# --------------------------------------------------------------------------- #
+# Render manuscrito
+# --------------------------------------------------------------------------- #
+# Caligrafias libres (Google Fonts). A cada documento le toca una, siempre la misma
+# en todas las severidades. "dificultad" es una etiqueta para el analisis, puesta a
+# ojo: facil = letra de imprenta a mano; dificil = cursiva corrida.
+fuentes_manuscritas:
+  - {nombre: caveat,             ruta: "M4/eval_visual/fonts/caveat/Caveat.ttf",                         dificultad: facil}
+  - {nombre: kalam,              ruta: "M4/eval_visual/fonts/kalam/Kalam-Regular.ttf",                   dificultad: facil}
+  - {nombre: patrickhand,        ruta: "M4/eval_visual/fonts/patrickhand/PatrickHand-Regular.ttf",       dificultad: facil}
+  - {nombre: indieflower,        ruta: "M4/eval_visual/fonts/indieflower/IndieFlower-Regular.ttf",       dificultad: facil}
+  - {nombre: architectsdaughter, ruta: "M4/eval_visual/fonts/architectsdaughter/ArchitectsDaughter-Regular.ttf", dificultad: facil}
+  - {nombre: handlee,            ruta: "M4/eval_visual/fonts/handlee/Handlee-Regular.ttf",               dificultad: facil}
+  - {nombre: shadowsintolight,   ruta: "M4/eval_visual/fonts/shadowsintolight/ShadowsIntoLight.ttf",     dificultad: media}
+  - {nombre: reeniebeanie,       ruta: "M4/eval_visual/fonts/reeniebeanie/ReenieBeanie.ttf",             dificultad: media}
+  - {nombre: kristi,             ruta: "M4/eval_visual/fonts/kristi/Kristi-Regular.ttf",                 dificultad: media}
+  - {nombre: homemadeapple,      ruta: "M4/eval_visual/fonts/homemadeapple/HomemadeApple-Regular.ttf",   dificultad: media}
+  - {nombre: nothingyoucoulddo,  ruta: "M4/eval_visual/fonts/nothingyoucoulddo/NothingYouCouldDo.ttf",   dificultad: media}
+  - {nombre: dancingscript,      ruta: "M4/eval_visual/fonts/dancingscript/DancingScript.ttf",           dificultad: media}
+  - {nombre: dawningofanewday,   ruta: "M4/eval_visual/fonts/dawningofanewday/DawningofaNewDay.ttf",     dificultad: dificil}
+  - {nombre: cedarvillecursive,  ruta: "M4/eval_visual/fonts/cedarvillecursive/Cedarville-Cursive.ttf",  dificultad: dificil}
+  - {nombre: labelleaurore,      ruta: "M4/eval_visual/fonts/labelleaurore/LaBelleAurore.ttf",           dificultad: dificil}
+  - {nombre: zeyada,             ruta: "M4/eval_visual/fonts/zeyada/Zeyada.ttf",                         dificultad: dificil}
+
+manuscrito_base: &manuscrito_base
+  ancho_px: 1240
+  alto_px: 1754
+  margen_izq_px: 130
+  margen_der_px: 90
+  margen_sup_px: 90
+  margen_inf_px: 80
+  colores_tinta: [[25, 35, 110], [20, 20, 30], [30, 60, 150]]   # azul oscuro, negro, azul de boligrafo
+  inclinacion_grados: [-6, 14]       # cursiva por documento (positivo = hacia la derecha)
+  x_alto_px: [16, 19]                # alto de la "x": iguala el tamano entre caligrafias
+  variacion_tamano: 0.06             # +-6 % de tamano entre letras
+  dispersion_tamano: 0.6
+  presion: [0.8, 1.0]                # opacidad de la tinta por letra
+  grosor: 0                          # 0 = trazo de la fuente; 1 = mas grueso
+  paso_linea_px: 58
+  jitter_vertical_px: 0.6
+  jitter_horizontal_px: 0.3
+  giro_palabra_grados: 0.6
+  pendiente_linea_grados: 0.3
+  onda_amplitud_px: 1.0
+  onda_longitud_px: [500, 900]
+  elastico_amplitud_px: 0
+  elastico_celda_px: 40
+  p_tachadura: 0.0
+  p_garabato: 0.0
+  p_pegadas: 0.0
+  p_tinta_falla: 0.0
+  p_repaso: 0.0
+  papel: blanco                      # blanco | rayado | cuadriculado (o lista para sortear)
+
+# --------------------------------------------------------------------------- #
+# Bloques de efectos reutilizables
+# --------------------------------------------------------------------------- #
+bloques:
+  sello: &sello
+    radio_px: [90, 130]
+    opacidad: [0.55, 0.8]
+    colores: [[185, 40, 50], [45, 70, 165], [110, 50, 140]]
+    instituciones: ["HOSPITAL CLINICO SIMULADO", "CLINICA DE PRUEBA M4", "IPS SINTETICA"]
+    textos_centro: ["RECIBIDO", "URGENCIAS", "CONSULTA EXTERNA", "COPIA"]
+    irregularidad: 0.5
+    posicion: aleatoria
+  firma: &firma
+    largo_px: [220, 340]
+    grosor_px: [2, 4]
+    colores: [[25, 35, 110], [20, 20, 30]]
+    posicion: abajo
+  notas: &notas
+    n: 1
+    colores: [[30, 60, 150], [190, 40, 40], [20, 20, 30]]
+    textos: ["revisar", "pendiente", "ver resultados", "control", "ok", "llamar familia", "solicitar copia", "firmar"]
+  resaltador: &resaltador
+    n_lineas: 1
+    colores: [[255, 235, 60], [150, 255, 120], [255, 160, 200]]
+  fondos: &fondos [[120, 85, 55], [95, 95, 100], [55, 62, 85], [200, 198, 190], [150, 120, 90]]
+
+# --------------------------------------------------------------------------- #
+# Niveles
+# --------------------------------------------------------------------------- #
+# familia/severidad sirven para agrupar en el informe. documentos: todos | barrido.
+# formato: png | jpg; calidad_jpeg aplica a jpg (puede ser rango).
+niveles:
+
+  # ---------------- Base (los 59 documentos) ----------------
+  limpio:
+    descripcion: "Render impreso sin degradar. Techo visual."
+    familia: limpio
+    severidad: ninguna
+    documentos: todos
+    render: impreso
+    formato: png
+    efectos: []
+
+  foto_realista:
+    descripcion: "Nota impresa fotografiada con celular: mezcla aleatoria de marcas, papel doblado, perspectiva, sombra, flash, luz y desenfoque."
+    familia: combinado
+    severidad: mixta
+    documentos: todos
+    render: impreso
+    formato: jpg
+    calidad_jpeg: [55, 80]
+    efectos:
+      - {tipo: sello, prob: 0.35, <<: *sello}
+      - {tipo: firma, prob: 0.3, <<: *firma}
+      - {tipo: resaltador, prob: 0.25, <<: *resaltador}
+      - {tipo: notas_margen, prob: 0.3, <<: *notas}
+      - {tipo: mancha_cafe, prob: 0.15, radio_px: [70, 140], opacidad: [0.3, 0.55]}
+      - {tipo: perforaciones, prob: 0.3, n: [2, 3]}
+      - {tipo: deformacion_papel, ondulacion_amplitud_px: [0, 5], ondulacion_longitud_px: [400, 900], curvatura_px: [0, 10], pliegues: [0, 2], pliegue_desplazamiento_px: [1, 3], pliegue_sombra: [0.15, 0.35]}
+      - {tipo: perspectiva, margen: [0.0, 0.07], inclinacion: [0.0, 0.07], colores_fondo: *fondos}
+      - {tipo: sombra_dura, prob: 0.7, oscuridad: [0.3, 0.75], penumbra_px: [10, 40], ancho: [0.25, 0.45], alcance: [0.35, 0.75], umbral_ilegible: 0.2}
+      - {tipo: flash, prob: 0.35, intensidad: [0.5, 1.0], radio: [0.12, 0.22], umbral_ilegible: 0.9}
+      - {tipo: tinte, modos: [calido, frio, verdoso], fuerza: [0.2, 1.0]}
+      - {tipo: poca_luz, prob: 0.25, exposicion: [0.6, 0.85], gamma: [1.0, 1.3], ruido_sigma: [5, 10]}
+      - {tipo: desenfoque_parcial, prob: 0.35, radio: [1.5, 3.0]}
+      - {tipo: movimiento, prob: 0.15, largo_px: [4, 9]}
+      - {tipo: ruido, sigma: [2, 6]}
+
+  manuscrito_foto:
+    descripcion: "Nota escrita a mano (caligrafia variable, errores de escritura) y fotografiada con celular."
+    familia: combinado
+    severidad: mixta
+    documentos: todos
+    render: manuscrito
+    manuscrito:
+      <<: *manuscrito_base
+      jitter_vertical_px: 1.5
+      jitter_horizontal_px: 0.8
+      giro_palabra_grados: 1.8
+      pendiente_linea_grados: 0.9
+      onda_amplitud_px: [2, 4]
+      elastico_amplitud_px: [1.0, 2.0]
+      presion: [0.6, 1.0]
+      grosor: [0, 1]
+      p_tachadura: 0.025
+      p_garabato: 0.3
+      p_pegadas: 0.04
+      p_tinta_falla: 0.015
+      p_repaso: 0.02
+      papel: [blanco, rayado, rayado, cuadriculado]
+    formato: jpg
+    calidad_jpeg: [60, 85]
+    efectos:
+      - {tipo: notas_margen, prob: 0.2, <<: *notas}
+      - {tipo: deformacion_papel, ondulacion_amplitud_px: [0, 4], ondulacion_longitud_px: [400, 900], curvatura_px: [0, 8], pliegues: [0, 1], pliegue_desplazamiento_px: [1, 2], pliegue_sombra: [0.15, 0.3]}
+      - {tipo: perspectiva, margen: [0.02, 0.07], inclinacion: [0.0, 0.05], colores_fondo: *fondos}
+      - {tipo: sombra_dura, prob: 0.5, oscuridad: [0.25, 0.6], penumbra_px: [15, 40], ancho: [0.25, 0.4], alcance: [0.3, 0.6], umbral_ilegible: 0.2}
+      - {tipo: flash, prob: 0.2, intensidad: [0.4, 0.8], radio: [0.12, 0.2], umbral_ilegible: 0.9}
+      - {tipo: tinte, modos: [calido, frio, verdoso], fuerza: [0.2, 0.9]}
+      - {tipo: desenfoque_parcial, prob: 0.25, radio: [1.2, 2.2]}
+      - {tipo: ruido, sigma: [2, 5]}
+
+  # ---------------- Barridos de severidad (subconjunto "barrido") ----------------
+  # Un factor por familia, para atribuir la caida del F1 a una causa.
+
+  manuscrito_leve:
+    descripcion: "Letra a mano prolija en papel blanco."
+    familia: manuscrito
+    severidad: leve
+    documentos: barrido
+    render: manuscrito
+    manuscrito:
+      <<: *manuscrito_base
+    formato: jpg
+    calidad_jpeg: 92
+    efectos: []
+  manuscrito_moderado:
+    descripcion: "Letra irregular en papel rayado, con algunas tachaduras y palabras pegadas."
+    familia: manuscrito
+    severidad: moderado
+    documentos: barrido
+    render: manuscrito
+    manuscrito:
+      <<: *manuscrito_base
+      jitter_vertical_px: 1.5
+      jitter_horizontal_px: 0.8
+      giro_palabra_grados: 2.0
+      pendiente_linea_grados: 1.0
+      onda_amplitud_px: 3
+      elastico_amplitud_px: 1.5
+      presion: [0.6, 1.0]
+      p_tachadura: 0.02
+      p_garabato: 0.2
+      p_pegadas: 0.04
+      p_tinta_falla: 0.01
+      p_repaso: 0.02
+      papel: rayado
+    formato: jpg
+    calidad_jpeg: 92
+    efectos: []
+  manuscrito_severo:
+    descripcion: "Letra apurada: muy irregular, renglones que se montan, tachaduras, tinta que falla, cuadriculado."
+    familia: manuscrito
+    severidad: severo
+    documentos: barrido
+    render: manuscrito
+    manuscrito:
+      <<: *manuscrito_base
+      paso_linea_px: 50
+      x_alto_px: [18, 21]
+      variacion_tamano: 0.12
+      jitter_vertical_px: 1.7
+      jitter_horizontal_px: 1.5
+      giro_palabra_grados: 3.5
+      pendiente_linea_grados: 2.0
+      onda_amplitud_px: 5
+      elastico_amplitud_px: 3.0
+      presion: [0.45, 1.0]
+      grosor: [0, 1]
+      p_tachadura: 0.05
+      p_garabato: 0.4
+      p_pegadas: 0.08
+      p_tinta_falla: 0.03
+      p_repaso: 0.04
+      papel: [rayado, cuadriculado]
+    formato: jpg
+    calidad_jpeg: 92
+    efectos: []
+
+  sombra_leve:
+    descripcion: "Sombra suave de una mano en un borde."
+    familia: sombra
+    severidad: leve
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: sombra_dura, oscuridad: [0.25, 0.35], penumbra_px: [35, 50], ancho: [0.25, 0.35], alcance: [0.3, 0.4], umbral_ilegible: 0.2}
+  sombra_moderado:
+    descripcion: "Sombra de mano o celular que llega al centro de la hoja."
+    familia: sombra
+    severidad: moderado
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: sombra_dura, oscuridad: [0.5, 0.62], penumbra_px: [18, 30], ancho: [0.3, 0.4], alcance: [0.5, 0.65], umbral_ilegible: 0.2}
+  sombra_severo:
+    descripcion: "Dos sombras oscuras y de borde duro que cruzan el centro."
+    familia: sombra
+    severidad: severo
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: sombra_dura, n: 2, oscuridad: [0.72, 0.85], penumbra_px: [6, 14], ancho: [0.3, 0.45], alcance: [0.55, 0.8], umbral_ilegible: 0.2}
+
+  flash_leve:
+    descripcion: "Reflejo del flash debil."
+    familia: flash
+    severidad: leve
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: flash, intensidad: [0.4, 0.55], radio: [0.12, 0.18], umbral_ilegible: 0.9}
+  flash_moderado:
+    descripcion: "Reflejo del flash que deja el texto palido en el centro."
+    familia: flash
+    severidad: moderado
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: flash, intensidad: [0.7, 0.85], radio: [0.15, 0.22], umbral_ilegible: 0.9}
+  flash_severo:
+    descripcion: "Reflejo del flash que borra el texto en una zona grande."
+    familia: flash
+    severidad: severo
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: flash, intensidad: [0.97, 1.0], radio: [0.18, 0.26], umbral_ilegible: 0.9}
+
+  perspectiva_leve:
+    descripcion: "Foto casi de frente sobre una mesa, papel apenas ondulado."
+    familia: perspectiva
+    severidad: leve
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: deformacion_papel, ondulacion_amplitud_px: 2, ondulacion_longitud_px: [500, 900]}
+      - {tipo: perspectiva, margen: [0.05, 0.08], inclinacion: [0.0, 0.03], colores_fondo: *fondos}
+  perspectiva_moderado:
+    descripcion: "Foto en angulo, hoja abombada y con un pliegue."
+    familia: perspectiva
+    severidad: moderado
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: deformacion_papel, ondulacion_amplitud_px: 4, ondulacion_longitud_px: [400, 800], curvatura_px: 6, pliegues: 1, pliegue_desplazamiento_px: 2, pliegue_sombra: 0.25}
+      - {tipo: perspectiva, margen: [0.03, 0.06], inclinacion: [0.03, 0.07], colores_fondo: *fondos}
+  perspectiva_severo:
+    descripcion: "Foto muy inclinada, hoja doblada en cruz y parte de la hoja fuera de cuadro."
+    familia: perspectiva
+    severidad: severo
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: deformacion_papel, ondulacion_amplitud_px: 7, ondulacion_longitud_px: [350, 700], curvatura_px: 12, pliegues: 2, pliegue_desplazamiento_px: 4, pliegue_sombra: 0.35}
+      - {tipo: perspectiva, margen: [-0.03, 0.03], inclinacion: [0.07, 0.12], colores_fondo: *fondos}
+
+  desenfoque_leve:
+    descripcion: "Desenfoque leve en toda la hoja."
+    familia: desenfoque
+    severidad: leve
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: desenfoque, radio: 1.0}
+  desenfoque_moderado:
+    descripcion: "Media hoja fuera de foco (profundidad de campo)."
+    familia: desenfoque
+    severidad: moderado
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: desenfoque, radio: 0.6}
+      - {tipo: desenfoque_parcial, radio: [2.0, 2.8]}
+  desenfoque_severo:
+    descripcion: "Mano que tiembla mas media hoja fuera de foco."
+    familia: desenfoque
+    severidad: severo
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: movimiento, largo_px: [8, 13]}
+      - {tipo: desenfoque_parcial, radio: [3.0, 4.0]}
+
+  rotacion_recorte_leve:
+    descripcion: "Hoja girada 3-5 grados."
+    familia: rotacion_recorte
+    severidad: leve
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: rotacion, angulo: [3, 5]}
+  rotacion_recorte_moderado:
+    descripcion: "Hoja girada 6-9 grados y un borde cortado dentro del texto."
+    familia: rotacion_recorte
+    severidad: moderado
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: rotacion, angulo: [6, 9]}
+      - {tipo: recorte, fraccion: [0.04, 0.08], bordes: 1}
+  rotacion_recorte_severo:
+    descripcion: "Hoja girada 10-15 grados y dos bordes cortados."
+    familia: rotacion_recorte
+    severidad: severo
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: rotacion, angulo: [10, 15]}
+      - {tipo: recorte, fraccion: [0.08, 0.15], bordes: 2}
+
+  orientacion:
+    descripcion: "Foto girada 90, 180 o 270 grados."
+    familia: orientacion
+    severidad: unica
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: orientacion, angulos: [90, 180, 270]}
+
+  baja_resolucion_leve:
+    descripcion: "70 % de resolucion, JPEG calidad 45."
+    familia: baja_resolucion
+    severidad: leve
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 45
+    efectos:
+      - {tipo: resolucion, escala: 0.7}
+  baja_resolucion_moderado:
+    descripcion: "50 % de resolucion, JPEG calidad 22."
+    familia: baja_resolucion
+    severidad: moderado
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 22
+    efectos:
+      - {tipo: resolucion, escala: 0.5}
+  baja_resolucion_severo:
+    descripcion: "35 % de resolucion, JPEG calidad 12."
+    familia: baja_resolucion
+    severidad: severo
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 12
+    efectos:
+      - {tipo: desenfoque, radio: 0.6}
+      - {tipo: resolucion, escala: 0.35}
+
+  marcas_leve:
+    descripcion: "Perforaciones de archivador y una linea resaltada."
+    familia: marcas
+    severidad: leve
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: perforaciones, n: [2, 3]}
+      - {tipo: resaltador, <<: *resaltador}
+  marcas_moderado:
+    descripcion: "Sello en una zona del texto, firma abajo, resaltador y una nota al margen."
+    familia: marcas
+    severidad: moderado
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: sello, <<: *sello}
+      - {tipo: firma, <<: *firma}
+      - {tipo: resaltador, <<: *resaltador, n_lineas: 2}
+      - {tipo: notas_margen, <<: *notas}
+  marcas_severo:
+    descripcion: "Sello grande sobre el centro, firma encima del texto, mancha de cafe y dos notas."
+    familia: marcas
+    severidad: severo
+    documentos: barrido
+    render: impreso
+    formato: jpg
+    calidad_jpeg: 92
+    efectos:
+      - {tipo: mancha_cafe, radio_px: [110, 170], opacidad: [0.45, 0.65]}
+      - {tipo: sello, <<: *sello, radio_px: [130, 170], opacidad: [0.75, 0.9], posicion: centro, irregularidad: 0.3}
+      - {tipo: firma, <<: *firma, posicion: aleatoria, largo_px: [300, 420]}
+      - {tipo: resaltador, <<: *resaltador, n_lineas: 3}
+      - {tipo: notas_margen, <<: *notas, n: 2}
