@@ -1,4 +1,4 @@
-# M4 · Set sintético de imágenes (tarea 3a)
+# M4 · Set sintético de imágenes 
 
 Genera imágenes a partir de los documentos del gold set de M2 para medir cuánto cae el sistema
 cuando la nota llega como imagen (escaneo, foto o nota escrita a mano) en vez de texto limpio.
