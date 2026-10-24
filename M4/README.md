@@ -107,8 +107,6 @@ transcripción), Pau (métricas semánticas), Agustín (juez).*
 parámetros, semillas, script, ubicación y manifiesto. Aclarar que el gold sigue siendo el texto
 original.*
 
-*Responsable: Luis. Detalle técnico completo en [`eval_visual/README.md`](eval_visual/README.md).*
-
 **Origen y gold.** Las imágenes se generan a partir de los 59 documentos del gold set de M2
 (`M2/examples/gold_examples.jsonl`, casos clínicos de DisTEMIST). Cada documento se dibuja como
 páginas de imagen, impresas o escritas a mano, y luego se degrada. **El gold no cambia: sigue
@@ -231,10 +229,76 @@ agregó al harness y cómo se corre.*
 
 *CER y WER (normalización adoptada) y protocolo de auditoría de entidades inventadas por el
 VLM.*
+*CER y WER (normalización adoptada) y protocolo de auditoría de entidades inventadas por el
+VLM.*
 
-[COMPLETAR – Luis y Agustín]
 
-### 3.4 Línea base de la última entrega
+El F1 de la sección 3.5 dice cuánto cae el sistema con imágenes. Estas métricas dicen por qué:
+porque la visión leyó mal, porque inventó texto, porque el texto no estaba en la imagen o porque
+falló el NER. Se calculan con `python M4/metricas_transcripcion/run_metricas.py`, un cache de
+transcripciones por nivel (de `M4/vision`) y, si existe, su cache NER.
+
+**Preparación.** Las transcripciones de cada página se unen por `doc_id` en orden de página. El
+módulo deja esa versión unida en `transcripciones_por_documento/`, con el formato que acepta
+`M4/vision/ner_bridge.py`, para que el NER y el harness trabajen con los `doc_id` del gold. Una
+página con válvula ("no se aprecia texto") o con error cuenta como transcripción vacía.
+
+**CER y WER.**
+- **Definición.** Distancia de edición (Levenshtein, con rapidfuzz) entre la transcripción y la
+  referencia, dividida por el largo de la referencia. CER en caracteres, WER en palabras. Se
+  reportan micro (errores totales sobre largo total), que es la cifra principal, y macro (promedio
+  por documento).
+- **Normalización**, igual en ambos lados: Unicode NFC, minúsculas, y espacios y saltos de línea
+  colapsados a uno, porque el render corta las líneas en otros lugares que el original. Las tildes
+  no se quitan, porque perderlas es un fallo que se quiere medir. El CER conserva la puntuación. El
+  WER la quita de los bordes de cada palabra.
+- **Dos referencias.** La principal es el texto **visible**, es decir, solo lo que quedó en la
+  imagen según el manifiesto de la sección 3.1. La otra es el texto **completo**. La diferencia
+  entre las dos es lo que la imagen ocultó, y no se le cobra al VLM.
+- **Diagnósticos.**
+  - CER sin diacríticos: cuánto del error son tildes y eñes.
+  - Sustituciones, borrados e inserciones: son indicativos, porque hay varias alineaciones posibles.
+  - Peso del texto extra (sellos, notas, tachaduras): cuánto podría inflar las inserciones.
+  - CER de `limpio` sobre los mismos documentos: es la comparación justa para los barridos de 20
+    documentos.
+  - Desglose por dificultad de la caligrafía.
+
+**Lectura de entidades (sin NER).** Mide, de las entidades del gold que se ven completas en la
+imagen, cuántas aparecen escritas tal cual en la transcripción, y cuántas con un parecido de 85 o
+más. Separa dos fallos distintos: que la visión perdió la entidad, o que el NER no la reconoció.
+
+**Auditoría de entidades predichas.** Cada entidad que el NER sacó de una transcripción se
+clasifica, comparando la cadena normalizada y completa:
+
+| Categoría | Regla |
+|---|---|
+| Acierto | Está en el gold |
+| Falso positivo del NER | No está en el gold, pero sí en el texto original. Se marca si el sistema sobre texto limpio comete el mismo error |
+| Texto extra | No está en el original, pero sí en un sello, nota o tachadura de la imagen. No es alucinación |
+| Mal leída | No está en el original y se parece (partial ratio ≥ 85) a un fragmento de él |
+| Inventada | No está en el original ni se parece a nada de él. Candidata a alucinación |
+
+Las tasas de inventadas y mal leídas se calculan sobre el total de entidades predichas. Las mal
+leídas y las inventadas se exportan a `candidatos_juez.jsonl`, con una afirmación y las imágenes
+del documento, para revisarlas con el juez visual.
+
+**Validación del módulo.** Fuente: `--simular` con 12 documentos y 6 niveles, corrida local del
+24-10-2026. Se inyectaron errores conocidos en el texto visible. La distancia medida dio entre el
+99,6 % y el 99,9 % de las ediciones inyectadas, y las cinco categorías de entidades coincidieron
+exactamente con lo inyectado. **Son datos simulados que solo validan el módulo. No son resultados
+del sistema.**
+
+**Limitaciones.**
+- Mal leída o inventada depende de un umbral. En entidades de 6 caracteres o menos, un solo error
+  ya cae como inventada.
+- Si el VLM "corrige" algo que estaba mal escrito en el original, eso no se detecta comparando
+  texto. Hace falta el juez visual.
+
+**Juez visual.** [COMPLETAR – Agustín: cómo se corre `M4/vision/juez.py` sobre
+`candidatos_juez.jsonl`, qué modelo juzga y cómo se agregan los veredictos.]
+
+**Resultados.** [COMPLETAR – Luis, cuando existan las transcripciones reales: tabla de CER, WER,
+lectura de entidades e inventadas por sistema y nivel, con fuente.]ima entrega
 
 *Sistema de referencia, versión, valores por dimensión y archivo de resultados.*
 
