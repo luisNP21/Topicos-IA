@@ -23,6 +23,9 @@ M3/outputs/
 M4/data/
 M4/outputs/
 
+# Cache de predicciones NER (incluye las variantes OCR/VLM de M4/vision).
+M2/predictions/
+
 # Estado de reanudacion del juez (intermedio, no es entregable)
 checkpoint_*.json
 
