@@ -1,0 +1,81 @@
+# config.yaml -- metricas de transcripcion (M4, tarea 5a)
+#
+# Compara lo que transcribio la vision (VLM u OCR) con el texto original y audita
+# las entidades que el NER saco de esas transcripciones.
+# Rutas relativas a PROJECT_ROOT, salvo gold_set (relativo a la raiz del repo).
+
+proyecto:
+  seed_global: 42
+
+rutas:
+  gold_set: "M2/examples/gold_examples.jsonl"               # raiz del repo
+  manifest: "M4/data/imagenes/manifest.json"                # salida de M4/eval_visual
+  salida_dir: "M4/outputs/metricas_transcripcion"
+  # Cache NER del sistema sobre texto (techo). Opcional: si existe, la auditoria marca
+  # que falsos positivos del NER aparecen tambien cuando el sistema lee texto limpio.
+  ner_texto: "M2/predictions/encoder_solo.json"
+
+# Transcripciones a evaluar. Una entrada por (backend, nivel).
+# - transcripciones: cache de M4/vision (doc_id -> Transcripcion). Puede venir por pagina
+#   (id "<doc_id>__p<k>", como en los CSV de eval_visual) o por documento.
+# - ner (opcional): cache doc_id -> list[str] con las entidades que saco el NER de esas
+#   transcripciones. Sin el, solo se calculan CER/WER y la lectura de entidades.
+# - nivel (opcional): si falta, se deduce de la ruta de la imagen (<nivel>/<doc_id>_p<k>.ext).
+# - nombre (opcional): etiqueta del sistema en los reportes (por defecto, el backend).
+# Tambien se pueden pasar por CLI: --transcripciones RUTA [--ner RUTA] [--nivel N].
+entradas: []
+#  - transcripciones: "M4/vision/predictions/transcripciones_vlm_limpio.json"
+#    ner: "M2/predictions/vision_vlm_limpio.json"
+#  - transcripciones: "M4/vision/predictions/transcripciones_ocr_docling_limpio.json"
+
+normalizacion:
+  # Se aplica igual a la referencia y a la transcripcion antes de medir.
+  unicode: "NFC"                 # las tildes compuestas y precompuestas cuentan igual
+  minusculas: true
+  colapsar_espacios: true        # saltos de linea y espacios -> un espacio (el render corta lineas)
+  quitar_puntuacion: false       # CER con puntuacion: una coma perdida es un error de lectura
+  wer_quitar_puntuacion_bordes: true   # WER: "diabetes," == "diabetes"
+  # Las tildes NO se quitan: perderlas es uno de los fallos que se quieren ver.
+  # El reporte trae ademas cer_sin_diacriticos como diagnostico (cuanto del CER son tildes y enies).
+
+referencia:
+  # visible: solo el texto que quedo en la imagen (texto_visible_por_pagina del manifiesto).
+  # completo: todo el texto del documento. Se reportan ambos; "principal" va primero en las tablas.
+  principal: visible
+  # Entidades del gold que no cuentan como legibles para la "lectura de entidades":
+  # oculta siempre; parcial (alguna palabra tapada) segun esta opcion. Con true, una entidad
+  # perdida es un error de lectura y no texto que faltaba en la imagen.
+  excluir_parciales: true
+
+auditoria:
+  # Una entidad predicha que no esta en el texto original se clasifica como "mal_leida" si
+  # se parece a un fragmento del original (rapidfuzz partial_ratio >= umbral) e "inventada" si no.
+  umbral_mal_leida: 85
+  # Las entidades de menos caracteres que esto no se comparan por parecido (demasiados falsos parecidos).
+  min_caracteres_parecido: 4
+
+# Simulacion para probar el modulo sin transcripciones reales (python run_metricas.py --simular).
+# Las salidas van a <salida_dir>/simulado/ y quedan marcadas como simuladas. NO son resultados.
+simulacion:
+  niveles: [limpio, foto_realista, manuscrito_foto, sombra_severo, rotacion_recorte_severo, manuscrito_severo]
+  tasa_caracter:                 # fraccion de caracteres con error (sustitucion, borrado o insercion)
+    ninguna: 0.005
+    leve: 0.02
+    moderado: 0.05
+    severo: 0.10
+    mixta: 0.06
+    unica: 0.03
+  p_perder_tilde: 0.25           # por caracter con tilde o enie
+  p_valvula_pagina: 0.02         # pagina que el VLM declara sin texto
+  p_transcribir_extra: 0.5       # el VLM copia el texto de un sello o una nota
+  p_entidad_detectada: 0.85      # el NER simulado encuentra una entidad del gold que se lee
+  inventadas_por_doc: [0, 2]     # entidades insertadas que no estan en el original
+  mal_leidas_por_doc: [0, 2]     # entidades del gold escritas con un error
+  fp_ner_por_doc: [0, 2]         # fragmentos del original que el NER marca sin ser gold
+  enfermedades_inventadas:
+    - "diabetes mellitus tipo 2"
+    - "hipertensión arterial"
+    - "insuficiencia renal crónica"
+    - "fibrilación auricular"
+    - "enfermedad pulmonar obstructiva crónica"
+    - "cardiopatía isquémica"
