@@ -85,22 +85,47 @@ def paginar(lineas: list[str], lineas_por_pagina: int) -> list[list[str]]:
     return paginas or [[""]]
 
 
-def dibujar_pagina(lineas: list[str], fuente, render_cfg: dict) -> Image.Image:
+def _dibujar_linea_irregular(draw, linea: str, x0: int, y0: int, fuente, color, rng,
+                             jitter_v: float, jitter_h: float) -> None:
+    """Dibuja palabra por palabra con pequenas variaciones de posicion (aspecto manuscrito)."""
+    x = float(x0)
+    espacio = fuente.getlength(" ")
+    for palabra in linea.split(" "):
+        dy = rng.uniform(-jitter_v, jitter_v)
+        draw.text((x, y0 + dy), palabra, font=fuente, fill=color)
+        x += fuente.getlength(palabra) + espacio + rng.uniform(-jitter_h, jitter_h)
+
+
+def dibujar_pagina(lineas: list[str], fuente, render_cfg: dict, rng=None) -> Image.Image:
+    """Dibuja una pagina. Si el perfil define jitter, las lineas se dibujan con irregularidad."""
     ancho, alto = render_cfg["ancho_px"], render_cfg["alto_px"]
     margen = render_cfg["margen_px"]
     paso = int(render_cfg["tamano_fuente"] * render_cfg["interlineado"])
+    color = tuple(render_cfg.get("color_tinta", (20, 20, 20)))
+    jitter_v = float(render_cfg.get("jitter_vertical_px", 0))
+    jitter_h = float(render_cfg.get("jitter_horizontal_px", 0))
+    irregular = rng is not None and (jitter_v > 0 or jitter_h > 0)
 
     img = Image.new("RGB", (ancho, alto), "white")
     draw = ImageDraw.Draw(img)
     y = margen
     for linea in lineas:
-        draw.text((margen, y), linea, font=fuente, fill=(20, 20, 20))
+        if irregular:
+            _dibujar_linea_irregular(draw, linea, margen, y, fuente, color, rng, jitter_v, jitter_h)
+        else:
+            draw.text((margen, y), linea, font=fuente, fill=color)
         y += paso
     return img
 
 
-def renderizar_documento(texto: str, fuente, render_cfg: dict) -> list[dict]:
-    """Devuelve una lista de paginas: {"imagen": PIL.Image, "texto": str renderizado}."""
+def renderizar_documento(texto: str, fuente, render_cfg: dict, semilla_pagina=None) -> list[dict]:
+    """Devuelve una lista de paginas: {"imagen": PIL.Image, "texto": str renderizado}.
+
+    semilla_pagina: funcion opcional k -> int (k desde 1). Se usa solo si el perfil
+    tiene jitter, para que la irregularidad sea reproducible.
+    """
+    import numpy as np
+
     ancho_util = render_cfg["ancho_px"] - 2 * render_cfg["margen_px"]
     alto_util = render_cfg["alto_px"] - 2 * render_cfg["margen_px"]
     paso = int(render_cfg["tamano_fuente"] * render_cfg["interlineado"])
@@ -108,7 +133,8 @@ def renderizar_documento(texto: str, fuente, render_cfg: dict) -> list[dict]:
 
     lineas = partir_en_lineas(texto, fuente, ancho_util)
     paginas = paginar(lineas, lineas_por_pagina)
-    return [
-        {"imagen": dibujar_pagina(p, fuente, render_cfg), "texto": "\n".join(p)}
-        for p in paginas
-    ]
+    resultado = []
+    for k, p in enumerate(paginas, start=1):
+        rng = np.random.default_rng(semilla_pagina(k)) if semilla_pagina else None
+        resultado.append({"imagen": dibujar_pagina(p, fuente, render_cfg, rng), "texto": "\n".join(p)})
+    return resultado

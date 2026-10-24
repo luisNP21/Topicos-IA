@@ -76,25 +76,51 @@ def run(cfg: dict, project_root: Path, limite: int | None = None, niveles: list[
     fuente_ruta = resolver_fuente(cfg["render"], REPO_ROOT)
     fuente = cargar_fuente(fuente_ruta, cfg["render"]["tamano_fuente"])
     log(f"Fuente: {fuente_ruta}")
+
+    # Perfiles de render por nivel: los niveles sin "render" propio usan el comun.
+    perfiles = {}
+    fuentes_usadas = {"comun": Path(fuente_ruta).name}
+    for nivel in seleccion:
+        override = niveles_cfg[nivel].get("render")
+        if not override:
+            perfiles[nivel] = (cfg["render"], fuente)
+            continue
+        perfil = {**cfg["render"], **override}
+        ruta = Path(perfil["fuente_archivo"])
+        if not ruta.is_absolute():
+            ruta = REPO_ROOT / ruta
+        if not ruta.exists():
+            raise FileNotFoundError(f"Fuente del nivel {nivel} no encontrada: {ruta}")
+        perfiles[nivel] = (perfil, cargar_fuente(str(ruta), perfil["tamano_fuente"]))
+        fuentes_usadas[nivel] = ruta.name
+        log(f"Fuente de {nivel}: {ruta}")
     log(f"Documentos: {len(eval_set)} | niveles: {seleccion}")
 
     documentos = []
     n_imagenes = 0
     for i, rec in enumerate(eval_set, start=1):
         doc_id, texto = rec["doc_id"], rec["text"]
-        paginas = renderizar_documento(texto, fuente, cfg["render"])
         entrada = {
             "doc_id": doc_id,
             "n_caracteres": len(texto),
             "sha256_texto": hashlib.sha256(texto.encode("utf-8")).hexdigest(),
-            "n_paginas": len(paginas),
-            "texto_por_pagina": [p["texto"] for p in paginas],
             "niveles": {},
         }
 
+        paginas_comunes = None
         for nivel in seleccion:
             ncfg = niveles_cfg[nivel]
             ext = ncfg["formato"]
+            perfil, fuente_nivel = perfiles[nivel]
+            if ncfg.get("render"):
+                paginas = renderizar_documento(
+                    texto, fuente_nivel, perfil,
+                    semilla_pagina=lambda k, n=nivel, d=doc_id: semilla_de(seed_global, n + "_render", d, k),
+                )
+            else:
+                if paginas_comunes is None:
+                    paginas_comunes = renderizar_documento(texto, fuente_nivel, perfil)
+                paginas = paginas_comunes
             carpeta = imagenes_dir / nivel
             carpeta.mkdir(parents=True, exist_ok=True)
             registros = []
@@ -116,7 +142,11 @@ def run(cfg: dict, project_root: Path, limite: int | None = None, niveles: list[
                     "tamano_px": list(img.size),
                 })
                 n_imagenes += 1
-            entrada["niveles"][nivel] = registros
+            entrada["niveles"][nivel] = {
+                "n_paginas": len(paginas),
+                "texto_por_pagina": [p["texto"] for p in paginas],
+                "paginas": registros,
+            }
 
         documentos.append(entrada)
         if i % 10 == 0 or i == len(eval_set):
@@ -130,7 +160,7 @@ def run(cfg: dict, project_root: Path, limite: int | None = None, niveles: list[
         ),
         "gold_set": cfg["entrada"]["gold_set"],
         "seed_global": seed_global,
-        "fuente": Path(fuente_ruta).name,
+        "fuentes": fuentes_usadas,
         "versiones": {"Pillow": PIL.__version__, "numpy": np.__version__},
         "render": cfg["render"],
         "niveles_config": {n: niveles_cfg[n] for n in seleccion},

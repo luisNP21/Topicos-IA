@@ -79,8 +79,14 @@ def sombra_celular(img: Image.Image, rng: np.random.Generator, params: dict):
     }
 
 
+def manuscrito_sintetico(img: Image.Image, rng: np.random.Generator, params: dict):
+    """La imagen ya sale con fuente y jitter manuscritos desde render.py; aqui no se degrada mas."""
+    return img, {}
+
+
 DEGRADACIONES = {
     "limpio": limpio,
+    "manuscrito_sintetico": manuscrito_sintetico,
     "jpeg_bajo": jpeg_bajo,
     "rotacion": rotacion,
     "desenfoque": desenfoque,

@@ -51,6 +51,19 @@ niveles:
     formato: "png"
     params:
       radio: 1.5           # Gaussian blur
+  manuscrito_sintetico:
+    formato: "png"
+    # Perfil de render propio: sobrescribe los valores de la seccion "render".
+    # La fuente es Caveat (SIL OFL 1.1), incluida en el repo. Simula trazo cursivo,
+    # no una letra real: cada letra sale igual salvo por la irregularidad de linea base.
+    render:
+      fuente_archivo: "M4/eval_visual/fonts/Caveat.ttf"   # relativo a la raiz del repo
+      tamano_fuente: 44
+      interlineado: 1.3
+      color_tinta: [25, 35, 110]
+      jitter_vertical_px: 3
+      jitter_horizontal_px: 3
+    params: {}
   sombra_celular:
     formato: "jpg"
     params:
