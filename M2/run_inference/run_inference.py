@@ -60,7 +60,10 @@ def _fuente_texto(cfg: dict, project_root: Path, eval_set: list[dict]) -> tuple[
 
     # Fuente de visión: se transcribe la imagen de cada caso y ese texto entra
     # al mismo NER. No se reimplementa la visión aquí: se reutiliza M4/vision.
-    vision_dir = project_root / "M4" / "vision"
+    # El codigo y el config de M4/vision viven en el repo clonado, no en Drive
+    # (PROJECT_ROOT solo tiene datos). Este archivo esta en <repo>/M2/run_inference/.
+    repo_root = Path(__file__).resolve().parents[2]
+    vision_dir = repo_root / "M4" / "vision"
     if str(vision_dir) not in sys.path:
         sys.path.insert(0, str(vision_dir))
     try:
@@ -75,7 +78,7 @@ def _fuente_texto(cfg: dict, project_root: Path, eval_set: list[dict]) -> tuple[
         ) from exc
 
     vision_cfg_path = fuente.get("vision_config", "M4/vision/config.yaml")
-    with open(project_root / vision_cfg_path, "r", encoding="utf-8") as f:
+    with open(repo_root / vision_cfg_path, "r", encoding="utf-8") as f:
         vision_cfg = yaml.safe_load(f)
 
     backend_nombre = fuente.get("backend") or (vision_cfg.get("vision") or {}).get("backend", "vlm")
@@ -98,7 +101,10 @@ def _fuente_texto(cfg: dict, project_root: Path, eval_set: list[dict]) -> tuple[
     for caso in casos:
         caso["_imagen_resuelta"] = resolver_ruta_imagen(caso, imagenes_dir, project_root)
 
-    textos: dict[str, str] = {}
+    # Un documento puede venir partido en varias paginas (eval_visual escribe
+    # id = "<doc_id>__p<k>"). Se juntan en orden de pagina antes del NER para
+    # que el texto quede indexado por el doc_id del gold set.
+    paginas_por_doc: dict[str, list[tuple[int, str]]] = {}
     transcripciones: list[dict] = []
     for caso in casos:
         imagen = cargar_imagen(caso["_imagen_resuelta"])
@@ -113,7 +119,10 @@ def _fuente_texto(cfg: dict, project_root: Path, eval_set: list[dict]) -> tuple[
                 imagen, backend=backend, instruccion=instruccion,
                 ruta=caso["_imagen_resuelta"], doc_id=caso["id"],
             )
-        textos[caso["id"]] = t["texto"]
+        doc_id, _, pag = str(caso["id"]).partition("__p")
+        paginas_por_doc.setdefault(doc_id, []).append(
+            (int(pag) if pag.isdigit() else 0, t.get("texto") or "")
+        )
         transcripciones.append(t)
 
     latencias = [float(t.get("segundos") or 0.0) for t in transcripciones]
@@ -139,6 +148,11 @@ def _fuente_texto(cfg: dict, project_root: Path, eval_set: list[dict]) -> tuple[
             for t in transcripciones
         },
     }
+    textos = {
+        doc_id: "\n".join(texto for _, texto in sorted(paginas))
+        for doc_id, paginas in paginas_por_doc.items()
+    }
+    vision_meta["n_docs"] = len(textos)
     return textos, vision_meta
 
 
