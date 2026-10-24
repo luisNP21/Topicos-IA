@@ -1,0 +1,57 @@
+id,doc_id,pagina,n_paginas,imagen,nivel,familia,severidad,tipo,grupo,motivo
+ex_45__p1,ex_45,1,1,nucleo/limpio/ex_45_p1.png,limpio,limpio,ninguna,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/limpio/ex_47_p1.png,limpio,limpio,ninguna,sintetico,nucleo,comparable
+ex_53__p1,ex_53,1,1,nucleo/limpio/ex_53_p1.png,limpio,limpio,ninguna,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,nucleo/foto_realista/ex_45_p1.jpg,foto_realista,combinado,mixta,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/foto_realista/ex_47_p1.jpg,foto_realista,combinado,mixta,sintetico,nucleo,comparable
+ex_53__p1,ex_53,1,1,nucleo/foto_realista/ex_53_p1.jpg,foto_realista,combinado,mixta,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,nucleo/manuscrito_foto/ex_45_p1.jpg,manuscrito_foto,combinado,mixta,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/manuscrito_foto/ex_47_p1.jpg,manuscrito_foto,combinado,mixta,sintetico,nucleo,comparable
+ex_53__p1,ex_53,1,1,nucleo/manuscrito_foto/ex_53_p1.jpg,manuscrito_foto,combinado,mixta,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,nucleo/manuscrito_leve/ex_45_p1.jpg,manuscrito_leve,manuscrito,leve,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/manuscrito_leve/ex_47_p1.jpg,manuscrito_leve,manuscrito,leve,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,nucleo/manuscrito_severo/ex_45_p1.jpg,manuscrito_severo,manuscrito,severo,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/manuscrito_severo/ex_47_p1.jpg,manuscrito_severo,manuscrito,severo,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,nucleo/desenfoque_leve/ex_45_p1.jpg,desenfoque_leve,desenfoque,leve,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/desenfoque_leve/ex_47_p1.jpg,desenfoque_leve,desenfoque,leve,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,nucleo/desenfoque_severo/ex_45_p1.jpg,desenfoque_severo,desenfoque,severo,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/desenfoque_severo/ex_47_p1.jpg,desenfoque_severo,desenfoque,severo,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,nucleo/sombra_moderado/ex_45_p1.jpg,sombra_moderado,sombra,moderado,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/sombra_moderado/ex_47_p1.jpg,sombra_moderado,sombra,moderado,sintetico,nucleo,comparable
+ex_53__p1,ex_53,1,1,nucleo/sombra_moderado/ex_53_p1.jpg,sombra_moderado,sombra,moderado,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,nucleo/flash_moderado/ex_45_p1.jpg,flash_moderado,flash,moderado,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/flash_moderado/ex_47_p1.jpg,flash_moderado,flash,moderado,sintetico,nucleo,comparable
+ex_53__p1,ex_53,1,1,nucleo/flash_moderado/ex_53_p1.jpg,flash_moderado,flash,moderado,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,nucleo/perspectiva_moderado/ex_45_p1.jpg,perspectiva_moderado,perspectiva,moderado,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/perspectiva_moderado/ex_47_p1.jpg,perspectiva_moderado,perspectiva,moderado,sintetico,nucleo,comparable
+ex_53__p1,ex_53,1,1,nucleo/perspectiva_moderado/ex_53_p1.jpg,perspectiva_moderado,perspectiva,moderado,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,nucleo/orientacion/ex_45_p1.jpg,orientacion,orientacion,unica,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/orientacion/ex_47_p1.jpg,orientacion,orientacion,unica,sintetico,nucleo,comparable
+ex_53__p1,ex_53,1,1,nucleo/orientacion/ex_53_p1.jpg,orientacion,orientacion,unica,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,nucleo/baja_resolucion_moderado/ex_45_p1.jpg,baja_resolucion_moderado,baja_resolucion,moderado,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/baja_resolucion_moderado/ex_47_p1.jpg,baja_resolucion_moderado,baja_resolucion,moderado,sintetico,nucleo,comparable
+ex_53__p1,ex_53,1,1,nucleo/baja_resolucion_moderado/ex_53_p1.jpg,baja_resolucion_moderado,baja_resolucion,moderado,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,nucleo/marcas_moderado/ex_45_p1.jpg,marcas_moderado,marcas,moderado,sintetico,nucleo,comparable
+ex_47__p1,ex_47,1,1,nucleo/marcas_moderado/ex_47_p1.jpg,marcas_moderado,marcas,moderado,sintetico,nucleo,comparable
+ex_53__p1,ex_53,1,1,nucleo/marcas_moderado/ex_53_p1.jpg,marcas_moderado,marcas,moderado,sintetico,nucleo,comparable
+ex_45__p1,ex_45,1,1,retos/flash_severo/ex_45_p1.jpg,flash_severo,flash,severo,sintetico,retos,legible: reflejo fuerte del flash
+ex_47__p1,ex_47,1,1,retos/flash_severo/ex_47_p1.jpg,flash_severo,flash,severo,sintetico,retos,legible: reflejo fuerte del flash
+ex_45__p1,ex_45,1,1,retos/perspectiva_severo/ex_45_p1.jpg,perspectiva_severo,perspectiva,severo,sintetico,retos,"legible: foto muy inclinada, hoja doblada"
+ex_47__p1,ex_47,1,1,retos/perspectiva_severo/ex_47_p1.jpg,perspectiva_severo,perspectiva,severo,sintetico,retos,"legible: foto muy inclinada, hoja doblada"
+ex_45__p1,ex_45,1,1,retos/baja_resolucion_severo/ex_45_p1.jpg,baja_resolucion_severo,baja_resolucion,severo,sintetico,retos,"legible: 35 % de resolución, JPEG 12"
+ex_47__p1,ex_47,1,1,retos/baja_resolucion_severo/ex_47_p1.jpg,baja_resolucion_severo,baja_resolucion,severo,sintetico,retos,"legible: 35 % de resolución, JPEG 12"
+ex_12__p1,ex_12,1,1,retos/marcas_severo/ex_12_p1.jpg,marcas_severo,marcas,severo,sintetico,retos,sello/firma/mancha sobre el texto
+ex_45__p1,ex_45,1,1,retos/marcas_severo/ex_45_p1.jpg,marcas_severo,marcas,severo,sintetico,retos,sello/firma/mancha sobre el texto
+ex_30__p1,ex_30,1,2,retos/sombra_severo/ex_30_p1.jpg,sombra_severo,sombra,severo,sintetico,retos,"legible: sombras duras, 2 páginas"
+ex_30__p2,ex_30,2,2,retos/sombra_severo/ex_30_p2.jpg,sombra_severo,sombra,severo,sintetico,retos,"legible: sombras duras, 2 páginas"
+ex_4__p1,ex_4,1,2,retos/sombra_severo/ex_4_p1.jpg,sombra_severo,sombra,severo,sintetico,retos,texto oculto: sombra casi negra (¿inventa o avisa?)
+ex_4__p2,ex_4,2,2,retos/sombra_severo/ex_4_p2.jpg,sombra_severo,sombra,severo,sintetico,retos,texto oculto: sombra casi negra (¿inventa o avisa?)
+ex_30__p1,ex_30,1,2,retos/rotacion_recorte_severo/ex_30_p1.jpg,rotacion_recorte_severo,rotacion_recorte,severo,sintetico,retos,"borde cortado, 2 páginas"
+ex_30__p2,ex_30,2,2,retos/rotacion_recorte_severo/ex_30_p2.jpg,rotacion_recorte_severo,rotacion_recorte,severo,sintetico,retos,"borde cortado, 2 páginas"
+ex_22__p1,ex_22,1,2,retos/rotacion_recorte_severo/ex_22_p1.jpg,rotacion_recorte_severo,rotacion_recorte,severo,sintetico,retos,texto oculto: recorte fuerte (¿inventa o avisa?)
+ex_22__p2,ex_22,2,2,retos/rotacion_recorte_severo/ex_22_p2.jpg,rotacion_recorte_severo,rotacion_recorte,severo,sintetico,retos,texto oculto: recorte fuerte (¿inventa o avisa?)
+ex_0__p1,ex_0,1,3,retos/foto_realista/ex_0_p1.jpg,foto_realista,combinado,mixta,sintetico,retos,"documento largo: 3 páginas, 28 entidades"
+ex_0__p2,ex_0,2,3,retos/foto_realista/ex_0_p2.jpg,foto_realista,combinado,mixta,sintetico,retos,"documento largo: 3 páginas, 28 entidades"
+ex_0__p3,ex_0,3,3,retos/foto_realista/ex_0_p3.jpg,foto_realista,combinado,mixta,sintetico,retos,"documento largo: 3 páginas, 28 entidades"
+ex_50__p1,ex_50,1,2,retos/manuscrito_foto/ex_50_p1.jpg,manuscrito_foto,combinado,mixta,sintetico,retos,letra cursiva difícil fotografiada
+ex_50__p2,ex_50,2,2,retos/manuscrito_foto/ex_50_p2.jpg,manuscrito_foto,combinado,mixta,sintetico,retos,letra cursiva difícil fotografiada

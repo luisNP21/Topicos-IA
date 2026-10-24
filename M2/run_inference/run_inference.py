@@ -106,6 +106,7 @@ def _fuente_texto(cfg: dict, project_root: Path, eval_set: list[dict]) -> tuple[
     # que el texto quede indexado por el doc_id del gold set.
     paginas_por_doc: dict[str, list[tuple[int, str]]] = {}
     transcripciones: list[dict] = []
+    backend = None  # se crea una sola vez
     for caso in casos:
         imagen = cargar_imagen(caso["_imagen_resuelta"])
         if backend_nombre == "auto":
@@ -114,7 +115,8 @@ def _fuente_texto(cfg: dict, project_root: Path, eval_set: list[dict]) -> tuple[
                 ruta=caso["_imagen_resuelta"], doc_id=caso["id"],
             )
         else:
-            backend = crear_backend(backend_nombre, vision_cfg)
+            if backend is None:
+                backend = crear_backend(backend_nombre, vision_cfg)
             t = transcribir(
                 imagen, backend=backend, instruccion=instruccion,
                 ruta=caso["_imagen_resuelta"], doc_id=caso["id"],
@@ -247,7 +249,14 @@ def run(cfg: dict, project_root: Path) -> dict:
 
 
 if __name__ == "__main__":
-    with open(Path(__file__).with_name("config.yaml"), encoding="utf-8") as f:
+    import argparse
+    parser = argparse.ArgumentParser(description="Inferencia NER (texto o vision)")
+    parser.add_argument("--config", default="config.yaml", help="Ruta al config")
+    args = parser.parse_args()
+    config_path = Path(args.config)
+    if not config_path.is_absolute():
+        config_path = Path(__file__).resolve().parent / config_path
+    with open(config_path, encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
     project_root = resolver_project_root()
     run(cfg, project_root)
