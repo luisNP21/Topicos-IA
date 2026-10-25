@@ -15,7 +15,7 @@ Qué hace:
 
 Uso:
     python run_vision.py --config config.yaml --demo
-    python run_vision.py --config config.yaml --manifest M4/eval_set/casos.csv
+    python run_vision.py --config config.yaml --manifest M4/data/imagenes/casos/limpio.csv
     python run_vision.py --config config.yaml --imagen foto.jpg --backend ocr_docling
     python run_vision.py --config config.yaml --comparar --manifest ... --ner
 """
@@ -133,7 +133,12 @@ def _preparar_casos(
     return casos
 
 
-def _transcribir_caso(caso: dict, cfg: dict, backend_nombre: str) -> dict:
+def _transcribir_caso(
+    caso: dict,
+    cfg: dict,
+    backend_nombre: str,
+    backend_instancia=None,
+) -> dict:
     ruta = caso.get("_imagen_resuelta") or caso["imagen"]
     imagen = cargar_imagen(ruta)
     instruccion = (cfg.get("vision") or {}).get("instruccion")
@@ -147,7 +152,7 @@ def _transcribir_caso(caso: dict, cfg: dict, backend_nombre: str) -> dict:
             doc_id=caso["id"],
         )
 
-    backend = crear_backend(backend_nombre, cfg)
+    backend = backend_instancia or crear_backend(backend_nombre, cfg)
     return transcribir(
         imagen,
         backend=backend,
@@ -222,6 +227,7 @@ def run(
     comparar: bool = False,
     nivel: str | None = None,
     grupo: str | None = None,
+    limite: int | None = None,
 ) -> dict:
     """Ejecuta la transcripción sobre los casos y escribe los caches."""
     project_root = Path(project_root)
@@ -229,11 +235,6 @@ def run(
     vision_cfg = cfg.get("vision") or {}
     nivel = nivel or rutas.get("nivel") or None
     grupo = grupo or rutas.get("grupo") or None
-    sufijo = ""
-    if nivel:
-        sufijo += f"_{nivel}"
-    if grupo:
-        sufijo += f"_{grupo}"
 
     if comparar:
         backends = vision_cfg.get("comparar", ["vlm", "ocr_docling"])
@@ -253,6 +254,22 @@ def run(
         nivel=nivel,
         grupo=grupo,
     )
+    if limite is not None and limite > 0:
+        casos = casos[:limite]
+
+    # Si se pasó un CSV por nivel (ej. M4/data/imagenes/casos/limpio.csv) sin
+    # especificar --nivel, deducimos el nivel único para no pisar el JSON.
+    if not nivel:
+        niveles_casos = {c.get("nivel") for c in casos if c.get("nivel")}
+        if len(niveles_casos) == 1:
+            nivel = next(iter(niveles_casos))
+
+    sufijo = ""
+    if nivel:
+        sufijo += f"_{nivel}"
+    if grupo:
+        sufijo += f"_{grupo}"
+
     log(
         f"Casos: {len(casos)} | backends: {', '.join(backends)} | "
         f"nivel: {nivel or 'todos'} | grupo: {grupo or 'todos'} | raíz: {project_root}"
@@ -261,9 +278,14 @@ def run(
     resumenes = []
     for backend_nombre in backends:
         log(f"Transcribiendo con backend={backend_nombre} ...")
+        backend_instancia = (
+            None if backend_nombre == "auto" else crear_backend(backend_nombre, cfg)
+        )
         resultados = []
         for i, caso in enumerate(casos, 1):
-            t = _transcribir_caso(caso, cfg, backend_nombre)
+            t = _transcribir_caso(
+                caso, cfg, backend_nombre, backend_instancia=backend_instancia
+            )
             resultados.append(t)
             estado = "ERROR" if t.get("error") else ("VÁLVULA" if t.get("valvula") else "ok")
             log(
@@ -369,6 +391,7 @@ def main() -> None:
     parser.add_argument("--entidad", default=None, help="Entidad gold opcional del caso")
     parser.add_argument("--nivel", default=None, help="Filtra el set sintético por nivel (ej. limpio)")
     parser.add_argument("--grupo", default=None, help="Filtra el set sintético por grupo (nucleo|retos)")
+    parser.add_argument("--limite", type=int, default=None, help="Procesa solo los primeros N casos del manifiesto")
     parser.add_argument("--demo", action="store_true", help="Genera una nota sintética")
     parser.add_argument("--comparar", action="store_true", help="Corre todos los backends de vision.comparar")
     parser.add_argument("--ner", action="store_true", help="Fuerza el puente NER -> cache M2")
@@ -393,6 +416,7 @@ def main() -> None:
         comparar=args.comparar,
         nivel=args.nivel,
         grupo=args.grupo,
+        limite=args.limite,
     )
     print(yaml.safe_dump(resultado, allow_unicode=True, sort_keys=False))
 

@@ -55,15 +55,12 @@ rutas:
   # Eval set con imágenes: lo construyen Luis (set sintético) y Pau (casos
   # límite). Aquí solo se consume. Se puede sobreescribir con --manifest.
   #
-  # Set de muestra versionado en GitHub: un solo CSV con varios niveles y
-  # `id` repetido entre niveles. Se debe elegir un nivel con --nivel (o con
-  # rutas.nivel). Para el set completo generado fuera de git, usar:
+  # Set completo generado en Drive (PROJECT_ROOT/M4/data/imagenes):
   #   manifest:     M4/data/imagenes/casos/<nivel>.csv
   #   imagenes_dir: M4/data/imagenes
-  manifest: "M4/eval_set/ejemplos_finales/ejemplos.csv"
-  imagenes_dir: "M4/eval_set/ejemplos_finales"
-  # null -> se debe pasar --nivel si el manifiesto combina varios niveles.
-  # Ejemplo para la muestra: "limpio".
+  manifest: "M4/data/imagenes/casos/limpio.csv"
+  imagenes_dir: "M4/data/imagenes"
+  # null -> se deduce automáticamente del CSV por nivel o se pasa con --nivel.
   nivel: null
   grupo: null
 

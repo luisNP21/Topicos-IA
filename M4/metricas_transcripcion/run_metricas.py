@@ -63,6 +63,33 @@ def _ruta(project_root: Path, valor: str) -> Path:
     return p if p.is_absolute() else project_root / p
 
 
+def cargar_eval_set_m3(ruta: Path) -> list[dict]:
+    """Carga M3/ejecucion/eval_set_casos.json con el mismo esquema que el gold de M2 (caso_01..caso_15)."""
+    if not ruta.exists():
+        raise FileNotFoundError(f"Eval set de M3 no encontrado: {ruta}")
+    casos = cargar_json(ruta)
+    if not isinstance(casos, list) or not casos:
+        raise ValueError(f"El eval set de M3 esta vacio o no es una lista: {ruta}")
+    registros = []
+    for i, c in enumerate(casos):
+        texto = (c.get("input") or "").strip()
+        entidad = (c.get("entidad") or "").strip()
+        registros.append({
+            "doc_id": str(c.get("id") or f"caso_{i + 1:02d}"),
+            "text": texto,
+            "entities_gold": [entidad] if entidad else [],
+            "criterio": "",
+        })
+    return registros
+
+
+def _cargar_gold(manifest: dict, rutas: dict) -> dict[str, dict]:
+    if manifest.get("fuente") == "m3":
+        rel = manifest.get("gold_set") or rutas.get("m3_eval_set", "M3/ejecucion/eval_set_casos.json")
+        return {r["doc_id"]: r for r in cargar_eval_set_m3(REPO_ROOT / rel)}
+    return {r["doc_id"]: r for r in cargar_gold_set(REPO_ROOT / rutas["gold_set"])}
+
+
 def _ner_por_documento(cache: dict) -> tuple[dict, bool]:
     """Acepta NER por documento o por pagina (<doc_id>__p<k>); en ese caso une por documento."""
     por_pagina = any("__p" in k for k in cache)
@@ -90,7 +117,11 @@ def evaluar_entrada(entrada: dict, manifest: dict, docs_manifest: dict, gold: di
 
     ner, ner_por_pagina = None, False
     if entrada.get("ner"):
-        ner, ner_por_pagina = _ner_por_documento(cargar_json(_ruta(project_root, entrada["ner"])))
+        ruta_ner = _ruta(project_root, entrada["ner"])
+        if ruta_ner.exists():
+            ner, ner_por_pagina = _ner_por_documento(cargar_json(ruta_ner))
+        else:
+            log(f"Aviso: cache NER no encontrado ({ruta_ner}); se evalua solo transcripcion.")
 
     ruta_unido = salida / "transcripciones_por_documento" / f"{nombre}__{nivel}.json"
     ruta_unido.parent.mkdir(parents=True, exist_ok=True)
@@ -324,7 +355,7 @@ def run(cfg: dict, project_root: Path, entradas_extra: list[dict] | None = None,
         raise FileNotFoundError(f"No existe el manifiesto: {ruta_manifest}. Corre antes M4/eval_visual/generar_set.py")
     manifest = cargar_json(ruta_manifest)
     docs_manifest = {d["doc_id"]: d for d in manifest["documentos"]}
-    gold = {r["doc_id"]: r for r in cargar_gold_set(REPO_ROOT / rutas["gold_set"])}
+    gold = _cargar_gold(manifest, rutas)
 
     ner_texto = None
     if rutas.get("ner_texto") and _ruta(project_root, rutas["ner_texto"]).exists():
