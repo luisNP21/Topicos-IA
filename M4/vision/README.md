@@ -91,7 +91,7 @@ M4/vision/
 ├── run_vision.py       # run(cfg, project_root) + CLI
 ├── config.yaml
 ├── requirements.txt
-├── test_vision.py      # 29 pruebas con backend falso (sin GPU/API)
+├── test_vision.py      # 31 pruebas con backend falso (sin GPU/API)
 └── README.md
 ```
 
@@ -213,7 +213,7 @@ python M4/vision/test_vision.py
 # o: python -m unittest M4.vision.test_vision -v
 ```
 
-Las 29 pruebas usan `BackendFake`: no descargan modelos, no llaman APIs y no
+Las 31 pruebas usan `BackendFake`: no descargan modelos, no llaman APIs y no
 necesitan Docling/Tesseract.
 
 ### 5.3 Manifiesto de casos
@@ -229,6 +229,43 @@ CSV o JSON, una fila por caso. Columnas aceptadas:
 | `esperado`, `criterio`, `tipo` | no | los usa el harness/eval set; la visión los ignora |
 
 La visión **no genera** este archivo: solo lo consume.
+
+### 5.4 Set sintético de Luis/Pau: niveles y páginas
+
+El set versionado en GitHub es `M4/eval_set/ejemplos_finales/ejemplos.csv`. Trae
+varios niveles en un solo CSV y el `id` de cada página (`ex_45__p1`) se repite
+entre niveles. Por eso hay que elegir **un nivel** antes de transcribir; si no,
+el cache mezclaría imágenes de niveles distintos bajo el mismo `id`.
+
+```bash
+# Muestra versionada, nivel limpio
+python M4/vision/run_vision.py --config M4/vision/config.yaml \
+  --manifest M4/eval_set/ejemplos_finales/ejemplos.csv \
+  --nivel limpio --backend ocr_tesseract
+```
+
+Eso deja `transcripciones_ocr_tesseract_limpio.json` y
+`resultado_vision_ocr_tesseract_limpio.json`: el sufijo `_<nivel>` evita pisar
+los otros niveles. También se puede filtrar por `--grupo nucleo|retos`.
+
+Para el set completo generado fuera de git (`M4/data/imagenes/`), usar un CSV
+por nivel:
+
+```bash
+python M4/vision/run_vision.py --config M4/vision/config.yaml \
+  --manifest M4/data/imagenes/casos/sombra_severo.csv \
+  --backend vlm
+```
+
+**Integración con `run_inference` (Luis/Isabella).**
+`M2/run_inference/config_vision.yaml` ya apunta a la muestra y al nivel
+`limpio`. Para otro nivel o para el set completo, cambiar en ese YAML
+`fuente.manifest`, `fuente.nivel`, `fuente.imagenes_dir` y `output_path`:
+
+```bash
+python M2/run_inference/run_inference.py --config M2/run_inference/config_vision.yaml
+python M2/harness/run_harness.py --config M2/harness/config_vision.yaml --solo exact
+```
 
 ---
 
@@ -345,6 +382,24 @@ TFNA, cifras y HbA1c). Se observó un error de OCR: `FC 84 Ipm` en vez de
 > (Luis/Isabella). El VLM real sigue pendiente de Colab/GPU; Docling no se
 > instaló, así que Tesseract validó el baseline OCR clásico.
 
+## 8.2 Integración validada con el set de Luis/Pau (muestra)
+
+Se corrió el flujo real sobre la muestra `limpio` (3 documentos: `ex_45`,
+`ex_47`, `ex_53`) usando `M2/run_inference/config_vision.yaml` y el backend
+`ocr_tesseract`:
+
+| Paso | Resultado |
+|---|---|
+| `run_inference.py --config config_vision.yaml` | 3/3 docs, 0 errores, 0 válvulas, **1.732 s** de latencia media |
+| Cache NER | `M2/predictions/vision_ocr_tesseract_limpio.json` |
+| Sidecar | `...vision_meta.json` con backend, latencias y detalle por documento |
+| Harness `--solo exact` | precision/recall/F1 = **0.8261** (19 TP / 4 FP / 4 FN) |
+
+> Es una muestra de **3 documentos**: valida el cableado
+> `imagen -> OCR -> NER -> cache -> harness`, **no** el delta oficial de M4. El
+> set completo (20/59 documentos) y las demás dimensiones los corre
+> Isabella/Luis. El 0.8261 no debe citarse como resultado final del módulo.
+
 ## 9. Estado de la Tarea 1
 
 | Entregable | Estado |
@@ -357,11 +412,12 @@ TFNA, cifras y HbA1c). Se observó un error de OCR: `FC 84 Ipm` en vez de
 | Cache NER compatible con `run_inference/` | Hecho |
 | Puente NER opcional (reutiliza M2) | Hecho |
 | Primitivo de juez visual (apoyo a Luis) | Hecho |
-| Pruebas sin GPU/API | **29/29 OK** (backend falso) |
+| Pruebas sin GPU/API | **31/31 OK** (backend falso) |
 | Corrida real OCR (Tesseract local) | **Hecha**: 1/1, 1.899 s, cache NER generado |
+| Integración con `run_inference` de Luis/Isabella | **Hecha** en la muestra: 3/3 docs, 0 errores, 1.732 s |
+| Cache NER consumido por el harness | **Validado localmente** en exact-match (3 docs); Isabella corre el set completo |
 | Corrida real VLM (Qwen2-VL) | Pendiente de Colab/GPU |
 | Corrida real Docling | Pendiente (no instalado; Tesseract validó el baseline OCR) |
-| Cache NER consumido por el harness | Pendiente (Isabella) |
 | Eval set con imágenes y delta | Fuera de esta tarea (Luis/Pau/Isabella) |
 | App Gradio/Streamlit | Fuera de esta tarea (Pau) |
 
@@ -371,11 +427,13 @@ TFNA, cifras y HbA1c). Se observó un error de OCR: `FC 84 Ipm` en vez de
   `responder_m3` real/sustituto; no es un notebook aislado.
 - **Justificación del patrón:** la implementación es `input`; la argumentación
   formal la aporta Pau (Tarea 2).
-- **Impacto medido:** esta pieza deja los caches y la latencia; el delta lo
-  calcula Isabella (Tarea 5b) para no duplicar su trabajo.
-- **Casos de prueba:** la visión consume el eval set de Luis/Pau; las pruebas
-  propias cubren casos límite del componente (sin texto, backend caído, nota
-  larga sin extractor, ids repetidos, caché inválido).
+- **Impacto medido:** esta pieza deja los caches, la latencia y una validación
+  local de 3 documentos; el delta oficial lo calcula Isabella (Tarea 5b) con el
+  set completo, para no duplicar su trabajo.
+- **Casos de prueba:** la visión consume el eval set de Luis/Pau (incluido el
+  filtro por nivel del set sintético); las pruebas propias cubren casos límite
+  del componente (sin texto, backend caído, nota larga sin extractor, ids
+  repetidos, caché inválido).
 - **Límites y ética:** sección 8 y rótulo de imagen sintética.
 
 ---

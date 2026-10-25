@@ -42,9 +42,18 @@ fuente:
   vision_config: "M4/vision/config.yaml"
   # Manifiesto de imágenes con doc_id que coincidan con el gold set.
   # null -> usa rutas.manifest de M4/vision/config.yaml.
-  manifest: "M4/eval_set/casos_imagen.csv"
+  #
+  # Muestra versionada (varios niveles en un CSV): elegir `nivel`.
+  # Set completo generado fuera de git: usar
+  #   manifest: M4/data/imagenes/casos/<nivel>.csv
+  #   imagenes_dir: M4/data/imagenes
+  manifest: "M4/eval_set/ejemplos_finales/ejemplos.csv"
+  nivel: "limpio"
+  grupo: null
+  # null -> usa rutas.imagenes_dir de M4/vision/config.yaml.
+  imagenes_dir: "M4/eval_set/ejemplos_finales"
 
 # Cache de predicciones específico de la fuente visual. El harness de visión
 # apunta aquí. El sidecar de metadatos queda en el mismo directorio como
-# vision_vlm.vision_meta.json.
-output_path: "M2/predictions/vision_vlm.json"
+# vision_vlm_limpio.vision_meta.json.
+output_path: "M2/predictions/vision_vlm_limpio.json"
