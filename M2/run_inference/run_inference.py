@@ -93,11 +93,24 @@ def _fuente_texto(cfg: dict, project_root: Path, eval_set: list[dict]) -> tuple[
             "fuente.manifest o rutas.manifest en M4/vision/config.yaml."
         )
     manifest_path = project_root / manifest
-    imagenes_dir = (vision_cfg.get("rutas") or {}).get("imagenes_dir")
+    # `fuente.imagenes_dir` permite apuntar a la muestra versionada
+    # (M4/eval_set/ejemplos_finales) sin cambiar el default del módulo de visión.
+    imagenes_dir = fuente.get("imagenes_dir") or (vision_cfg.get("rutas") or {}).get(
+        "imagenes_dir"
+    )
     if imagenes_dir:
         imagenes_dir = project_root / imagenes_dir
 
-    casos = [dict(c) for c in cargar_manifiesto(manifest_path)]
+    # El set sintético combinado repite `id` entre niveles; se filtra por
+    # `fuente.nivel`/`fuente.grupo` antes de validar duplicados.
+    casos = [
+        dict(c)
+        for c in cargar_manifiesto(
+            manifest_path,
+            nivel=fuente.get("nivel"),
+            grupo=fuente.get("grupo"),
+        )
+    ]
     for caso in casos:
         caso["_imagen_resuelta"] = resolver_ruta_imagen(caso, imagenes_dir, project_root)
 

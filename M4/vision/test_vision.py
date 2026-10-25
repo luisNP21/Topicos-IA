@@ -251,6 +251,23 @@ class TestManifiesto(unittest.TestCase):
             with self.assertRaises(ValueError):
                 cargar_manifiesto(path)
 
+    def test_filtra_por_nivel_y_evita_duplicados(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "casos.csv"
+            path.write_text(
+                "id,imagen,nivel,grupo\n"
+                "ex_1__p1,a.png,limpio,nucleo\n"
+                "ex_1__p1,b.png,sombra_severo,nucleo\n",
+                encoding="utf-8",
+            )
+            casos = cargar_manifiesto(path, nivel="limpio")
+            self.assertEqual(len(casos), 1)
+            self.assertEqual(casos[0]["nivel"], "limpio")
+            with self.assertRaises(ValueError):
+                cargar_manifiesto(path)
+            with self.assertRaises(ValueError):
+                cargar_manifiesto(path, nivel="noexiste")
+
     def test_resolver_ruta_imagen(self):
         caso = {"imagen": "nota.png"}
         self.assertEqual(
@@ -425,6 +442,33 @@ class TestRun(unittest.TestCase):
             self.assertTrue(archivo.exists())
             self.assertIn("archivo_comparacion", resumen)
             self.assertEqual(len(resumen["comparacion"]), 2)
+
+    def test_run_filtra_nivel_y_sufija_cache(self):
+        with tempfile.TemporaryDirectory() as d:
+            tmp = Path(d)
+            _imagen(tmp, "a.png")
+            _imagen(tmp, "b.png")
+            (tmp / "casos.csv").write_text(
+                "id,imagen,nivel,grupo\n"
+                "ex_1__p1,a.png,limpio,nucleo\n"
+                "ex_1__p1,b.png,sombra_severo,nucleo\n",
+                encoding="utf-8",
+            )
+            cfg = self._cfg(tmp)
+            resumen = run(
+                cfg,
+                tmp,
+                manifest=str(tmp / "casos.csv"),
+                nivel="limpio",
+                backend="fake",
+            )
+            cache_path = tmp / "predicciones" / "transcripciones_fake_limpio.json"
+            salida_path = tmp / "salidas" / "resultado_fake_limpio.json"
+            self.assertTrue(cache_path.exists())
+            self.assertTrue(salida_path.exists())
+            self.assertEqual(resumen["nivel"], "limpio")
+            cache = cargar_cache_transcripciones(cache_path)
+            self.assertEqual(list(cache), ["ex_1__p1"])
 
     def test_run_demo_genera_imagen(self):
         with tempfile.TemporaryDirectory() as d:

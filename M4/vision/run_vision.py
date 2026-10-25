@@ -75,6 +75,8 @@ def _preparar_casos(
     imagen: str | None,
     pregunta: str | None,
     entidad: str | None,
+    nivel: str | None = None,
+    grupo: str | None = None,
 ) -> list[dict]:
     if imagen:
         casos = [
@@ -121,7 +123,9 @@ def _preparar_casos(
     if imagenes_dir and not Path(imagenes_dir).is_absolute():
         imagenes_dir = project_root / imagenes_dir
 
-    casos = [dict(c) for c in cargar_manifiesto(ruta_manifiesto)]
+    casos = [dict(c) for c in cargar_manifiesto(
+        ruta_manifiesto, nivel=nivel, grupo=grupo
+    )]
     for caso in casos:
         caso["_imagen_resuelta"] = resolver_ruta_imagen(
             caso, imagenes_dir, project_root
@@ -200,6 +204,11 @@ def _resumen_backend(
     }
 
 
+def _con_sufijo(path: Path, sufijo: str) -> Path:
+    """Agrega `_<nivel>[_<grupo>]` al nombre, sin cambiar la carpeta."""
+    return path.with_name(path.stem + sufijo + path.suffix) if sufijo else path
+
+
 def run(
     cfg: dict,
     project_root: str | Path,
@@ -211,11 +220,20 @@ def run(
     pregunta: str | None = None,
     entidad: str | None = None,
     comparar: bool = False,
+    nivel: str | None = None,
+    grupo: str | None = None,
 ) -> dict:
     """Ejecuta la transcripción sobre los casos y escribe los caches."""
     project_root = Path(project_root)
     rutas = cfg.get("rutas") or {}
     vision_cfg = cfg.get("vision") or {}
+    nivel = nivel or rutas.get("nivel") or None
+    grupo = grupo or rutas.get("grupo") or None
+    sufijo = ""
+    if nivel:
+        sufijo += f"_{nivel}"
+    if grupo:
+        sufijo += f"_{grupo}"
 
     if comparar:
         backends = vision_cfg.get("comparar", ["vlm", "ocr_docling"])
@@ -232,8 +250,13 @@ def run(
         imagen=imagen,
         pregunta=pregunta,
         entidad=entidad,
+        nivel=nivel,
+        grupo=grupo,
     )
-    log(f"Casos: {len(casos)} | backends: {', '.join(backends)} | raíz: {project_root}")
+    log(
+        f"Casos: {len(casos)} | backends: {', '.join(backends)} | "
+        f"nivel: {nivel or 'todos'} | grupo: {grupo or 'todos'} | raíz: {project_root}"
+    )
 
     resumenes = []
     for backend_nombre in backends:
@@ -253,7 +276,9 @@ def run(
         plantilla_cache = rutas.get(
             "transcripciones_cache", "M4/vision/predictions/transcripciones_{backend}.json"
         )
-        cache_path = project_root / plantilla_cache.format(backend=backend_nombre)
+        cache_path = _con_sufijo(
+            project_root / plantilla_cache.format(backend=backend_nombre), sufijo
+        )
         guardar_cache_transcripciones(resultados, cache_path)
         log(f"Cache de transcripciones: {cache_path}")
 
@@ -262,7 +287,9 @@ def run(
             plantilla_ner = rutas.get(
                 "ner_cache", "M2/predictions/vision_{backend}.json"
             )
-            ner_path = project_root / plantilla_ner.format(backend=backend_nombre)
+            ner_path = _con_sufijo(
+                project_root / plantilla_ner.format(backend=backend_nombre), sufijo
+            )
             ner_resumen = generar_cache_ner(
                 {t["doc_id"]: t for t in resultados},
                 cfg["ner"],
@@ -274,7 +301,9 @@ def run(
         plantilla_salida = rutas.get(
             "salida", "M4/vision/outputs/resultado_vision_{backend}.json"
         )
-        salida_path = project_root / plantilla_salida.format(backend=backend_nombre)
+        salida_path = _con_sufijo(
+            project_root / plantilla_salida.format(backend=backend_nombre), sufijo
+        )
         resumen = _resumen_backend(
             resultados,
             backend_nombre,
@@ -283,6 +312,8 @@ def run(
             ner_resumen,
             salida_path,
         )
+        resumen["nivel"] = nivel
+        resumen["grupo"] = grupo
         guardar_json(resumen, salida_path)
         log(f"Resumen: {salida_path}")
         resumenes.append(resumen)
@@ -308,8 +339,11 @@ def run(
         "n_casos": len(casos),
         "backends": [{k: r.get(k) for k in claves} for r in resumenes],
     }
-    ruta_comparacion = project_root / rutas.get(
-        "comparacion", "M4/vision/outputs/comparacion_backends.json"
+    ruta_comparacion = _con_sufijo(
+        project_root / rutas.get(
+            "comparacion", "M4/vision/outputs/comparacion_backends.json"
+        ),
+        sufijo,
     )
     guardar_json(comparacion, ruta_comparacion)
     log(f"Comparación de backends: {ruta_comparacion}")
@@ -333,6 +367,8 @@ def main() -> None:
     parser.add_argument("--imagen", default=None, help="Una sola imagen (modo rápido)")
     parser.add_argument("--pregunta", default=None)
     parser.add_argument("--entidad", default=None, help="Entidad gold opcional del caso")
+    parser.add_argument("--nivel", default=None, help="Filtra el set sintético por nivel (ej. limpio)")
+    parser.add_argument("--grupo", default=None, help="Filtra el set sintético por grupo (nucleo|retos)")
     parser.add_argument("--demo", action="store_true", help="Genera una nota sintética")
     parser.add_argument("--comparar", action="store_true", help="Corre todos los backends de vision.comparar")
     parser.add_argument("--ner", action="store_true", help="Fuerza el puente NER -> cache M2")
@@ -355,6 +391,8 @@ def main() -> None:
         pregunta=args.pregunta,
         entidad=args.entidad,
         comparar=args.comparar,
+        nivel=args.nivel,
+        grupo=args.grupo,
     )
     print(yaml.safe_dump(resultado, allow_unicode=True, sort_keys=False))
 

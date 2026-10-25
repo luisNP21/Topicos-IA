@@ -49,41 +49,86 @@ def _normalizar_caso(raw: dict, indice: int) -> CasoVision:
         "esperado": _parsear_esperado(raw.get("esperado") or raw.get("ground_truth")),
         "criterio": raw.get("criterio") or None,
         "tipo": raw.get("tipo") or raw.get("tipo_caso") or "normal",
+        "nivel": (str(raw.get("nivel")).strip() if raw.get("nivel") else None),
+        "grupo": (str(raw.get("grupo")).strip() if raw.get("grupo") else None),
+        "doc_id_original": (
+            str(raw.get("doc_id")).strip() if raw.get("doc_id") else None
+        ),
     }
     return caso
 
 
-def cargar_manifiesto(path: str | Path) -> list[CasoVision]:
-    """Carga un CSV o un JSON (lista de objetos) con los casos de imagen."""
+def _leer_filas(ruta: Path) -> list[dict]:
+    if ruta.suffix.lower() == ".csv":
+        with open(ruta, "r", encoding="utf-8-sig", newline="") as f:
+            return list(csv.DictReader(f))
+    if ruta.suffix.lower() in (".json", ".jsonl"):
+        if ruta.suffix.lower() == ".jsonl":
+            with open(ruta, "r", encoding="utf-8") as f:
+                return [json.loads(line) for line in f if line.strip()]
+        with open(ruta, "r", encoding="utf-8") as f:
+            filas = json.load(f)
+        if isinstance(filas, dict):
+            filas = filas.get("casos") or filas.get("results") or []
+        return filas
+    raise ValueError(
+        f"Formato de manifiesto no soportado: {ruta.suffix}. Use .csv o .json/.jsonl"
+    )
+
+
+def _valores(filas: list[dict], campo: str) -> list[str]:
+    valores = {str(f.get(campo)).strip() for f in filas if f.get(campo)}
+    return sorted(v for v in valores if v)
+
+
+def cargar_manifiesto(
+    path: str | Path,
+    nivel: str | None = None,
+    grupo: str | None = None,
+) -> list[CasoVision]:
+    """Carga un CSV/JSON de casos de imagen, opcionalmente filtrado por nivel/grupo.
+
+    El set sintético completo tiene un `id` por página (`<doc_id>__p<k>`) que se
+    repite entre niveles de degradación. Para procesarlo hay que elegir UN nivel
+    (`--nivel`) o usar un CSV por nivel; si no, el cache mezclaría imágenes de
+    niveles distintos bajo el mismo doc_id.
+    """
     ruta = Path(path)
     if not ruta.exists():
         raise FileNotFoundError(f"No existe el manifiesto: {ruta}")
 
-    if ruta.suffix.lower() == ".csv":
-        with open(ruta, "r", encoding="utf-8-sig", newline="") as f:
-            filas = list(csv.DictReader(f))
-    elif ruta.suffix.lower() in (".json", ".jsonl"):
-        if ruta.suffix.lower() == ".jsonl":
-            with open(ruta, "r", encoding="utf-8") as f:
-                filas = [json.loads(line) for line in f if line.strip()]
-        else:
-            with open(ruta, "r", encoding="utf-8") as f:
-                filas = json.load(f)
-        if isinstance(filas, dict):
-            filas = filas.get("casos") or filas.get("results") or []
-    else:
-        raise ValueError(
-            f"Formato de manifiesto no soportado: {ruta.suffix}. Use .csv o .json/.jsonl"
-        )
-
+    filas = _leer_filas(ruta)
     if not isinstance(filas, list) or not filas:
         raise ValueError(f"El manifiesto está vacío o no es una lista: {ruta}")
+
+    niveles = _valores(filas, "nivel")
+    grupos = _valores(filas, "grupo")
+
+    if nivel:
+        filas = [f for f in filas if str(f.get("nivel", "")).strip() == nivel]
+    if grupo:
+        filas = [f for f in filas if str(f.get("grupo", "")).strip() == grupo]
+
+    if not filas:
+        detalle = []
+        if nivel:
+            detalle.append(f"nivel={nivel!r} (disponibles: {niveles or 'sin columna nivel'})")
+        if grupo:
+            detalle.append(f"grupo={grupo!r} (disponibles: {grupos or 'sin columna grupo'})")
+        raise ValueError(
+            "El filtro no dejó casos en el manifiesto: " + "; ".join(detalle)
+        )
 
     casos = [_normalizar_caso(fila, i) for i, fila in enumerate(filas, 1)]
     ids = [c["id"] for c in casos]
     repetidos = sorted({x for x in ids if ids.count(x) > 1})
     if repetidos:
-        raise ValueError(f"doc_id repetidos en el manifiesto: {repetidos}")
+        pista = (
+            f" Use --nivel/--grupo o un CSV por nivel. Niveles disponibles: {niveles}."
+            if not nivel and not grupo and niveles
+            else " Revisar el manifiesto: el filtro aplicado no dejó ids únicos."
+        )
+        raise ValueError(f"doc_id repetidos en el manifiesto: {repetidos}.{pista}")
     return casos
 
 

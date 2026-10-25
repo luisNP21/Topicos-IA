@@ -36,6 +36,11 @@ class CasoVision(TypedDict):
     esperado: NotRequired[Any]
     criterio: NotRequired[str | None]
     tipo: NotRequired[str | None]      # normal | adversarial | ...
+    # Columnas del set sintético de Luis/Pau: permiten filtrar por nivel sin
+    # tocar los doc_id del harness.
+    nivel: NotRequired[str | None]
+    grupo: NotRequired[str | None]
+    doc_id_original: NotRequired[str | None]
 
 
 class ResultadoCaso(TypedDict):
