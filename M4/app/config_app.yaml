@@ -29,9 +29,10 @@ vision:
   vlm_max_new_tokens: 1024
  
 rag:
-  # Cuántas entidades (en orden de aparición) se consultan en las guías.
-  # Consultar una entidad cuesta ~0,35 s (retrieval); el LLM solo se llama si hay
-  # fragmentos sobre el umbral de evidencia, así que un límite alto casi no suma tiempo.
+  # Cuántas entidades (en orden de aparición) se buscan en las guías. Buscar una cuesta
+  # ~0,35 s y no llama al LLM. De todas, la app elige UNA enfermedad principal (la de mayor
+  # score del reranker entre las que pasan la compuerta de evidencia) y solo para esa
+  # redacta la respuesta, como en el eval set de M3 (una entidad por caso).
   max_entidades: 15
  
 umbrales:

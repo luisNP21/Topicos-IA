@@ -18,7 +18,8 @@ No reimplementa ninguna pieza: llama al código del equipo (`M4/vision`, `M2/run
 | Archivo | Qué hace |
 |---|---|
 | `app.py` | Interfaz Gradio (chat multimodal) y arranque |
-| `pipeline_app.py` | Carga las piezas y expone `transcribir`, `extraer_entidades`, `consultar` y `analizar` |
+| `pipeline_app.py` | Carga las piezas y expone `transcribir`, `extraer_entidades`, `buscar`, `elegir_principal`, `redactar` y `analizar` |
+| `evaluar_principal.py` | Compara la enfermedad principal que elige la app con la `entidad` del eval set de M3 |
 | `config_app.yaml` | Rutas, umbrales, backend de visión por defecto, límite de entidades |
 | `requirements.txt` | Dependencias (reutiliza las de M2 y M4/vision) |
  
@@ -62,20 +63,20 @@ La primera vez descarga los modelos (embeddings e5-base, reranker, Clinical BERT
 # escribir /content/corpus/.env con PROJECT_ROOT=/content/drive/MyDrive/TopicosIA/Proyecto-Salud y GROQ_API_KEY
 !python M4/app/app.py --share
 ```
-
+ 
 ## Capturas
-
+ 
 **Caso escrito con cobertura en las guías.** La app identifica diabetes mellitus tipo 2 e
 insuficiencia cardíaca y responde con base en las guías, mostrando sus fuentes.
-
+ 
 ![caso cubierto](https://github.com/user-attachments/assets/2d19bbda-fb67-4b41-b512-9a3c4c731e70)
-
+ 
 **Caso desde una imagen, sin cobertura.** La nota fotografiada es de cirugía maxilofacial. La app
 la lee con el VLM y detecta 7 hallazgos. Como ninguno pertenece a las guías del corpus, no responde
 en vez de inventar.
-
+ 
 ![caso no cubierto](https://github.com/user-attachments/assets/90069f4f-146a-4a96-84d6-192acefd5521)
-
+ 
 ## Decisiones
  
 - **Backend de visión.** `auto` usa el VLM (Qwen2-VL-2B) si hay GPU; si no, OCR con Docling, porque
@@ -85,16 +86,24 @@ en vez de inventar.
 - **Umbrales.** Usa `M3/retrieval/outputs/umbrales.json` si existe; si no, 0.174 / 0.174 (calibración
   final de `M3/README.md`, sección 5). Los provisionales de `config_retrieval.yaml` (0.754 / 0.554)
   vienen del corpus de prueba y aquí no se usan.
-- **Entidades consultadas.** Se consultan hasta 15 en orden de aparición (configurable en la app).
-  Consultar una cuesta ~0,35 s y el LLM solo se llama si hay fragmentos sobre el umbral de evidencia.
-- **Presentación para el médico.** Primero un resumen y los hallazgos con respaldo en las guías (respuesta
-  y fuentes con relevancia alta/media/baja: cortes de presentación en 0.5 y 0.3 sobre el score del
-  reranker, no calibrados). Los hallazgos sin cobertura van en una sola línea. Scores, normalización,
-  `chunk_id` y tiempos quedan en "Detalles técnicos".
+- **Una enfermedad principal por caso.** El NER detecta todas las menciones de enfermedad (así se
+  entrenó y se evalúa en M2), pero la respuesta se redacta para una sola, como en el eval set de M3.
+  Se buscan hasta 15 entidades en las guías y se elige la que tiene el
+  mayor score del reranker entre las que pasan la compuerta de evidencia. Es un criterio
+  determinista, como la orquestación de M3: elige la enfermedad sobre la que las guías pueden
+  responder mejor, no un diagnóstico clínico. Las demás entidades se muestran plegadas. Si ninguna
+  pasa la compuerta, no hay principal y la app no responde. `evaluar_principal.py` mide cuántas
+  veces coincide con la `entidad` de los 15 casos de `M3/ejecucion/eval_set_casos.json`.
+- **Pregunta del usuario.** Si el mensaje trae una pregunta entre `¿` y `?`, la respuesta se genera
+  sobre esa pregunta (como la columna `pregunta` del eval set de M3). Si no, se usa la pregunta de
+  intención del retrieval ("¿Cuál es el tratamiento de …?").
+- **Presentación para el médico.** Primero un resumen con la enfermedad principal, su respuesta y sus
+  fuentes con relevancia alta/media/baja (cortes de presentación en 0.5 y 0.3 sobre el score del
+  reranker, no calibrados). Los otros hallazgos quedan plegados. Scores, normalización, `chunk_id` y
+  tiempos quedan en "Detalles técnicos".
 - **Varias imágenes** se tratan como páginas de la misma nota, en el orden en que se adjuntan.
 - **No usa `M4/vision/integracion.sistema_multimodal`**, porque devuelve un solo texto y la app necesita
   entidades y fragmentos por separado.
-
 ## Manejo de errores
  
 - Falta un recurso en `PROJECT_ROOT`: la app no arranca y lista qué falta y dónde.
@@ -103,3 +112,4 @@ en vez de inventar.
 - Una entidad sin fragmentos sobre el umbral de evidencia: se muestra la válvula de escape de M3, sin
   llamar al LLM.
 - Error del LLM en una entidad: se muestra el error en esa entidad; las demás siguen.
+ 

@@ -68,23 +68,44 @@ El punto de entrada es una app de chat en Gradio (M4/app/). La pensamos para un 
  
 1. **Lectura de la imagen** con `M4/vision` (`transcribir`). Con GPU usa el VLM (Qwen2-VL-2B); sin GPU usa OCR con Docling, porque el VLM en CPU tarda minutos por página. El usuario puede cambiar el motor en "Opciones".
 2. **NER** con el Clinical BERT y el adaptador LoRA de M1, con el mismo chunking de M2 (ventanas de 277 palabras con 50 de traslape). Las entidades se devuelven en orden de aparición y sin repetir.
-3. **Por cada entidad**, la orquestación de M3 (`resolver_query`): retrieval híbrido con reranker sobre las guías, normalización terminológica cuando el score es bajo y compuerta de evidencia.
-4. **Generación** con el LLM externo de M3 (`generar_respuesta`), solo con los fragmentos que pasaron la compuerta.
+3. **Búsqueda de todas las entidades** con la orquestación de M3 (`resolver_query`): retrieval
+   híbrido con reranker sobre las guías, normalización terminológica cuando el score es bajo y
+   compuerta de evidencia. Este paso no llama al LLM.
+4. **Elección de una enfermedad principal.** El NER detecta todas las menciones de enfermedad, que
+   es como se entrenó y como se evalúa en M2. Pero, como en el eval set de M3, la respuesta se da
+   sobre una sola. Se elige con un criterio determinista: entre las entidades con al menos un
+   fragmento sobre el umbral de evidencia, la de mayor score del reranker. Es la enfermedad sobre
+   la que las guías pueden responder mejor, no un diagnóstico decidido por el sistema. Si ninguna
+   pasa la compuerta, no hay principal y la app no responde.
+5. **Generación** con el LLM externo de M3 (`generar_respuesta`), solo para la enfermedad principal
+   y con sus fragmentos. Si el usuario escribió una pregunta (entre `¿` y `?`), se responde esa
+   pregunta, como la columna `pregunta` del eval set de M3. Si no, se usa la pregunta de intención
+   del retrieval ("¿Cuál es el tratamiento de …?").
 
 **Generación final con LLM externo.**: Groq con `qwen/qwen3.8-27b`, temperatura 0, hasta 700 tokens y 3 s de pausa entre llamadas por los límites de la API (`M3/generacion/config.yaml`). El LLM solo se llama si al menos un fragmento supera el umbral de evidencia; si no, se devuelve ("No tengo esa información en mis fuentes.") sin llamar al modelo. Usamos los umbrales de la calibración final de M3.
 
 **Salida mostrada.** La organizamos para que el médico vea primero lo útil:
  
-- Un resumen: cuántos hallazgos se identificaron y cuántos tienen respaldo en las guías disponibles.
-- El texto leído de la imagen, plegado, para que se pueda verificar la lectura.
-- Por cada hallazgo con respaldo: "Qué dicen las guías" (la respuesta del LLM) y sus fuentes. Cada
-  fuente muestra guía, sección y relevancia (alta, media o baja), y se despliega con el texto del
-  fragmento. La relevancia sale del score del reranker con cortes en 0.5 y 0.3.
-- Los hallazgos sin respaldo, en una sola línea, con las guías disponibles y una nota que explica
-  que el sistema no responde para no inventar.
+- Un resumen con la enfermedad principal del caso.
+- El texto leído de la imagen dado el caso, plegado, para que se pueda verificar la lectura.
+- La enfermedad principal con su nombre normalizado (por ejemplo, "DM2" aparece como "Diabetes
+  mellitus tipo 2"), la pregunta respondida, "Qué dicen las guías" (la respuesta del LLM) y sus
+  fuentes. Cada fuente muestra guía, sección y relevancia (alta, media o baja), y se despliega con
+  el texto del fragmento. La relevancia sale del score del reranker con cortes en 0.5 y 0.3; esos
+  cortes son solo de presentación, no están calibrados.
+- Los otros hallazgos detectados en la nota, plegados, indicando cuáles tienen fragmentos en las
+  guías.
+- Si ninguna enfermedad tiene respaldo, la lista de guías disponibles y una nota que explica que el
+  sistema no responde para no inventar.
 - "Detalles técnicos", plegado: motor y tiempo de lectura por página, scores, si se normalizó la
   consulta, `chunk_id` y tiempo por hallazgo.
-Se consultan hasta 15 hallazgos por mensaje (configurable). Consultar uno tarda unos 0,35 s a hasta 75 s con consulta por medio de imagen (medido en Colab con T4).
+Se buscan hasta 15 entidades por mensaje (configurable). Buscar una tarda unos 0,35 s, y el LLM se
+llama una sola vez por caso. Lo que más tarda es leer la imagen: 75,7 s por página con el VLM en
+una T4 (medido en Colab).
+ 
+`M4/app/evaluar_principal.py` mide cuántas veces la enfermedad que elige la app coincide con la
+`entidad` de los 15 casos de `M3/ejecucion/eval_set_casos.json`. Resultado: [COMPLETAR – correr el
+script y poner "X de 15", con la fecha de la corrida].
  
 **Manejo de errores**
  

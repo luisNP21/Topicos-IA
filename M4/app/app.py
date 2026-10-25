@@ -70,8 +70,19 @@ def _fuente(f: dict) -> str:
     return html.escape(f"{f['fuente']}{seccion}")
  
  
+def _nombre(r: dict) -> str:
+    """Nombre legible de la enfermedad: el normalizado si la orquestación lo cambió (DM2 -> ...)."""
+    if r.get("query_final") and r["query_final"].strip().lower() != r["entidad"].strip().lower():
+        return _capitalizar(r["query_final"])
+    return _capitalizar(r["entidad"])
+ 
+ 
 def _bloque_cubierto(r: dict) -> str:
-    partes = [f"### {html.escape(_capitalizar(r['entidad']))}"]
+    partes = [f"### Enfermedad principal: {html.escape(_nombre(r))}"]
+    if _nombre(r) != _capitalizar(r["entidad"]):
+        partes.append(f"<sub>En la nota aparece como «{html.escape(r['entidad'])}».</sub>")
+    if r.get("pregunta"):
+        partes.append(f"<sub>Pregunta respondida: {html.escape(r['pregunta'])}</sub>")
     if r["error"]:
         partes.append(f"No se pudo redactar la respuesta ({html.escape(r['error'])}). "
                       "Abajo están los fragmentos de las guías.")
@@ -79,7 +90,7 @@ def _bloque_cubierto(r: dict) -> str:
         partes.append(f"**Qué dicen las guías:** {r['respuesta']}")
     elif r["respuesta"] is not None and r["fallback"]:
         partes.append("Las guías tienen fragmentos relacionados, pero no alcanzan para responder "
-                      "sobre el tratamiento. Revisa las fuentes.")
+                      "esta pregunta. Revisa las fuentes.")
     partes.append(f"**Fuentes ({len(r['fragmentos'])}):**")
     for f in r["fragmentos"]:
         etiqueta = _relevancia(f.get("score"))
@@ -120,22 +131,18 @@ def _bloque_tecnico(transcripcion: dict | None, resultados: list[dict]) -> str:
  
  
 def armar_respuesta(transcripcion: dict | None, entidades: list[str], origen: str,
-                    resultados: list[dict], no_consultadas: list[str], guias: list[str]) -> str:
-    cubiertos = [r for r in resultados if r["fragmentos"]]
-    sin_cobertura = [r for r in resultados if not r["fragmentos"]]
+                    resultados: list[dict], principal: dict | None, no_consultadas: list[str],
+                    guias: list[str]) -> str:
     partes = []
+    otros = [r for r in resultados if r is not principal]
  
-    n = len(entidades)
-    resumen = f"**Resumen:** se identificaron {n} hallazgo{'s' if n != 1 else ''} clínico{'s' if n != 1 else ''}. "
-    if not cubiertos:
-        resumen += "Ninguno tiene recomendaciones en las guías disponibles"
+    if principal is not None:
+        resumen = (f"**Resumen:** la enfermedad principal del caso es "
+                   f"**{html.escape(_nombre(principal))}**, la que tiene más evidencia "
+                   f"en las guías disponibles.")
     else:
-        resumen += f"{len(cubiertos)} con recomendaciones en las guías disponibles"
-        if sin_cobertura:
-            resumen += f", {len(sin_cobertura)} sin cobertura"
-    if no_consultadas:
-        resumen += f" ({len(no_consultadas)} sin consultar por el límite de hallazgos)"
-    resumen += "."
+        resumen = ("**Resumen:** ninguna de las enfermedades detectadas tiene recomendaciones en las "
+                   "guías disponibles.")
     if origen == "consulta_directa":
         resumen += "\n\n<sub>No se detectaron hallazgos en el texto; se buscó lo escrito tal cual.</sub>"
     partes.append(resumen)
@@ -144,18 +151,18 @@ def armar_respuesta(transcripcion: dict | None, entidades: list[str], origen: st
         partes.append("<details><summary>Ver el texto leído de la imagen</summary>\n\n"
                       f"{html.escape(transcripcion['texto'])}\n\n</details>")
  
-    for r in cubiertos:
-        partes.append("---\n\n" + _bloque_cubierto(r))
+    if principal is not None:
+        partes.append("---\n\n" + _bloque_cubierto(principal))
+    else:
+        partes.append("---\n\n<sub>Las guías disponibles son: " + html.escape("; ".join(guias))
+                      + ". Si el caso no pertenece a esos temas, el sistema no responde para no "
+                        "inventar información.</sub>")
  
-    if sin_cobertura:
-        lista = ", ".join(html.escape(_capitalizar(r["entidad"])) for r in sin_cobertura)
-        partes.append("---\n\n**Sin cobertura en las guías disponibles:** " + lista
-                      + "\n\n<sub>Las guías disponibles son: " + html.escape("; ".join(guias))
-                      + ". Si un hallazgo no pertenece a esos temas, el sistema no responde "
-                        "para no inventar información.</sub>")
-    if no_consultadas:
-        lista = ", ".join(html.escape(_capitalizar(e)) for e in no_consultadas)
-        partes.append(f"<sub>No consultados (límite de hallazgos por consulta): {lista}</sub>")
+    if otros or no_consultadas:
+        items = [html.escape(_capitalizar(r["entidad"])) + (" (con fragmentos en las guías)" if r["fragmentos"] else "")
+                 for r in otros] + [html.escape(_capitalizar(e)) + " (no consultado)" for e in no_consultadas]
+        partes.append("<details><summary>Otros hallazgos detectados en la nota "
+                      f"({len(items)})</summary>\n\n" + "<br>".join(items) + "\n\n</details>")
  
     tecnico = _bloque_tecnico(transcripcion, resultados)
     if tecnico:
@@ -208,9 +215,14 @@ def construir_app(pipeline: PipelineClinico) -> gr.ChatInterface:
         resultados = []
         for i, entidad in enumerate(entidades[:n], 1):
             yield estado(f"Buscando en las guías: {_capitalizar(entidad)} ({i} de {min(n, len(entidades))})...")
-            resultados.append(pipeline.consultar(entidad))
+            resultados.append(pipeline.buscar(entidad))
  
-        yield aviso_archivos + armar_respuesta(transcripcion, entidades, origen, resultados,
+        principal = pipeline.elegir_principal(resultados)
+        if principal is not None:
+            yield estado(f"Redactando la respuesta para {_nombre(principal)}...")
+            pipeline.redactar(principal, pipeline.extraer_pregunta(texto))
+ 
+        yield aviso_archivos + armar_respuesta(transcripcion, entidades, origen, resultados, principal,
                                                entidades[n:], info["guias"])
  
     descripcion = f"{AVISO}\n\n**Guías disponibles:** {html.escape('; '.join(info['guias']))}"
@@ -224,7 +236,7 @@ def construir_app(pipeline: PipelineClinico) -> gr.ChatInterface:
         multimodal=True,
         textbox=gr.MultimodalTextbox(
             file_types=["image"], file_count="multiple",
-            placeholder="Escribe el caso clínico o adjunta la foto de la nota clínica (si tiene varias páginas, adjúntalas en orden)",
+            placeholder="Escribe el caso clínico (y si quieres, una pregunta con ¿...?) o adjunta la foto de la nota",
         ),
         additional_inputs=[
             gr.Dropdown(BACKENDS, value=pipeline.cfg["vision"]["backend_por_defecto"],
