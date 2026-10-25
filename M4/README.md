@@ -92,7 +92,7 @@ El punto de entrada es una app de chat en Gradio (M4/app/). La pensamos para un 
   mellitus tipo 2"), la pregunta respondida, "Qué dicen las guías" (la respuesta del LLM) y sus
   fuentes. Cada fuente muestra guía, sección y relevancia (alta, media o baja), y se despliega con
   el texto del fragmento. La relevancia sale del score del reranker con cortes en 0.5 y 0.3; esos
-  cortes son solo de presentación, no están calibrados.
+  cortes son solo de presentación, no están calibrados
 - Los otros hallazgos detectados en la nota, plegados, indicando cuáles tienen fragmentos en las
   guías.
 - Si ninguna enfermedad tiene respaldo, la lista de guías disponibles y una nota que explica que el

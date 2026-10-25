@@ -12,6 +12,7 @@ from __future__ import annotations
  
 import argparse
 import html
+import re
 from pathlib import Path
  
 import gradio as gr
@@ -70,6 +71,27 @@ def _fuente(f: dict) -> str:
     return html.escape(f"{f['fuente']}{seccion}")
  
  
+# Identificadores internos de los fragmentos (p. ej. gpc_depresion_adultos_chunk1). El prompt de
+# M3 le pide al LLM citar la fuente y el contexto los incluye, así que a veces aparecen en la
+# respuesta. Al médico se le muestran las fuentes abajo, con nombre de guía y sección.
+_ID_CHUNK = r"[A-Za-z0-9][A-Za-z0-9_\-]*_chunk\d+"
+_CITA_ENTRE_SIGNOS = re.compile(
+    rf"\s*[\(\[]\s*(?:(?:fuentes?|chunk_id|id)\s*:?\s*)?{_ID_CHUNK}(?:\s*(?:,|;|y)\s*{_ID_CHUNK})*\s*[\)\]]",
+    re.IGNORECASE)
+_ID_SUELTO = re.compile(rf"\s*(?:[,;|]\s*)?{_ID_CHUNK}")
+ 
+ 
+def limpiar_respuesta(texto: str) -> str:
+    """Quita los chunk_id de la respuesta del LLM sin tocar el resto del texto."""
+    texto = _CITA_ENTRE_SIGNOS.sub("", texto or "")
+    texto = _ID_SUELTO.sub("", texto)
+    texto = re.sub(r"\(\s*\)|\[\s*\]", "", texto)          # paréntesis que quedaron vacíos
+    texto = re.sub(r"[ \t]+([,.;:)])", r"\1", texto)         # espacio antes de puntuación
+    texto = re.sub(r"\(\s+", "(", texto)
+    texto = re.sub(r"[ \t]{2,}", " ", texto)
+    return texto.strip()
+ 
+ 
 def _nombre(r: dict) -> str:
     """Nombre legible de la enfermedad: el normalizado si la orquestación lo cambió (DM2 -> ...)."""
     if r.get("query_final") and r["query_final"].strip().lower() != r["entidad"].strip().lower():
@@ -87,7 +109,7 @@ def _bloque_cubierto(r: dict) -> str:
         partes.append(f"No se pudo redactar la respuesta ({html.escape(r['error'])}). "
                       "Abajo están los fragmentos de las guías.")
     elif r["respuesta"] is not None and not r["fallback"]:
-        partes.append(f"**Qué dicen las guías:** {r['respuesta']}")
+        partes.append(f"**Qué dicen las guías:** {limpiar_respuesta(r['respuesta'])}")
     elif r["respuesta"] is not None and r["fallback"]:
         partes.append("Las guías tienen fragmentos relacionados, pero no alcanzan para responder "
                       "esta pregunta. Revisa las fuentes.")
