@@ -56,7 +56,7 @@ La primera vez descarga los modelos (embeddings e5-base, reranker, Clinical BERT
 **Con GPU (Colab T4)**, para usar el VLM y obtener un enlace público temporal:
  
 ```python
-!git clone --branch appM4 https://github.com/luisNP21/Topicos-IA.git /content/corpus
+!git clone --branch dev https://github.com/luisNP21/Topicos-IA.git /content/corpus
 %cd /content/corpus
 !pip install -r M4/app/requirements.txt
 # escribir /content/corpus/.env con PROJECT_ROOT=/content/drive/MyDrive/TopicosIA/Proyecto-Salud y GROQ_API_KEY

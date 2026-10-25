@@ -5,7 +5,7 @@
 -r ../../M2/run_inference/requirements.txt
 -r ../vision/requirements.txt
 
-# Retrieval y generación de M3 (M3/retrieval no tiene requirements propio)
+# Retrieval y generación de M3
 chromadb>=0.5.0
 sentence-transformers>=3.0.0
 rank_bm25

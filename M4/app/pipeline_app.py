@@ -8,14 +8,6 @@ Reutiliza las piezas reales del equipo, sin reimplementarlas:
   - Orquestación .. M3/generacion/orquestacion.py (cuándo se normaliza, compuerta de evidencia)
   - Generación .... M3/generacion/generacion.py (Groq, válvula de escape si no hay evidencia)
 
-Por qué no se usa `M4/vision/integracion.sistema_multimodal`: devuelve un solo texto con
-las respuestas pegadas, y esta app necesita las entidades y los fragmentos por separado.
-
-Choque de nombres que se resuelve aquí: `contratos.py` existe en M3/generacion y en
-M4/vision, y `orquestacion.py` en M3/generacion y en M3/tools. Python cachea los módulos por
-nombre, así que la visión se importa aislada (ver `_importar_vision`) y M3/generacion queda
-primero en sys.path.
-
 Uso como librería (sin interfaz):
     from pipeline_app import PipelineClinico
     p = PipelineClinico(); p.cargar()
