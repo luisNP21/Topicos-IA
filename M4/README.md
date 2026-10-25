@@ -22,36 +22,178 @@ harness y cache).*
 
 ### 1.1 Qué hace y dónde se conecta
 
-*Flujo completo desde la imagen hasta las entidades y los fragmentos de guía, y en qué punto de
-`run_inference/` se inserta.*
+El componente recibe una o varias imágenes de una nota clínica y las convierte en el texto que
+alimenta el resto del sistema. No reemplaza ninguna pieza de M1–M3: es un adaptador de entrada.
 
-[COMPLETAR – Agustín]
+Flujo:
+
+1. **Manifiesto.** Cada fila trae `id` (`<doc_id>__p<k>` para una página), `imagen`, `pregunta` y,
+   si existe, `entidad`. El módulo carga la imagen con `cargar_imagen()`.
+2. **Transcripción.** `transcribir()` llama al backend elegido (`vlm`, `ocr_docling`,
+   `ocr_tesseract` o `auto`) y devuelve una `Transcripcion` con `texto`, `backend`, `segundos`,
+   `valvula`, `error`, `imagen` y `sha256`. Si el backend no ve texto, el texto es la válvula
+   literal y `valvula=True`.
+3. **Unión de páginas.** Antes del NER, las transcripciones de un mismo `doc_id` se unen en orden
+   de página. Eso ocurre en `M2/run_inference/run_inference.py` para la ruta del harness y en
+   `M4/metricas_transcripcion/paginas.py` para las métricas de Luis. Una entidad puede quedar
+   partida entre dos páginas; unirlas evita perderla.
+4. **NER de M1/M2.** El texto unido entra al mismo Clinical BERT + LoRA y al mismo chunking de M2
+   (ventanas de 277 palabras con 50 de solapamiento). La visión no reimplementa el NER: solo le
+   cambia la fuente del texto.
+5. **Entidades → M3.** El cache `{doc_id: [entidades]}` lo lee el harness de M2 o, en la app, las
+   entidades se pasan a la orquestación de M3 (`resolver_query`) y a la generación.
+
+En `run_inference/` el punto de inserción es `_fuente_texto()` de
+`M2/run_inference/run_inference.py`: con `fuente.tipo: "vision"` importa `M4/vision`, transcribe
+el manifiesto, une páginas por `doc_id` y devuelve `textos_por_doc`; el resto de `run()` (NER,
+chunking y cache) queda igual. La configuración dedicada es
+`M2/run_inference/config_vision.yaml`; el harness la lee desde
+`M2/harness/config_vision.yaml`.
+
+La ruta independiente `M4/vision/run_vision.py` produce el cache de transcripciones (para CER/WER y
+auditoría) y, con `--ner`, el cache de entidades. La app de Pau usa `transcribir()` directamente
+(sección 1.6). En ningún caso hay un notebook aparte: el módulo se importa.
 
 ### 1.2 Modelos y parámetros
 
-*VLM (checkpoint y versión exactas), forma de acceso, baseline de OCR clásico, parámetros de
-inferencia, latencia y costo por documento (medidos, con fuente).*
+**VLM.** `Qwen/Qwen2-VL-2B-Instruct`, cargado localmente con `transformers`
+(`Qwen2VLForConditionalGeneration` + `AutoProcessor`). Se usa `device_map="auto"`,
+`torch_dtype=float16` en GPU y `float32` en CPU, `do_sample=False` y `max_new_tokens=512` en
+`M4/vision/config.yaml`. La app sube el límite a 1024 (sección 1.6). No usa API externa: el costo
+es tiempo de GPU/CPU, no tokens de una API.
 
-[COMPLETAR – Agustín]
+**Baseline OCR.** Dos backends, ambos con la misma interfaz:
+
+- **Tesseract 5.4.0 (build 20240606)** vía `pytesseract`, `lang=spa+eng`, `psm=6`,
+  `oem=3`. Para instalaciones fuera del `PATH` se configuran `TESSERACT_CMD` y
+  `TESSDATA_PREFIX` (usado en la validación local). Es el baseline clásico que se ejecutó.
+- **Docling** (`docling>=2.0.0`, `DocumentConverter`, export a Markdown) con OCR en español
+  best-effort. Está implementado, pero **no se ejecutó** en la validación local; queda como
+  segundo baseline para comparar.
+
+**Parámetros del set.** El manifiesto se filtra por `nivel` (`limpio`, `sombra_severo`, etc.) y
+opcionalmente por `grupo` (`nucleo`/`retos`). La muestra versionada
+`M4/eval_set/ejemplos_finales/ejemplos.csv` combina niveles y repite `id`; sin `--nivel` el
+cargador falla con un mensaje explícito. El set completo generado fuera de git usa
+`M4/data/imagenes/casos/<nivel>.csv`.
+
+**Latencia y costo (medidos).** En la corrida de `run_inference.py` sobre la muestra `limpio`
+(3 páginas, Windows, CPU), Tesseract tardó **1.732 s de promedio** (2.705, 1.394 y 1.097 s por
+página); la corrida independiente de `run_vision.py` dio **1.1–2.4 s** por página. Fuente:
+corrida local del 2026-10-20, `vision_meta.json` (no versionado). El VLM no se ejecutó en local: la
+app reporta **75.7 s por página en T4** (fuente: sección 1.6, medición de la app). No hay costo de
+API para la visión; el VLM requiere GPU y el OCR corre en CPU.
 
 ### 1.3 Prompt de transcripción
 
-*Texto literal y sus versiones.*
+El prompt vive en `M4/vision/prompts.py`. Los backends OCR no usan prompt (no son generativos);
+el VLM recibe dos textos:
 
-[COMPLETAR – Agustín]
+**System:**
+
+> Eres un transcriptor clínico. Transcribes literalmente lo que se ve en la imagen. No
+> diagnosticas, no interpretas, no resumas y no inventas datos.
+
+**Instrucción:**
+
+> Transcribe literalmente el texto visible en la imagen, en español. Conserva tildes, la letra ñ,
+> siglas, abreviaturas, números, dosis y saltos de línea, en el mismo orden en que aparecen. No
+> interpretes, no resumas, no corrijas y no agregues información que no esté en la imagen.
+> Devuelve únicamente el texto transcrito, sin comentarios ni explicaciones. Si la imagen no
+> contiene texto legible, responde exactamente: "No se aprecia texto legible en la imagen."
+
+**Válvula.** `MENSAJE_SIN_TEXTO = "No se aprecia texto legible en la imagen."`. Si el VLM responde
+esa frase (o el OCR devuelve texto vacío), `transcribir()` marca `valvula=True`, deja ese mensaje
+literal y el NER no recibe texto útil. `PATRON_VALVULA` solo acepta la negativa al inicio, para no
+confundir una nota real que mencione "no se aprecia..." dentro de una frase clínica.
+
+Esta es la única versión del prompt que está versionada; no se hicieron barridos de variantes. El
+límite de salida del VLM es 512 tokens en el módulo y 1024 en la app (sección 1.6), para no cortar
+el final de una página larga.
 
 ### 1.4 Interfaz, configuración y estructura de archivos
 
-*Interfaz `run(cfg, project_root) -> dict`, bloque en `config.yaml`, árbol de archivos nuevos o
-modificados.*
+**Interfaz.** `M4/vision/run_vision.py` expone `run(cfg, project_root) -> dict`. Además:
+`ver(imagen) -> (texto, None)`, `transcribir(imagen, ...) -> Transcripcion`,
+`sistema_multimodal(pregunta, imagen, ...)` y `crear_responder_m3(...)`.
 
-[COMPLETAR – Agustín]
+**`config.yaml`.** Bloques:
+
+- `vision`: backend por defecto (`vlm`), `fallback_order`, backends de `--comparar`, instrucción.
+- `vlm`: `model_id`, `device`, `torch_dtype`, `max_new_tokens`.
+- `ocr.docling` / `ocr.tesseract`: export, idioma, `psm`/`oem` y rutas del binario/tessdata.
+- `rutas`: manifiesto y carpeta de imágenes, `nivel`/`grupo`, caches de transcripciones/NER,
+  salida y comparación.
+- `ner`: si se activa el puente NER, checkpoint, adaptador LoRA y chunking.
+- `integracion`: si usa mocks de M3, config de M3 y máximo de entidades.
+
+**Archivos nuevos (`M4/vision/`):**
+
+```text
+M4/vision/
+├── prompts.py          # instrucción literal + válvula
+├── contratos.py        # Transcripcion, CasoVision, Protocols
+├── backends.py         # Qwen2-VL, Docling, Tesseract, fake
+├── transcripcion.py    # ver(), transcribir(), carga y limpieza
+├── manifiesto.py       # CSV/JSON, filtro nivel/grupo
+├── cache.py            # cache de transcripciones y NER
+├── ner_bridge.py       # visión -> Clinical BERT + LoRA
+├── integracion.py      # sistema_multimodal() + responder_m3
+├── juez.py             # primitivo de fidelidad visual
+├── demo.py             # nota sintética marcada
+├── run_vision.py       # run() + CLI
+├── config.yaml
+├── requirements.txt
+├── start_vision.ipynb
+├── test_vision.py      # 31 pruebas
+├── __init__.py
+└── README.md
+```
+
+**Config de integración (M2).** `M2/run_inference/config_vision.yaml` añade
+`fuente.tipo: "vision"`, `fuente.nivel`, `fuente.grupo`, `fuente.imagenes_dir` y un
+`output_path` por nivel. La muestra versionada se usa con `nivel: "limpio"`; para el set completo
+se cambia a `M4/data/imagenes/casos/<nivel>.csv` y `imagenes_dir: M4/data/imagenes`. El
+`M2/harness/config_vision.yaml` apunta a ese config de inferencia.
 
 ### 1.5 Integración con el cache de predicciones y el harness
 
-*Cómo se registra cada sistema en `predictions/<sistema>.json` y cómo lo lee el harness.*
+Hay dos caches, con propósitos distintos:
 
-[COMPLETAR – Agustín e Isabella]
+1. **Transcripciones.** `M4/vision/predictions/transcripciones_<backend>_<nivel>.json`:
+   `id -> Transcripcion` (`texto`, `backend`, `segundos`, `valvula`, `error`, `imagen`,
+   `sha256`). Puede ser por página (`ex_45__p1`) o por documento. Lo usa Luis para CER/WER y
+   auditoría, y `M4/vision/ner_bridge.py` para producir entidades.
+2. **Entidades NER.** `M2/predictions/vision_<backend>_<nivel>.json`: `doc_id -> list[str]`.
+   Es exactamente el formato de `M2/harness/cached_system.sistema_desde_cache`. Al lado queda
+   `vision_<backend>_<nivel>.vision_meta.json` con backend, latencias, válvulas y errores por
+   documento.
+
+**Cómo se produce.**
+
+- `M4/vision/run_vision.py` escribe el cache de transcripciones y, con `--ner`, el de entidades.
+- `M2/run_inference/run_inference.py --config config_vision.yaml` hace la ruta del harness:
+  transcribe el manifiesto, une páginas por `doc_id`, corre el mismo NER y escribe el cache de
+  entidades más el sidecar. No reimplementa el NER ni el harness.
+
+**Cómo lo lee el harness.** `M2/harness/config_vision.yaml` apunta con
+`rutas.inference_config` al config de `run_inference`; de ahí `gold_loader.resolver_rutas` obtiene
+`output_path`. `cached_system.sistema_desde_cache` exige que el cache y el eval set tengan
+exactamente los mismos `doc_id`, y que cada valor sea `list[str]`; si falta o sobra un `doc_id`,
+falla con un mensaje explícito. El harness corre exact-match, similitud semántica y juez con esas
+entidades; el delta lo calcula Isabella (sección 3.5).
+
+**Regla de `doc_id`.** El `id` del manifiesto es por página (`ex_45__p1`); el `doc_id` del gold es
+`ex_45`. La unión de páginas ocurre antes del NER para que el cache quede con `ex_45` y para no
+perder entidades partidas entre páginas.
+
+**Verificación local (prueba de humo).** Sobre la muestra `limpio` (3 documentos) y OCR Tesseract:
+`run_inference.py` procesó 3/3 documentos, 0 errores y 0 válvulas, con 1.732 s de latencia media;
+el cache quedó en `M2/predictions/vision_ocr_tesseract_limpio.json` (no versionado). El
+harness `--solo exact` leyó ese cache y dio precision/recall/F1 = 0.8261
+(19 TP / 4 FP / 4 FN). Es una muestra de 3
+documentos para validar el cableado, **no** el delta oficial de M4; el set completo (20/59
+documentos) lo corre Isabella/Luis. Fuente: corrida local del 2026-10-20.
 
 ### 1.6 Punto de entrada del sistema
 
@@ -126,10 +268,60 @@ pertenece a las guías del corpus, así que la app no responde en vez de inventa
 
 ### 1.7 Cómo ejecutarlo
 
-*Comandos exactos, dependencias con versiones, semillas y variables de entorno requeridas (sin
-secretos).*
+**Dependencias.**
 
-[COMPLETAR – Agustín]
+```bash
+pip install -r M4/vision/requirements.txt
+# Tesseract (Linux/Colab):
+apt-get install -y tesseract-ocr tesseract-ocr-spa
+# o en Windows: instalar Tesseract y definir TESSERACT_CMD/TESSDATA_PREFIX
+```
+
+Para el adaptador real de M3 (solo si se usa `sistema_multimodal` con `usar_mocks: false`):
+
+```bash
+pip install -r M3/corpus/requirements.txt -r M3/generacion/requirements.txt -r M3/tools/requirements.txt
+```
+
+Se necesita `PROJECT_ROOT` en el `.env`; `GROQ_API_KEY` solo para la generación de M3.
+
+**Pruebas y demo.**
+
+```bash
+python M4/vision/test_vision.py                         # 31/31
+python M4/vision/run_vision.py --config M4/vision/config.yaml --demo --backend fake
+python M4/vision/run_vision.py --config M4/vision/config.yaml --demo --backend ocr_tesseract
+```
+
+**Muestra versionada (nivel limpio).**
+
+```bash
+python M4/vision/run_vision.py --config M4/vision/config.yaml \
+  --manifest M4/eval_set/ejemplos_finales/ejemplos.csv \
+  --nivel limpio --backend ocr_tesseract
+
+python M2/run_inference/run_inference.py --config config_vision.yaml
+python M2/harness/run_harness.py --config M2/harness/config_vision.yaml --solo exact
+```
+
+`config_vision.yaml` ya apunta a la muestra y a `nivel: limpio`; su `fuente.backend` por defecto es
+`vlm`. Para CPU, cambiar `fuente.backend` a `ocr_tesseract`. El harness usa
+`M2/eval_harness/gold_examples_20.jsonl`; hay que asegurar que exista y que cubra los `doc_id` del
+manifiesto.
+
+**Set completo y VLM.**
+
+```bash
+python M4/vision/run_vision.py --config M4/vision/config.yaml \
+  --manifest M4/data/imagenes/casos/sombra_severo.csv --backend vlm
+```
+
+Para el set completo, ajustar `fuente.manifest`, `fuente.nivel`, `fuente.imagenes_dir` y
+`output_path` en `M2/run_inference/config_vision.yaml`. El VLM requiere GPU (T4 en Colab); en CPU
+es muy lento. La validación local se hizo con Tesseract, no con el VLM.
+
+**Reproducibilidad.** `seed_global: 42`; el VLM usa `do_sample=False`; el OCR es determinista.
+Los caches y salidas están en `.gitignore` y no se versionan.
 
 ---
 
@@ -427,8 +619,28 @@ del sistema.**
 - Si el VLM "corrige" algo que estaba mal escrito en el original, eso no se detecta comparando
   texto. Hace falta el juez visual.
 
-**Juez visual.** [COMPLETAR – Agustín: cómo se corre `M4/vision/juez.py` sobre
-`candidatos_juez.jsonl`, qué modelo juzga y cómo se agregan los veredictos.]
+**Juez visual.** El primitivo está en `M4/vision/juez.py`:
+`juez_fidelidad_visual(afirmacion, imagen, preguntar_fn, max_new_tokens=3) -> float`. Recibe una
+afirmación de `candidatos_juez.jsonl` (que genera `M4/metricas_transcripcion/run_metricas.py` para
+las entidades `mal_leida` e `inventada`) y la imagen del documento; le pide al VLM:
+`Afirmación: "...". ¿Se sostiene en la imagen? Responde solo SI o NO.` Devuelve 1.0 si responde
+"SÍ" y 0.0 si responde "NO".
+
+El modelo que juzga es el mismo VLM de transcripción, `Qwen2-VL-2B-Instruct`. La llamada se
+inyecta como `preguntar_fn(imagen, prompt, max_new_tokens=3)`, que debe apuntar al backend `vlm`
+(la app ya tiene esa función; en los tests se usa un mock), con `max_new_tokens=3` y
+`do_sample=False`. No hay un modelo juez separado ni una llamada a Groq.
+
+**Cómo se agrega.** La tasa de afirmaciones sostenidas es la suma de 1.0/0.0 sobre el total de
+candidatos; se reporta por categoría (`mal_leida`, `inventada`) y por nivel. Esa agregación la hace
+el módulo de métricas de Luis. En `M4/vision` está el primitivo, no el runner sobre el JSONL: la
+integración completa con `candidatos_juez.jsonl` y la tabla por nivel quedan pendientes de que
+existan las transcripciones reales del VLM. La prueba actual del primitivo es con un mock
+(`TestJuez`), no con veredictos reales.
+
+**Limitación.** Si el mismo Qwen2-VL transcribe y juzga, hay riesgo de auto-preferencia; la pregunta
+se ancla a la imagen y no a la transcripción, y una muestra debe revisarse a mano. No se reportan
+números de juez todavía.
 
 **Resultados.** [COMPLETAR – Luis, cuando existan las transcripciones reales: tabla de CER, WER,
 lectura de entidades e inventadas por sistema y nivel, con fuente.]
@@ -447,6 +659,11 @@ Cada dueño interpreta su dimensión: exacto (Luis), semántico (Pau), juez (Agu
 | Sistema | Nivel | Exacto | Δ | Semántico | Δ | Juez | Δ | Fuente |
 |---|---|---|---|---|---|---|---|---|
 | [COMPLETAR] | | | | | | | | |
+
+**Columna Juez (Agustín).** Se llena con los veredictos de `M4/vision/juez.py` sobre
+`candidatos_juez.jsonl` (ver 3.3): proporción de afirmaciones que el VLM considera sostenidas en
+la imagen, por sistema y nivel. Todavía no hay veredictos reales porque el VLM no se ha corrido
+sobre el set completo; no se reportan números inventados. El primitivo está probado con un mock.
 
 ### 3.6 Hallazgos y supuestos
 
@@ -527,5 +744,17 @@ documenta antes de ejecutar y el observado después.*
 
 *Etapa donde se rompe (lectura del VLM, chunking, NER, retrieval), evidencia y si el fallo es
 corregible o inherente al enfoque.*
+
+**Aporte de visión (Agustín).**
+
+| Etapa | Qué se observó | Evidencia | ¿Corregible? |
+|---|---|---|---|
+| Lectura OCR | Tesseract confundió `lpm` con `Ipm` en la nota sintética de humo; el resto del texto clínico salió correcto (tildes, ñ, DM2, HTA, EPOC, TFNA, dosis, HbA1c). | Corrida local del 2026-10-20, `--demo --backend ocr_tesseract`; transcripción en `M4/vision/predictions/transcripciones_ocr_tesseract.json` (no versionada). | Sí: post-proceso o un OCR/VLM mejor. No es un fallo del NER. |
+| Integración | El CSV combinado de `ejemplos_finales` repite `id` entre niveles; sin `--nivel` el manifiesto es ambiguo y el cargador no puede separar niveles (antes se habría mezclado el cache). | `M4/vision/manifiesto.py` y `test_filtra_por_nivel_y_evita_duplicados`. | Sí: se eligió `--nivel`/`--grupo` y se dejó un error explícito. |
+| Entorno | Si falta Docling/Tesseract, el backend devuelve `BackendError` y se registra en `error`; no hay fallback silencioso. | `test_error_del_backend_se_registra` y `run_vision.py` con `--backend ocr_docling`. | Sí: instalar la dependencia o cambiar de backend. |
+| Lectura VLM | El modo de falla esperado es alucinación o corrección de texto; no se ha medido con el VLM real. | Prompt literal y válvula en `prompts.py`; juez pendiente (3.3). | Mitigable, no eliminable: prompt + válvula + juez + revisión humana. |
+
+El VLM real no se ejecutó en la validación local; los fallos de lectura del VLM son **esperados,
+no medidos**. El OCR sí se ejecutó y es la evidencia que se reporta.
 
 [COMPLETAR – Isabella, con aportes de cada integrante]
