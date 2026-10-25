@@ -1,0 +1,49 @@
+# Configuración de la app de punto de entrada (M4 · Pau).
+# Imagen o texto -> transcripción (si hay imagen) -> NER -> retrieval + generación de M3.
+#
+# Dos raíces distintas:
+#   - "PROJECT_ROOT" (del .env): la carpeta Proyecto-Salud de Drive. Ahí están los
+#     datos que NO viven en git: el adaptador LoRA y los chunks del corpus.
+#   - "repo": la raíz del repositorio. Ahí está el código y la caché local de la app.
+
+rutas:
+  # --- Relativas a PROJECT_ROOT (Drive) ---
+  adapter_ner: "M1/saved_models/clinical_bert-distemist-lora"
+  corpus_chunks: "M3/data/guias_clinicas/chunks"
+  corpus_manifest: "M3/data/guias_clinicas/corpus_manifest.json"
+  # --- Relativas a la raíz del repo (disco local, no se versionan) ---
+  cache_dir: "M4/app/.cache"
+  chroma_local: "M4/app/.cache/chroma_guias"   # el índice se reconstruye aquí la 1.ª vez
+ 
+ner:
+  checkpoint: "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es"
+  # Mismo chunking que el baseline de M2 (M2/run_inference/config.yaml).
+  window_words: 277
+  overlap_words: 50
+ 
+vision:
+  # auto -> vlm si hay GPU; si no, ocr_docling (el VLM en CPU tarda minutos por página).
+  backend_por_defecto: "auto"
+  # Límite de tokens que genera el VLM por página. El config de M4/vision usa 512;
+  # una página A4 completa en español puede superarlo y cortar el final de la nota.
+  vlm_max_new_tokens: 1024
+ 
+rag:
+  # Cuántas entidades (en orden de aparición) se consultan en las guías.
+  # Consultar una entidad cuesta ~0,35 s (retrieval); el LLM solo se llama si hay
+  # fragmentos sobre el umbral de evidencia, así que un límite alto casi no suma tiempo.
+  max_entidades: 15
+ 
+umbrales:
+  # Si existe M3/retrieval/outputs/umbrales.json (calibración del experimento S08),
+  # se usa ese archivo. Si no, se usan estos valores: son los de la calibración final
+  # reportada en M3/README.md (sección 5). Los "provisionales" de config_retrieval.yaml
+  # (0.754 / 0.554) vienen del corpus de prueba y NO se usan aquí.
+  preferir_umbrales_json: true
+  umbral: 0.174
+  umbral_evidencia: 0.174
+ 
+interfaz:
+  titulo: "Asistente de guías clínicas"
+  puerto: 7860
+ 
