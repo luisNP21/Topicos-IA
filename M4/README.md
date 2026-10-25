@@ -69,7 +69,8 @@ es tiempo de GPU/CPU, no tokens de una API.
   `TESSDATA_PREFIX` (usado en la validación local). Es el baseline clásico que se ejecutó.
 - **Docling** (`docling>=2.0.0`, `DocumentConverter`, export a Markdown) con OCR en español
   best-effort. Está implementado, pero **no se ejecutó** en la validación local; queda como
-  segundo baseline para comparar.
+  segundo baseline para comparar. La app de Pau lo usa cuando no hay GPU (sección 1.6); esta
+  validación local no cubrió Docling, solo Tesseract.
 
 **Parámetros del set.** El manifiesto se filtra por `nivel` (`limpio`, `sombra_severo`, etc.) y
 opcionalmente por `grupo` (`nucleo`/`retos`). La muestra versionada
