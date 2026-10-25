@@ -62,7 +62,20 @@ La primera vez descarga los modelos (embeddings e5-base, reranker, Clinical BERT
 # escribir /content/corpus/.env con PROJECT_ROOT=/content/drive/MyDrive/TopicosIA/Proyecto-Salud y GROQ_API_KEY
 !python M4/app/app.py --share
 ```
- 
+
+## Capturas
+
+**Caso escrito con cobertura en las guías.** La app identifica diabetes mellitus tipo 2 e
+insuficiencia cardíaca y responde con base en las guías, mostrando sus fuentes.
+
+![caso cubierto](https://github.com/user-attachments/assets/2d19bbda-fb67-4b41-b512-9a3c4c731e70)
+
+**Caso desde una imagen, sin cobertura.** La nota fotografiada es de cirugía maxilofacial. La app
+la lee con el VLM y detecta 7 hallazgos. Como ninguno pertenece a las guías del corpus, no responde
+en vez de inventar.
+
+![caso no cubierto](https://github.com/user-attachments/assets/90069f4f-146a-4a96-84d6-192acefd5521)
+
 ## Decisiones
  
 - **Backend de visión.** `auto` usa el VLM (Qwen2-VL-2B) si hay GPU; si no, OCR con Docling, porque
@@ -81,8 +94,7 @@ La primera vez descarga los modelos (embeddings e5-base, reranker, Clinical BERT
 - **Varias imágenes** se tratan como páginas de la misma nota, en el orden en que se adjuntan.
 - **No usa `M4/vision/integracion.sistema_multimodal`**, porque devuelve un solo texto y la app necesita
   entidades y fragmentos por separado.
-- **Choque de nombres.** `contratos.py` existe en `M3/generacion` y en `M4/vision`, y `orquestacion.py`
-  en `M3/generacion` y en `M3/tools`. `pipeline_app.py` importa la visión aislada para que M3 use los suyos.
+
 ## Manejo de errores
  
 - Falta un recurso en `PROJECT_ROOT`: la app no arranca y lista qué falta y dónde.
