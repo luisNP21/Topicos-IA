@@ -69,13 +69,13 @@ La primera vez descarga los modelos (embeddings e5-base, reranker, Clinical BERT
 **Caso escrito con cobertura en las guías.** La app identifica diabetes mellitus tipo 2 e
 insuficiencia cardíaca y responde con base en las guías, mostrando sus fuentes.
  
-![caso cubierto](https://github.com/user-attachments/assets/2d19bbda-fb67-4b41-b512-9a3c4c731e70)
+![caso cubierto](https://github.com/user-attachments/assets/940eff92-6cd0-4077-b407-bef03de2e262)
  
-**Caso desde una imagen, sin cobertura.** La nota fotografiada es de cirugía maxilofacial. La app
-la lee con el VLM y detecta 7 hallazgos. Como ninguno pertenece a las guías del corpus, no responde
+**Caso desde una imagen, sin cobertura.** La nota fotografiada es de TFNA. La app
+la lee con el VLM y detecta 4 hallazgos. Como ninguno pertenece a las guías del corpus, no responde
 en vez de inventar.
  
-![caso no cubierto](https://github.com/user-attachments/assets/90069f4f-146a-4a96-84d6-192acefd5521)
+![caso no cubierto](https://github.com/user-attachments/assets/6172cdd4-750e-4785-9c8a-04ffd97ab2e8)
  
 ## Decisiones
  
