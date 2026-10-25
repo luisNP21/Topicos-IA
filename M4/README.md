@@ -55,11 +55,74 @@ modificados.*
 
 ### 1.6 Punto de entrada del sistema
 
-*App en Gradio o Streamlit que acepta imagen o texto y devuelve entidades más fragmentos de
-guía: entradas aceptadas, salida mostrada, flujo interno, manejo de errores, generación final
-con LLM externo, comando para ejecutarla y capturas.*
+El punto de entrada es una app de chat en Gradio (M4/app/). La pensamos para un médico: escribe el caso o adjunta la foto de la nota, y recibe los hallazgos clínicos con lo que dicen las guías sobre cada uno. 
 
-[COMPLETAR – Pau (app) y Agustín (generación con LLM externo)]
+**Entradas aceptadas**
+ 
+- Texto libre: un caso clínico o una consulta corta (por ejemplo, "DM2").
+- Una o varias imágenes (PNG, JPG, WEBP, BMP, TIFF). Varias imágenes se tratan como páginas de la misma nota, en el orden en que se adjuntan, igual que en el set de evaluación.
+- Texto e imagen juntos: el texto escrito se suma al texto leído de la imagen.
+- Los archivos que no son imágenes se ignoran y la app lo avisa.
+
+**Flujo interno** (`M4/app/pipeline_app.py`):
+ 
+1. **Lectura de la imagen** con `M4/vision` (`transcribir`). Con GPU usa el VLM (Qwen2-VL-2B); sin GPU usa OCR con Docling, porque el VLM en CPU tarda minutos por página. El usuario puede cambiar el motor en "Opciones".
+2. **NER** con el Clinical BERT y el adaptador LoRA de M1, con el mismo chunking de M2 (ventanas de 277 palabras con 50 de traslape). Las entidades se devuelven en orden de aparición y sin repetir.
+3. **Por cada entidad**, la orquestación de M3 (`resolver_query`): retrieval híbrido con reranker sobre las guías, normalización terminológica cuando el score es bajo y compuerta de evidencia.
+4. **Generación** con el LLM externo de M3 (`generar_respuesta`), solo con los fragmentos que pasaron la compuerta.
+
+**Generación final con LLM externo.**: Groq con `qwen/qwen3.8-27b`, temperatura 0, hasta 700 tokens y 3 s de pausa entre llamadas por los límites de la API (`M3/generacion/config.yaml`). El LLM solo se llama si al menos un fragmento supera el umbral de evidencia; si no, se devuelve ("No tengo esa información en mis fuentes.") sin llamar al modelo. Usamos los umbrales de la calibración final de M3.
+
+**Salida mostrada.** La organizamos para que el médico vea primero lo útil:
+ 
+- Un resumen: cuántos hallazgos se identificaron y cuántos tienen respaldo en las guías disponibles.
+- El texto leído de la imagen, plegado, para que se pueda verificar la lectura.
+- Por cada hallazgo con respaldo: "Qué dicen las guías" (la respuesta del LLM) y sus fuentes. Cada
+  fuente muestra guía, sección y relevancia (alta, media o baja), y se despliega con el texto del
+  fragmento. La relevancia sale del score del reranker con cortes en 0.5 y 0.3.
+- Los hallazgos sin respaldo, en una sola línea, con las guías disponibles y una nota que explica
+  que el sistema no responde para no inventar.
+- "Detalles técnicos", plegado: motor y tiempo de lectura por página, scores, si se normalizó la
+  consulta, `chunk_id` y tiempo por hallazgo.
+Se consultan hasta 15 hallazgos por mensaje (configurable). Consultar uno tarda unos 0,35 s a hasta 75 s con consulta por medio de imagen (medido en Colab con T4).
+ 
+**Manejo de errores**
+ 
+| Situación | Qué hace la app |
+|---|---|
+| Falta el adaptador LoRA o el corpus en `PROJECT_ROOT` | No arranca y lista qué falta y en qué ruta |
+| No hay `GROQ_API_KEY` | Arranca y muestra entidades y fragmentos, sin respuesta redactada, y lo avisa |
+| La imagen no tiene texto legible (válvula del VLM/OCR) | Lo informa y no inventa entidades |
+| El NER no encuentra entidades | Lo informa. Si el texto es una consulta corta, la busca tal cual |
+| Ningún fragmento pasa la compuerta | Válvula de escape, sin llamar al LLM |
+| Error del LLM en una entidad | Lo muestra en esa entidad; las demás siguen |
+ 
+**Cómo ejecutarla.** Se necesita un `.env` en la raíz del repo con `PROJECT_ROOT` (la carpeta
+`Proyecto-Salud` de Drive) y `GROQ_API_KEY`. Dentro de `PROJECT_ROOT` deben estar el adaptador
+LoRA (`M1/saved_models/clinical_bert-distemist-lora/`) y los chunks y el manifiesto del corpus
+(`M3/data/guias_clinicas/`).
+ 
+```bash
+pip install -r M4/app/requirements.txt
+python M4/app/app.py            # local: http://127.0.0.1:7860
+python M4/app/app.py --share    # en Colab con GPU: enlace público temporal
+```
+ 
+En Colab se usa `M4/app/start_app.ipynb` donde se encuentran todas las instrucciones correspondientes.
+ 
+**Capturas**.
+ 
+Caso escrito con cobertura: la app identifica diabetes mellitus tipo 2 e insuficiencia cardíaca y
+responde con base en las guías, citando sus fuentes.
+ 
+[COMPLETAR – captura del caso con cobertura]
+ 
+Caso desde una imagen sin cobertura: la nota es de cirugía maxilofacial. El VLM la leyó
+correctamente (75,7 s para una página, en Colab con T4) y el NER detectó 7 hallazgos. Ninguno
+pertenece a las guías del corpus, así que la app no responde en vez de inventar.
+ 
+[COMPLETAR – captura del caso sin cobertura]
+
 
 ### 1.7 Cómo ejecutarlo
 
@@ -72,27 +135,100 @@ secretos).*
 
 ## 2. Justificación del patrón de integración
 
-*Responsable: Pau, con revisión de Isabella.*
-
 ### 2.1 Por qué input
 
-*Argumento central, con evidencia del proyecto.*
+La pregunta del usuario de nuestro sistema es: "tengo esta nota clínica, ¿qué dicen las guías sobre
+lo que tiene el paciente?". En clase vimos que el patrón correcto es el que responde esa pregunta con
+menos piezas nuevas. En nuestro caso, la imagen no es un dato extra que el sistema consulta cuando
+lo necesita: **es la entrada misma**. Sin leerla no hay texto, sin texto no hay entidades y sin
+entidades el RAG de M3 no tiene nada que buscar.
 
-[COMPLETAR – Pau]
+Esto pesa más si se piensa en cómo le llega la información al médico. Muchas veces el caso no
+está en un sistema que pueda copiar y pegar: llega como una remisión impresa de otra institución,
+una historia clínica en papel, una nota escrita a mano o una foto que otro médico le envió. En esos casos, pedirle al médico que transcriba la nota antes de consultar las guías es justo el trabajo que el sistema debería ahorrarle, y además es una fuente de errores. Si el sistema solo aceptara texto, quedaría por
+fuera la forma más común en que el médico tiene el caso a la mano.
+
+Ese contexto es el que guía el diseño del set de evaluación (sección 3.1): las degradaciones
+simulan lo que pasa al fotografiar una nota con el celular (sombra de la mano o del teléfono,
+reflejo del flash, foto en ángulo, desenfoque, baja resolución), además de sellos, firmas y letra
+a mano. No es una condición ideal de escáner.
+ 
+Por eso pusimos la visión **al inicio** del pipeline, con una sola tarea: convertir la imagen en
+texto, que es lo que el sistema ya sabía procesar. A partir de ahí no construimos nada nuevo:
+el texto pasa por el mismo NER de M1/M2, el mismo retrieval y la misma orquestación de M3, y se
+evalúa con el mismo harness de M2.
 
 ### 2.2 Qué se habría perdido con tool y con output
 
 | Patrón | Qué se habría perdido |
 |---|---|
-| Tool | [COMPLETAR – Pau] |
-| Output | [COMPLETAR – Pau] |
+| Tool | **Omisiones silenciosas.** En el patrón tool, el LLM decide si llama a la herramienta que mira la imagen. Si el médico escribe "paciente con disnea, adjunto la nota" y el agente responde con lo escrito sin leer la foto, la recomendación se basa en un caso incompleto, y el médico no tiene cómo saber que la nota no se leyó. En un contexto clínico, una omisión que nadie ve es peor que un error visible.<br><br>**Respuestas que cambian de una consulta a otra.** La decisión de mirar la imagen depende del LLM y no de una regla, así que la misma foto podría leerse en una consulta y no en otra. Eso impide explicar por qué el sistema dio una recomendación, que es justo lo que evitamos en M3 al decidir la normalización con una regla determinista en lugar de function-calling (`M3/README.md`).<br><br>**Pérdida de detalle clínico.** Una herramienta devuelve un resultado corto: una clase si se usa CLIP, o un resumen si se usa un VLM. Un resumen interpreta, y en la interpretación se pierden las dosis, los valores de laboratorio, la lateralidad y sobre todo las negaciones ("niega dolor torácico"), que cambian el sentido de la nota. El NER necesita el texto literal completo.<br><br>**No se podría medir igual.** En el harness, una caída del F1 podría deberse a que el agente no llamó la herramienta o a que el VLM leyó mal, y no habría forma de separar las dos causas. |
+| Output | **No resuelve el problema del médico.** El patrón output genera una imagen después de responder, por ejemplo con difusión. Los casos clínicos que llegan como foto seguirían sin poder entrar al sistema, que es la necesidad real.<br><br>**Riesgo clínico sin control.** El uso más realista sería generar un esquema del manejo recomendado o una infografía para el paciente. Pero los modelos de difusión no garantizan texto legible ni correcto dentro de la imagen: una dosis o un umbral de laboratorio mal dibujado en un esquema es un error que el médico podría seguir.<br><br>**Sin respaldo ni evaluación.** La imagen generada no se apoya en los fragmentos de la guía. No tiene fuente que citar ni válvula de escape, y el harness de entidades no puede evaluarla. El CLIP score solo mide si la imagen se parece al prompt, no si es clínicamente correcta. |
+
+**¿Fue input la mejor opción?** Para la pregunta que responde nuestro sistema ("¿qué dicen las
+guías sobre lo que tiene este paciente?"), sí: esa pregunta necesita la nota completa y leída
+siempre. Pero
+elegirlo también tiene costos, y conviene decirlos:
+
+- **Siempre se lee la imagen completa,** aunque el médico solo necesite un dato. Una nota de tres
+  páginas tarda unos 4 minutos en leerse (3 × 75,7 s, cálculo a partir de lo medido en la app).
+- **Si el VLM lee mal, el error pasa directo al NER.** Lo mitigamos mostrándole al médico el texto
+  leído, pero el sistema no lo corrige solo.
+- **Solo entra el texto de la imagen.** En casos como una
+  radiografía no se interpretan.
+- **No se pueden hacer preguntas puntuales sobre la imagen,** como "¿cuánto da la HbA1c en esta
+  foto?". El sistema extrae enfermedades y busca en las guías; no responde preguntas libres.
+
+Si el uso principal fuera ese último (conversar con el médico sobre un documento que ya tiene
+abierto), el patrón tool, con un VLM que extraiga campos puntuales, habría sido la mejor opción.
+Para nuestro caso, donde la nota es la entrada y la pregunta es siempre sobre lo que tiene el
+paciente, input fue la mejor opción.
 
 ### 2.3 Alternativa visual descartada y conexión con la teoría
 
-*Por qué no CLIP sobre figuras de las guías, y cómo se aplican al diseño los temas vistos en
-clase (parches de ViT y resolución, alucinación del VLM).*
+**Por qué no CLIP sobre figuras de las guías.** Consideramos indexar con CLIP las figuras de las
+guías (algoritmos de manejo, tablas) para recuperarlas junto con el texto. La descartamos por
+cuatro razones:
+ 
+1. **No responde la pregunta del usuario.** Lo que entra al sistema es la nota del paciente, no una imagen
+   como de lesión o radiografias.
+2. **CLIP no lee.** Mide parecido entre una imagen y una frase. Las figuras de
+   una guía clínica son sobre todo texto dentro de cajas y tablas, y CLIP no extrae ese texto: solo
+   diría que la figura "se parece" a una consulta.
+3. **Idioma y costo.** En el lab vimos que CLIP rinde mejor con prompts en inglés, y nuestras guías
+   y consultas están en español. Además, el retrieval de M3 ya cubre el contenido de las guías como
+   texto (64 chunks de 3 guías), con métricas medidas.
 
-[COMPLETAR – Pau]
+**Parches de ViT y resolución.** El encoder visual de un VLM es un ViT: corta la imagen en
+parches y cada parche se vuelve un token. CLIP (S11) reduce toda imagen a 224 × 224 y la corta en
+49 parches, y a ese tamaño una página de texto es ilegible. Qwen2-VL no la reduce: la corta tal
+como llega, con cada token cubriendo 28 × 28 px, así que más imagen significa más tokens. De ahí
+salen dos decisiones:
+
+- **Una imagen por página.** Una página A4 a 150 dpi son unos 2.770 tokens visuales (cálculo
+  nuestro, no medido); tres páginas en una sola imagen serían unos 8.300, con mucha más memoria
+  en la T4 y toda la transcripción en un solo límite de salida. Por eso la app lee página por
+  página, como llegan las fotos, y une el texto en orden antes del NER.
+- **Más tokens de salida.** Una página llena puede superar los 512 tokens que generaba el VLM y
+  cortar el final de la nota, donde suele estar el diagnóstico. En la app subimos el límite a 1024.
+
+**Alucinación del VLM.** Sabemos que un VLM alucina como un LLM porque es un LLM. En una nota
+clínica eso es lo más peligroso: una entidad inventada termina en una recomendación de una guía. Lo
+abordamos en varias capas:
+ 
+- **Prompt de transcripción literal:** "transcribe literalmente, no diagnostiques, no interpretes,
+  no corrijas" (`M4/vision/prompts.py`), con una válvula de escape: si no hay texto legible, el
+  modelo debe responder exactamente "No se aprecia texto legible en la imagen.", y en ese caso no
+  se extraen entidades.
+- **Texto oculto medido, no supuesto.** El manifiesto del set registra qué palabras y entidades
+  quedaron fuera de la imagen (sombra, recorte), para no castigar al VLM por lo que no se ve y para
+  detectar cuándo escribe algo que no podía ver (sección 3.1).
+- **Auditoría de entidades inventadas.** Cada entidad que sale de una transcripción se clasifica
+  como acierto, falso positivo del NER, texto extra, mal leída o inventada (sección 3.3).
+- **Retos con texto oculto** entre las entradas finales (sección 4.1), para ver si el modelo inventa
+  o avisa.
+- **En la app,** el médico ve el texto leído y la fuente de cada recomendación, y el LLM de M3 solo
+  responde con fragmentos que pasaron la compuerta de evidencia.
 
 ---
 
@@ -334,10 +470,48 @@ de fallos).*
 
 ### 4.1 Entradas finales del sistema
 
-*Documentos escaneados o fotografiados usados en las pruebas de M4: tipo, procedencia y cómo
-se garantiza que no contienen datos de pacientes reales.*
-
-[COMPLETAR – Pau]
+Las entradas finales son 56 imágenes seleccionadas del set sintético de la sección 3.1. Están en
+`M4/eval_set/ejemplos_finales/`, con un manifiesto `ejemplos.csv` en el mismo formato que
+`casos/<nivel>.csv` y dos columnas más: `grupo` y `motivo`. El script que las selecciona solo copia
+del set completo; no modifica ni borra nada.
+ 
+**Tipo.** Notas clínicas impresas y escritas a mano, "fotografiadas" o "escaneadas" con
+degradaciones simuladas. Las organizamos en dos grupos que se reportan por separado, porque
+mezclarlos distorsiona los promedios:
+ 
+| Grupo | Imágenes | Qué contiene | Para qué |
+|---|---|---|---|
+| Núcleo comparable | 35 | Los mismos 3 documentos (`ex_45`, `ex_47`, `ex_53`) en 13 categorías: `limpio`, `foto_realista`, `manuscrito_foto`, `manuscrito_leve` y `manuscrito_severo`, `desenfoque_leve` y `desenfoque_severo` (2 documentos cada uno), y `sombra`, `flash`, `perspectiva`, `baja_resolucion` y `marcas` en nivel moderado, más `orientacion` | Comparar categorías: si el resultado cambia, es por la degradación y no porque la nota sea distinta |
+| Retos | 21 | Casos difíciles que pueden pasar en la práctica: flash, perspectiva y baja resolución severos; sellos y firmas sobre el texto; sombras duras; recortes; una nota de 3 páginas con 28 entidades; letra cursiva difícil fotografiada | Ver cómo responde el sistema ante lo que no controlamos |
+ 
+Elegimos `ex_45`, `ex_47` y `ex_53` para el núcleo porque, según el manifiesto del set, son los
+únicos documentos del barrido que ocupan una sola página en las 13 categorías y no tienen ninguna
+entidad oculta. Así el núcleo mide solo la legibilidad. Además, `ex_45` y `ex_47` usan una
+caligrafía marcada como difícil, de modo que el núcleo también incluye letra a mano exigente.
+ 
+Dentro de los retos hay dos con **texto oculto a propósito**: `sombra_severo` en `ex_4` y
+`rotacion_recorte_severo` en `ex_22`. Sirven para ver si el modelo inventa lo que no puede leer o
+activa la válvula de escape. En esos dos casos el F1 se calcula también contra el gold visible
+(quitando las entidades marcadas como `oculta` en el manifiesto), y la transcripción se revisa a
+mano.
+ 
+**Procedencia.** Ninguna imagen es la foto de un documento real. Todas se generaron con
+`M4/eval_visual/generar_set.py` (semilla 42, reproducible) a partir de los casos clínicos del gold
+set de M2 (`M2/examples/gold_examples.jsonl`), que vienen de DisTEMIST, un corpus público de casos
+clínicos publicados.
+ 
+**Cómo se garantiza que no hay datos de pacientes reales**
+ 
+- El texto sale de casos clínicos publicados en un corpus público, el mismo que el proyecto usa
+  desde M1. No incorporamos notas de ninguna institución ni de ningún paciente.
+- Los sellos usan nombres de instituciones ficticias ("HOSPITAL CLINICO SIMULADO", "CLINICA DE
+  PRUEBA M4", "IPS SINTETICA"), y las firmas y notas al margen son trazos generados.
+- La letra a mano sale de fuentes tipográficas libres, no de escritura de personas.
+- La app muestra un aviso para que nadie ingrese datos reales de pacientes, porque el texto se envía
+  a un servicio externo (Groq) para la generación.
+Limitación: al ser sintéticas, estas entradas no tienen la letra, las abreviaturas ni el desorden
+de una nota médica real. Lo que medimos con ellas es la robustez ante degradaciones controladas, no
+el desempeño con notas reales.
 
 ### 4.2 Casos propios del dominio
 
