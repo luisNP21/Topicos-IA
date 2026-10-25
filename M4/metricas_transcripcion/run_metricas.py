@@ -367,7 +367,7 @@ def run(cfg: dict, project_root: Path, entradas_extra: list[dict] | None = None,
         entradas = sim.generar(cfg, manifest, gold, salida / "caches")
         log(f"Simulacion: {len(entradas)} niveles en {salida / 'caches'}")
     else:
-        entradas = list(cfg.get("entradas") or []) + list(entradas_extra or [])
+        entradas = list(entradas_extra) if entradas_extra else list(cfg.get("entradas") or [])
     if not entradas:
         raise ValueError("No hay entradas. Agregalas en config.yaml o con --transcripciones (o usa --simular).")
 
