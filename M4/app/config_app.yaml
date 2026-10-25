@@ -14,25 +14,26 @@ rutas:
   # --- Relativas a la raíz del repo (disco local, no se versionan) ---
   cache_dir: "M4/app/.cache"
   chroma_local: "M4/app/.cache/chroma_guias"   # el índice se reconstruye aquí la 1.ª vez
-
+ 
 ner:
   checkpoint: "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es"
   # Mismo chunking que el baseline de M2 (M2/run_inference/config.yaml).
   window_words: 277
   overlap_words: 50
-
+ 
 vision:
   # auto -> vlm si hay GPU; si no, ocr_docling (el VLM en CPU tarda minutos por página).
   backend_por_defecto: "auto"
   # Límite de tokens que genera el VLM por página. El config de M4/vision usa 512;
   # una página A4 completa en español puede superarlo y cortar el final de la nota.
   vlm_max_new_tokens: 1024
-
+ 
 rag:
   # Cuántas entidades (en orden de aparición) se consultan en las guías.
-  # Las demás se muestran como detectadas pero no consultadas.
-  max_entidades: 5
-
+  # Consultar una entidad cuesta ~0,35 s (retrieval); el LLM solo se llama si hay
+  # fragmentos sobre el umbral de evidencia, así que un límite alto casi no suma tiempo.
+  max_entidades: 15
+ 
 umbrales:
   # Si existe M3/retrieval/outputs/umbrales.json (calibración del experimento S08),
   # se usa ese archivo. Si no, se usan estos valores: son los de la calibración final
@@ -41,7 +42,8 @@ umbrales:
   preferir_umbrales_json: true
   umbral: 0.174
   umbral_evidencia: 0.174
-
+ 
 interfaz:
-  titulo: "Asistente de guías clínicas (M4)"
+  titulo: "Asistente de guías clínicas"
   puerto: 7860
+ 
