@@ -1,0 +1,104 @@
+# Configuración de la pieza de visión (M4 · Agustín)
+# Patrón: input (imagen -> texto antes del RAG).
+#
+# Las rutas son relativas a PROJECT_ROOT (la raíz del repo en Colab/Drive).
+# Los caches y las salidas NO se versionan: están en .gitignore.
+
+proyecto:
+  nombre: "M4 -- Vision (input): transcripcion de notas clinicas"
+  seed_global: 42
+
+vision:
+  # Backend por defecto. Opciones:
+  #   vlm            Qwen2-VL-2B-Instruct (S11/S13)
+  #   ocr_docling    Docling (recomendación de Isabella; ya se usa en M3)
+  #   ocr_tesseract  OCR clásico de respaldo
+  #   auto           prueba fallback_order hasta que uno funcione
+  backend: "vlm"
+
+  # Orden de intentos para backend: auto.
+  fallback_order: ["vlm", "ocr_docling", "ocr_tesseract"]
+
+  # Backends que corre `--comparar` (VLM vs. baseline OCR).
+  comparar: ["vlm", "ocr_docling"]
+
+  # null -> usa prompts.INSTRUCCION_TRANSCRIPCION (transcripción literal +
+  # válvula de escape). Se puede sobreescribir sin tocar el código.
+  instruccion: null
+
+vlm:
+  model_id: "Qwen/Qwen2-VL-2B-Instruct"
+  device: "auto"            # auto | cuda | cpu
+  torch_dtype: "float16"    # float16 en GPU; float32 en CPU
+  max_new_tokens: 512
+  # null -> prompts.SYSTEM_VISION ("transcribe, no diagnostiques")
+  system: null
+  instruccion: null
+
+ocr:
+  docling:
+    # markdown conserva encabezados/tablas; text es más plano.
+    export: "markdown"
+    # Configura el OCR en español (best-effort según la versión de Docling).
+    configurar_ocr: true
+    lang: "es"              # EasyOCR usa 'es'; Tesseract usa 'spa'
+  tesseract:
+    lang: "spa+eng"         # requiere tesseract-ocr-spa (o spa.traineddata)
+    psm: 6
+    oem: 3
+    # null -> usa TESSERACT_CMD o el PATH del sistema.
+    tesseract_cmd: null
+    # null -> usa TESSDATA_PREFIX o el tessdata por defecto de Tesseract.
+    tessdata_dir: null
+
+rutas:
+  # Eval set con imágenes: lo construyen Luis (set sintético) y Pau (casos
+  # límite). Aquí solo se consume. Se puede sobreescribir con --manifest.
+  #
+  # Set completo generado en Drive (PROJECT_ROOT/M4/data/imagenes):
+  #   manifest:     M4/data/imagenes/casos/<nivel>.csv
+  #   imagenes_dir: M4/data/imagenes
+  manifest: "M4/data/imagenes/casos/limpio.csv"
+  imagenes_dir: "M4/data/imagenes"
+  # null -> se deduce automáticamente del CSV por nivel o se pasa con --nivel.
+  nivel: null
+  grupo: null
+
+  # Cache local de transcripciones (fuente de verdad de la visión).
+  transcripciones_cache: "M4/vision/predictions/transcripciones_{backend}.json"
+
+  # Cache de entidades en el MISMO formato que lee el harness de M2:
+  # {doc_id: [entidades]}. Isabella lo conecta en la Tarea 4.
+  ner_cache: "M2/predictions/vision_{backend}.json"
+
+  # Resumen de la corrida (latencias, válvulas, fallos).
+  salida: "M4/vision/outputs/resultado_vision_{backend}.json"
+
+  # Resumen lado a lado cuando se usa --comparar (VLM vs. OCR).
+  comparacion: "M4/vision/outputs/comparacion_backends.json"
+
+  # Imagen sintética de demo (se regenera; no se versiona).
+  demo: "M4/vision/data/demo/nota_sintetica.png"
+
+ner:
+  # false por defecto: la visión puede correr sin GPU de NER.
+  # true -> puente visión -> Clinical BERT + LoRA -> cache M2/predictions/.
+  enabled: false
+  checkpoint: "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es"
+  adapter_path: "M1/saved_models/clinical_bert-distemist-lora"
+  chunking:
+    window_words: 277
+    overlap_words: 50
+
+integracion:
+  # true -> responder_m3_sustituto (marcado). Sirve para demo/tests sin M3.
+  # false -> adaptador real: retrieval + normalización + generación de M3.
+  #          Requiere PROJECT_ROOT, índice de M3 y GROQ_API_KEY.
+  usar_mocks: true
+  m3_generacion_config: "M3/generacion/config.yaml"
+
+  # Máximo de entidades que se consultan en M3 por caso.
+  max_entidades: 3
+
+  # Entidad fija opcional para un caso puntual (null en operación normal).
+  entidad: null

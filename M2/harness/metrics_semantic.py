@@ -81,6 +81,16 @@ def calibrar_umbral(casos_boundary: list[dict], true_by_doc: dict, pred_by_doc: 
     sims_pos = emb_sim.sims_de_pares(pares_pos)
     sims_neg = emb_sim.sims_de_pares(pares_neg)
 
+    if sims_pos.size == 0 or sims_neg.size == 0:
+        print("Aviso: pares insuficientes para calibrar umbral Youden; usando umbral por defecto 0.57")
+        return {
+            "threshold": 0.57,
+            "tpr_positivos": 0.0,
+            "fpr_negativos": 0.0,
+            "n_pares_pos": len(pares_pos),
+            "n_pares_neg": len(pares_neg),
+        }
+
     grid = np.round(np.arange(0.30, 0.991, 0.01), 3)
     tabla_youden = [
         (t, float((sims_pos >= t).mean()), float((sims_neg >= t).mean()))

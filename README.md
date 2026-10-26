@@ -129,6 +129,18 @@ que corresponde al trámite. -->
 
 > _¿Qué aporta el componente multimodal/visual del Módulo 4 al sistema?_
 
+Permite que la nota clínica entre como **imagen** (foto o escaneo), no solo como texto escrito. Patrón de integración **input**: un VLM (`Qwen/Qwen2-VL-2B-Instruct`) transcribe la imagen a texto y ese texto entra al mismo pipeline de M1/M2/M3 (NER → retrieval → generación), sin reescribir nada aguas abajo. El harness de M2 no se modifica: `run_inference` gana una fuente `vision` que reutiliza el módulo `M4/vision`.
+
+**Lo implementado:** backends de transcripción (VLM y OCR clásico), válvula de escape cuando la imagen no es legible, puente al NER que produce el cache `{doc_id: [entidades]}` que el harness ya consume, un set de evaluación con imágenes sintéticas (15 casos, 28 niveles de degradación) y una app de chat que acepta imagen o texto.
+
+**Lo medido** (15 casos, backend VLM; detalle en `M4/README.md`):
+
+- **Transcripción:** CER 0.000 en imagen limpia y 0.003 en foto realista; 0 entidades inventadas.
+- **NER en el harness:** imagen limpia y foto realista dan **exactamente el mismo resultado que el texto gold** (F1 exacto 0.617, semántico 0.660, juez 4.417): **delta cero** en las tres dimensiones.
+- **Costo:** ~4.5 s por documento de transcripción con el VLM; es el único costo frente a leer el texto directo.
+
+Conclusión: el componente habilita la entrada por imagen sin pérdida de calidad frente al texto en el uso realista. El límite de F1 (recall 0.468) es del NER de M1/M2 y afecta por igual a texto e imagen, no lo introduce la visión.
+
 ---
 
 ## 7. Riesgos éticos

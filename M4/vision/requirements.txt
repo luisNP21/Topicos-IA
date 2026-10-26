@@ -1,0 +1,31 @@
+# Dependencias de la pieza de visión (M4 · Agustín)
+# Instalar desde la raíz del repo:
+#   pip install -r M4/vision/requirements.txt
+#
+# En Colab con GPU T4, el backend VLM (Qwen2-VL-2B) es el que más memoria usa.
+# El backend OCR (Docling/Tesseract) corre en CPU.
+
+# Base
+Pillow>=10.0
+PyYAML>=6.0
+python-dotenv>=1.0
+requests>=2.31
+
+# VLM del patrón input (S11/S13)
+torch>=2.2
+transformers>=4.45
+accelerate>=0.30
+qwen-vl-utils>=0.0.8
+
+# Baseline OCR recomendado por Isabella (ya usado en M3/corpus).
+# Las versiones recientes incluyen OCR (RapidOCR) para imágenes sin capa de texto.
+docling>=2.0.0
+
+# OCR clásico de respaldo. Requiere el binario del sistema:
+#   Linux/Colab: apt-get install -y tesseract-ocr tesseract-ocr-spa
+#   Windows:     instalar Tesseract y agregarlo al PATH
+pytesseract>=0.3.10
+
+# Puente opcional visión -> NER (reutiliza M2/run_inference)
+peft>=0.10
+torchao>=0.16.0
