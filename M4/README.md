@@ -5,14 +5,6 @@ Este módulo agrega al sistema la capacidad de recibir una nota clínica como **
 existente: chunking → encoder clínico → entidades de enfermedad → retrieval de fragmentos de
 guía. Patrón de integración: **input**.
 
-El README sigue los cuatro criterios de la rúbrica, una sección por criterio. Cada sección
-indica quién la documenta.
-
-> Convención: toda cifra que aparezca en este documento indica su fuente (archivo o run), y los
-> hallazgos medidos se mantienen separados de los supuestos.
-
-[COMPLETAR – Isabella: resumen de 4 a 6 líneas, escrito al final]
-
 ---
 
 ## Ejecución
@@ -44,8 +36,6 @@ sin modificarlo; solo cambia la fuente del texto que entra al NER (ver sección 
 
 ## 1. Componente visual implementado
 
-*Responsables: Agustín (componente), Pau (punto de entrada), Isabella (integración con
-harness y cache).*
 
 ### 1.1 Qué hace y dónde se conecta
 
@@ -475,14 +465,7 @@ abordamos en varias capas:
 
 ## 3. Impacto medido en el harness
 
-*Responsable de la sección: Isabella. Aportes: Luis (set de evaluación, métricas exactas y de
-transcripción), Pau (métricas semánticas), Agustín (juez).*
-
 ### 3.1 Set de evaluación
-
-*Cómo se generan las imágenes a partir de los documentos del test: niveles de degradación,
-parámetros, semillas, script, ubicación y manifiesto. Aclarar que el gold sigue siendo el texto
-original.*
 
 **Origen y gold.** Las imágenes se generan a partir de los 15 documentos del eval set de M3
 (`M3/ejecucion/eval_set_casos.json`, casos clínicos). Cada documento se dibuja como una imagen,
@@ -767,7 +750,6 @@ base de las corridas de visión (3.5), evaluado en formato de texto plano.
 ### 3.5 Resultados y delta
 
 *Tabla por sistema, nivel de degradación y dimensión, con el delta respecto a la línea base.
-Cada dueño interpreta su dimensión: exacto (Luis), semántico (Pau), juez (Agustín).*
 
 Fuente: `start_inference_harness_vision.ipynb` y `start_inference_harness_vision_realista.ipynb`
 (celda 16), `M2/outputs_vision/{limpio_vlm,foto_realista_vlm}/scorecard_vision.{json,md}`, gold
@@ -830,8 +812,6 @@ sobre el set completo; no se reportan números inventados. El primitivo está pr
 
 ### 3.7 Dónde el componente no aportó
 
-*Respuesta directa y con cifras por sistema y nivel. Incluye la decisión sobre cualquier variante
-que no aporte (se retira del sistema o se conserva, y por qué).*
 
 Con los datos disponibles, el componente **no mejora** el NER respecto al texto en ninguna
 dimensión de clasificación: en `limpio` y `foto_realista`, F1 exacto 0.617 vs. 0.727 del texto
@@ -855,13 +835,7 @@ entre la transcripción y el NER, no la visión.
 
 ## 4. Casos de prueba
 
-*Responsables: Pau (casos y entradas finales), Luis (formato y estructura), Isabella (análisis
-de fallos).*
-
 ### 4.1 Entradas finales del sistema
-
-*Documentos escaneados o fotografiados usados en las pruebas de M4: tipo, procedencia y cómo
-se garantiza que no contienen datos de pacientes reales.*
 
 Las entradas usadas en esta tanda son **imágenes sintéticas** generadas por
 `M4/ejecucion/start_eval_visual.ipynb` (celdas 8 y 12) a partir de 15 casos clínicos tomados del
@@ -884,10 +858,6 @@ representan un uso esperado.
 
 ### 4.2 Casos propios del dominio
 
-*Casos clínicos propios (abreviaturas, entidades partidas entre líneas, tildes y ñ, dosis,
-sellos o firmas, tablas de laboratorio, manuscrito real, entre otros). El fallo esperado se
-documenta antes de ejecutar y el observado después.*
-
 Casos del dominio evaluados sobre el set sintético, con el fallo esperado nombrado antes de medir
 y el resultado observado después. Fuente: `metricas_transcripcion/resumen.md`, los scorecards de
 visión y `manifest.json` (celda 12).
@@ -904,9 +874,6 @@ palabras ocultas en `sombra_severo`. No se evalúan imágenes ilegibles a simple
 representan una entrada que un usuario subiría al sistema.
 
 ### 4.3 Análisis de los casos donde el componente falla
-
-*Etapa donde se rompe (lectura del VLM, chunking, NER, retrieval), evidencia y si el fallo es
-corregible o inherente al enfoque.*
 
 En los niveles evaluados (`limpio` y `foto_realista`, el uso realista del sistema), el fallo
 dominante **no está en la lectura del VLM** sino en el **NER sobre el texto transcrito**:
@@ -941,5 +908,3 @@ del F1 "contra lo visible".
 
 El VLM real no se ejecutó en la validación local; los fallos de lectura del VLM son **esperados,
 no medidos**. El OCR sí se ejecutó y es la evidencia que se reporta.
-
-[COMPLETAR – Isabella, con aportes de cada integrante]
