@@ -62,6 +62,52 @@ def resolver_project_root() -> Path:
     return root_path
 
 
+def cargar_eval_set_m3(ruta: Path) -> list[dict]:
+    """Carga el eval set de M3 (M3/ejecucion/eval_set_casos.json) con el formato del gold de M2.
+
+    Cada caso aporta el texto (`input`) que se renderiza como imagen. El `id` de M3
+    (caso_01...) pasa a ser el doc_id de las imagenes. La entidad del caso es la unica
+    entidad de referencia: sirve para saber si quedo visible en la imagen. Si la cadena
+    no aparece tal cual en el texto, queda como `no_localizada`.
+    """
+    if not ruta.exists():
+        raise FileNotFoundError(f"Eval set de M3 no encontrado: {ruta}")
+    with open(ruta, "r", encoding="utf-8") as f:
+        casos = json.load(f)
+    if not isinstance(casos, list) or not casos:
+        raise ValueError(f"El eval set de M3 esta vacio o no es una lista: {ruta}")
+    registros = []
+    for i, c in enumerate(casos):
+        texto = (c.get("input") or "").strip()
+        if not texto:
+            raise ValueError(f"Caso {c.get('id', i)} de M3 sin campo 'input'")
+        entidad = (c.get("entidad") or "").strip()
+        entities = c.get("entities_gold") or ([entidad] if entidad else [])
+        if isinstance(entities, str):
+            entities = [entities]
+        registros.append({
+            "doc_id": str(c.get("id") or f"caso_{i + 1:02d}"),
+            "text": texto,
+            "entities_gold": entities,
+            "criterio": "",
+        })
+    ids = [r["doc_id"] for r in registros]
+    if len(set(ids)) != len(ids):
+        raise ValueError("ids repetidos en el eval set de M3")
+    log(f"Eval set de M3 cargado: {len(registros)} casos ({ruta.name})")
+    return registros
+
+
+def _cargar_documentos(cfg: dict) -> list[dict]:
+    entrada = cfg["entrada"]
+    fuente = entrada.get("fuente", "gold_m2")
+    if fuente == "m3":
+        return cargar_eval_set_m3(REPO_ROOT / entrada["m3_eval_set"])
+    if fuente == "gold_m2":
+        return cargar_gold_set(REPO_ROOT / entrada["gold_set"])
+    raise ValueError(f"entrada.fuente debe ser 'm3' o 'gold_m2', no {fuente!r}")
+
+
 def _validar(cfg: dict, seleccion: list[str]) -> None:
     niveles = cfg["niveles"]
     desconocidos = [n for n in seleccion if n not in niveles]
@@ -213,7 +259,7 @@ def run(cfg: dict, project_root: Path, limite: int | None = None, niveles: list[
     _validar(cfg, seleccion)
     umbral = float(cfg.get("visibilidad", {}).get("umbral_token", 0.5))
 
-    eval_set = cargar_gold_set(REPO_ROOT / cfg["entrada"]["gold_set"])
+    eval_set = _cargar_documentos(cfg)
     if limite is not None:
         eval_set = eval_set[:limite]
     subs = _subconjuntos(cfg, [r["doc_id"] for r in eval_set], seed)
@@ -290,7 +336,8 @@ def run(cfg: dict, project_root: Path, limite: int | None = None, niveles: list[
             "Set sintetico de imagenes derivado de los documentos del gold set. El gold es el texto "
             "original; las imagenes son sinteticas y no equivalen a escaneos o fotos reales."
         ),
-        "gold_set": cfg["entrada"]["gold_set"],
+        "fuente": cfg["entrada"].get("fuente", "gold_m2"),
+        "gold_set": cfg["entrada"].get("m3_eval_set" if cfg["entrada"].get("fuente") == "m3" else "gold_set"),
         "seed_global": seed,
         "fuentes": {"impresa": Path(fuente_ruta).name, "manuscritas": [f["nombre"] for f in fuentes_m]},
         "versiones": {"python": sys.version.split()[0], "Pillow": PIL.__version__, "numpy": np.__version__},

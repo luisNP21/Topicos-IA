@@ -8,7 +8,8 @@ proyecto:
   seed_global: 42
 
 rutas:
-  gold_set: "M2/examples/gold_examples.jsonl"               # raiz del repo
+  gold_set: "M2/examples/gold_examples.jsonl"               # raiz del repo (si fuente == gold_m2)
+  m3_eval_set: "M3/ejecucion/eval_set_casos.json"           # raiz del repo (si fuente == m3)
   manifest: "M4/data/imagenes/manifest.json"                # salida de M4/eval_visual
   salida_dir: "M4/outputs/metricas_transcripcion"
   # Cache NER del sistema sobre texto (techo). Opcional: si existe, la auditoria marca
@@ -23,10 +24,15 @@ rutas:
 # - nivel (opcional): si falta, se deduce de la ruta de la imagen (<nivel>/<doc_id>_p<k>.ext).
 # - nombre (opcional): etiqueta del sistema en los reportes (por defecto, el backend).
 # Tambien se pueden pasar por CLI: --transcripciones RUTA [--ner RUTA] [--nivel N].
-entradas: []
-#  - transcripciones: "M4/vision/predictions/transcripciones_vlm_limpio.json"
-#    ner: "M2/predictions/vision_vlm_limpio.json"
-#  - transcripciones: "M4/vision/predictions/transcripciones_ocr_docling_limpio.json"
+entradas:
+  - transcripciones: "M4/vision/predictions/transcripciones_vlm_limpio.json"
+    ner: "M2/predictions/vision_vlm_limpio.json"
+    nivel: "limpio"
+    nombre: "vlm"
+  - transcripciones: "M4/vision/predictions/transcripciones_vlm_foto_realista.json"
+    ner: "M2/predictions/vision_vlm_foto_realista.json"
+    nivel: "foto_realista"
+    nombre: "vlm"
 
 normalizacion:
   # Se aplica igual a la referencia y a la transcripcion antes de medir.

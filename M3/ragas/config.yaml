@@ -13,7 +13,7 @@ ragas:
 
 cruce_harness:
   # Ruta relativa a PROJECT_ROOT
-  resultado_dimension1_path: "M2/ejecucion/outputs_gold/resultado_dimension1.json"
+  resultado_dimension1_path: "M2/outputs_vision/foto_realista_vlm/resultado_dimension1.json"
   # Umbrales para clasificar F1 alto/bajo en el diagnostico
   # (mismos umbrales que scorecard.py de M2 para consistencia)
   umbral_f1_bajo: 0.4

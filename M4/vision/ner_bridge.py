@@ -16,12 +16,15 @@ from pathlib import Path
 
 from cache import guardar_cache_ner
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 def _agregar_paths_m2(project_root: Path) -> None:
-    for ruta in (project_root / "M2", project_root / "M2" / "run_inference"):
-        if str(ruta) not in sys.path:
-            # append (no insert) para no tapar módulos homónimos del repo.
-            sys.path.append(str(ruta))
+    for base in (REPO_ROOT, project_root):
+        for ruta in (base / "M2", base / "M2" / "run_inference"):
+            if ruta.exists() and str(ruta) not in sys.path:
+                # append (no insert) para no tapar módulos homónimos del repo.
+                sys.path.append(str(ruta))
 
 
 def generar_cache_ner(

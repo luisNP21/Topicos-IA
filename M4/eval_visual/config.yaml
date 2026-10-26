@@ -13,6 +13,11 @@ proyecto:
   seed_global: 42
 
 entrada:
+  # De donde salen los textos que se renderizan como imagen:
+  #   m3       -> los 15 casos de M3/ejecucion/eval_set_casos.json (doc_id = caso_01...)
+  #   gold_m2  -> los 59 documentos de M2/examples/gold_examples.jsonl (doc_id = ex_0...)
+  fuente: "m3"
+  m3_eval_set: "M3/ejecucion/eval_set_casos.json" # relativo a la raiz del repo
   gold_set: "M2/examples/gold_examples.jsonl"     # relativo a la raiz del repo
 
 salida:                                           # relativo a PROJECT_ROOT (fuera de git)
