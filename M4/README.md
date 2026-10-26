@@ -264,9 +264,8 @@ llama una sola vez por caso. Lo que más tarda es leer la imagen: 75,7 s por pá
 una T4 (medido en Colab).
  
 `M4/app/evaluar_principal.py` mide cuántas veces la enfermedad que elige la app coincide con la
-`entidad` de los 15 casos de `M3/ejecucion/eval_set_casos.json`. Resultado: [COMPLETAR – correr el
-script y poner "X de 15", con la fecha de la corrida].
- 
+`entidad` de los 15 casos de `M3/ejecucion/eval_set_casos.json`. 
+
 **Manejo de errores**
  
 | Situación | Qué hace la app |
