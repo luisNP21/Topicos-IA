@@ -117,24 +117,48 @@ def _fuente_texto(cfg: dict, project_root: Path, eval_set: list[dict]) -> tuple[
     # Un documento puede venir partido en varias paginas (eval_visual escribe
     # id = "<doc_id>__p<k>"). Se juntan en orden de pagina antes del NER para
     # que el texto quede indexado por el doc_id del gold set.
+    # Si las transcripciones ya fueron generadas por M4/vision, se reutilizan del cache.
+    sufijo_manifest = Path(manifest).stem.replace("casos_", "")
+    candidatos_cache = [
+        project_root / f"M4/vision/predictions/transcripciones_{backend_nombre}_{sufijo_manifest}.json",
+        project_root / f"M4/vision/predictions/transcripciones_{backend_nombre}.json",
+        repo_root / f"M4/vision/predictions/transcripciones_{backend_nombre}_{sufijo_manifest}.json",
+        repo_root / f"M4/vision/predictions/transcripciones_{backend_nombre}.json",
+    ]
+    cache_existente: dict[str, dict] = {}
+    for c_path in candidatos_cache:
+        if c_path.exists():
+            try:
+                raw_c = json.loads(c_path.read_text(encoding="utf-8"))
+                if isinstance(raw_c, dict) and raw_c:
+                    cache_existente = raw_c
+                    print(f"Reutilizando transcripciones de cache: {c_path.name} ({len(cache_existente)} items)")
+                    break
+            except Exception:
+                pass
+
     paginas_por_doc: dict[str, list[tuple[int, str]]] = {}
     transcripciones: list[dict] = []
-    backend = None  # se crea una sola vez
+    backend = None  # se crea una sola vez si se necesita transcribir
     for caso in casos:
-        imagen = cargar_imagen(caso["_imagen_resuelta"])
-        if backend_nombre == "auto":
-            t = transcribir_auto(
-                imagen, vision_cfg, instruccion=instruccion,
-                ruta=caso["_imagen_resuelta"], doc_id=caso["id"],
-            )
+        cid = str(caso["id"])
+        if cid in cache_existente and cache_existente[cid].get("texto") is not None:
+            t = cache_existente[cid]
         else:
-            if backend is None:
-                backend = crear_backend(backend_nombre, vision_cfg)
-            t = transcribir(
-                imagen, backend=backend, instruccion=instruccion,
-                ruta=caso["_imagen_resuelta"], doc_id=caso["id"],
-            )
-        doc_id, _, pag = str(caso["id"]).partition("__p")
+            imagen = cargar_imagen(caso["_imagen_resuelta"])
+            if backend_nombre == "auto":
+                t = transcribir_auto(
+                    imagen, vision_cfg, instruccion=instruccion,
+                    ruta=caso["_imagen_resuelta"], doc_id=caso["id"],
+                )
+            else:
+                if backend is None:
+                    backend = crear_backend(backend_nombre, vision_cfg)
+                t = transcribir(
+                    imagen, backend=backend, instruccion=instruccion,
+                    ruta=caso["_imagen_resuelta"], doc_id=caso["id"],
+                )
+        doc_id, _, pag = cid.partition("__p")
         paginas_por_doc.setdefault(doc_id, []).append(
             (int(pag) if pag.isdigit() else 0, t.get("texto") or "")
         )

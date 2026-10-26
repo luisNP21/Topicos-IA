@@ -82,10 +82,13 @@ def cargar_eval_set_m3(ruta: Path) -> list[dict]:
         if not texto:
             raise ValueError(f"Caso {c.get('id', i)} de M3 sin campo 'input'")
         entidad = (c.get("entidad") or "").strip()
+        entities = c.get("entities_gold") or ([entidad] if entidad else [])
+        if isinstance(entities, str):
+            entities = [entities]
         registros.append({
             "doc_id": str(c.get("id") or f"caso_{i + 1:02d}"),
             "text": texto,
-            "entities_gold": [entidad] if entidad else [],
+            "entities_gold": entities,
             "criterio": "",
         })
     ids = [r["doc_id"] for r in registros]

@@ -65,6 +65,10 @@ def _ruta(project_root: Path, valor: str) -> Path:
 
 def cargar_eval_set_m3(ruta: Path) -> list[dict]:
     """Carga M3/ejecucion/eval_set_casos.json con el mismo esquema que el gold de M2 (caso_01..caso_15)."""
+    jsonl_candidato = ruta.parent.parent / "M4/eval_set/eval_set_casos.jsonl"
+    if jsonl_candidato.exists():
+        with open(jsonl_candidato, "r", encoding="utf-8") as f:
+            return [json.loads(line) for line in f if line.strip()]
     if not ruta.exists():
         raise FileNotFoundError(f"Eval set de M3 no encontrado: {ruta}")
     casos = cargar_json(ruta)
@@ -74,10 +78,13 @@ def cargar_eval_set_m3(ruta: Path) -> list[dict]:
     for i, c in enumerate(casos):
         texto = (c.get("input") or "").strip()
         entidad = (c.get("entidad") or "").strip()
+        entities = c.get("entities_gold") or ([entidad] if entidad else [])
+        if isinstance(entities, str):
+            entities = [entities]
         registros.append({
             "doc_id": str(c.get("id") or f"caso_{i + 1:02d}"),
             "text": texto,
-            "entities_gold": [entidad] if entidad else [],
+            "entities_gold": entities,
             "criterio": "",
         })
     return registros
@@ -146,7 +153,7 @@ def evaluar_entrada(entrada: dict, manifest: dict, docs_manifest: dict, gold: di
         extra = " ".join(x["texto"] for pg in info["paginas"] for x in pg["texto_extra"])
         caracteres_extra += len(normalizar_texto(extra))
         estados = {x["entidad"]: x["estado"] for x in info["entidades"]["no_visibles"]}
-        excluir = {"oculta"} | ({"parcial"} if ref_cfg.get("excluir_parciales") else set())
+        excluir = {"oculta", "no_localizada"} | ({"parcial"} if ref_cfg.get("excluir_parciales") else set())
         gold_doc = list(dict.fromkeys(gold[doc_id]["entities_gold"]))
         legibles = list(dict.fromkeys(normalizar_entidad(e) for e in gold_doc if estados.get(e) not in excluir))
         hip_n = normalizar_texto(hip)
@@ -358,9 +365,20 @@ def run(cfg: dict, project_root: Path, entradas_extra: list[dict] | None = None,
     gold = _cargar_gold(manifest, rutas)
 
     ner_texto = None
-    if rutas.get("ner_texto") and _ruta(project_root, rutas["ner_texto"]).exists():
-        ner_texto, _ = _ner_por_documento(cargar_json(_ruta(project_root, rutas["ner_texto"])))
-        log(f"Cache NER del sistema sobre texto: {rutas['ner_texto']}")
+    candidatos_ner_texto = [
+        rutas.get("ner_texto"),
+        "M2/predictions/texto_techo_m4.json",
+        "M2/predictions/encoder_solo.json",
+    ]
+    for c_ner in candidatos_ner_texto:
+        if c_ner:
+            r_c = _ruta(project_root, c_ner)
+            if r_c.exists():
+                cargado, _ = _ner_por_documento(cargar_json(r_c))
+                if any(d in cargado for d in docs_manifest):
+                    ner_texto = cargado
+                    log(f"Cache NER del sistema sobre texto: {c_ner}")
+                    break
 
     if simular:
         import simular as sim
