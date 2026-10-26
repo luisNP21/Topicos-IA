@@ -103,11 +103,15 @@ def _fuente_texto(cfg: dict, project_root: Path, eval_set: list[dict]) -> tuple[
 
     # El set sintético combinado repite `id` entre niveles; se filtra por
     # `fuente.nivel`/`fuente.grupo` antes de validar duplicados.
+    nivel_filtro = fuente.get("nivel")
+    if manifest_path.stem.startswith("casos_"):
+        nivel_filtro = manifest_path.stem.replace("casos_", "")
+
     casos = [
         dict(c)
         for c in cargar_manifiesto(
             manifest_path,
-            nivel=fuente.get("nivel"),
+            nivel=nivel_filtro,
             grupo=fuente.get("grupo"),
         )
     ]

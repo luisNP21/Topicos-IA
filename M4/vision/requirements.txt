@@ -28,3 +28,4 @@ pytesseract>=0.3.10
 
 # Puente opcional visión -> NER (reutiliza M2/run_inference)
 peft>=0.10
+torchao>=0.16.0
