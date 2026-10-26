@@ -296,13 +296,13 @@ En Colab se usa `M4/app/start_app.ipynb` donde se encuentran todas las instrucci
 Caso escrito con cobertura: la app identifica diabetes mellitus tipo 2 e insuficiencia cardíaca y
 responde con base en las guías, citando sus fuentes.
  
-[COMPLETAR – captura del caso con cobertura]
+![captura del caso con cobertura](https://github.com/user-attachments/assets/76ad1d05-68f7-480e-8046-7453f791e611)
  
 Caso desde una imagen sin cobertura: la nota es de cirugía maxilofacial. El VLM la leyó
 correctamente (75,7 s para una página, en Colab con T4) y el NER detectó 7 hallazgos. Ninguno
 pertenece a las guías del corpus, así que la app no responde en vez de inventar.
  
-[COMPLETAR – captura del caso sin cobertura]
+![captura del caso sin cobertura](https://github.com/user-attachments/assets/e93cc73f-dfa0-4fce-8e23-de0426d2afdb)
 
 
 ### 1.7 Cómo ejecutarlo
