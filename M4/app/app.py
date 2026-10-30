@@ -170,6 +170,13 @@ def armar_respuesta(transcripcion: dict | None, entidades: list[str], origen: st
     partes.append(resumen)
  
     if transcripcion and transcripcion["texto"]:
+        sin_lectura = sum(1 for p in transcripcion["paginas"] if p["valvula"] or p["error"])
+        aviso = ("<sub>⚠️ Los hallazgos salen de una lectura automática de la imagen. "
+                 "Revise el texto leído antes de usarlos")
+        if sin_lectura:
+            aviso += (f"; {sin_lectura} de {len(transcripcion['paginas'])} página(s) no se "
+                      "pudieron leer y no se usaron")
+        partes.append(aviso + ".</sub>")
         partes.append("<details><summary>Ver el texto leído de la imagen</summary>\n\n"
                       f"{html.escape(transcripcion['texto'])}\n\n</details>")
  

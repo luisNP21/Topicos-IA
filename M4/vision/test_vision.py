@@ -75,6 +75,19 @@ class TestPrompts(unittest.TestCase):
         # Una nota real puede mencionar la frase dentro de una oración.
         self.assertFalse(es_valvula("En la nota se dice que no se aprecia el sello."))
 
+    def test_eco_sin_contenido_es_valvula(self):
+        # Salida real de Qwen2-VL-2B en el reto de recorte ex_22_p2.
+        self.assertTrue(es_valvula("Se aprecia texto legible en la imagen."))
+        self.assertTrue(es_valvula("  hay texto legible en la imagen"))
+        self.assertTrue(es_valvula("La imagen contiene texto."))
+
+    def test_nota_que_empieza_con_se_aprecia_no_es_valvula(self):
+        self.assertFalse(es_valvula("Se aprecia texto legible en la imagen: paciente con DM2."))
+        self.assertFalse(es_valvula("Se aprecia edema en miembros inferiores y disnea."))
+        self.assertFalse(es_valvula(
+            "realizada y alopecia, ambos relacionados con la toxicidad a las medidas de soporte"
+        ))
+
 
 class TestLimpieza(unittest.TestCase):
     def test_quita_markdown_y_pipes(self):
