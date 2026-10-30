@@ -38,8 +38,19 @@ PATRON_VALVULA = re.compile(
 )
 
 
+# Respuesta que solo comenta la imagen sin transcribir nada (p. ej. "Se aprecia
+# texto legible en la imagen."). Se observó con Qwen2-VL-2B en el reto de recorte
+# ex_22_p2: es un eco de la instrucción, no una lectura, y debe tratarse igual que
+# la válvula para que no llegue al NER como si fuera la nota.
+PATRON_ECO_SIN_CONTENIDO = re.compile(
+    r"^\s*(se aprecia|se observa|se ve|hay|la imagen contiene|la imagen tiene)\s+"
+    r"(un\s+|una\s+|el\s+)?texto(\s+legible)?(\s+en\s+la\s+imagen)?\s*\.?\s*$",
+    re.IGNORECASE,
+)
+
+
 def es_valvula(texto: str | None) -> bool:
     """True si la salida del backend equivale a 'no hay texto legible'."""
     if not texto or not texto.strip():
         return True
-    return bool(PATRON_VALVULA.match(texto))
+    return bool(PATRON_VALVULA.match(texto) or PATRON_ECO_SIN_CONTENIDO.match(texto))
