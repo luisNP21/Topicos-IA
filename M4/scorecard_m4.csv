@@ -1,0 +1,4 @@
+condicion,n_docs,n_gold,tp,fp,fn,precision,recall,f1,delta_f1,latencia_s_caso
+texto,15,57,29,3,28,0.9062,0.5088,0.6517,0.0,
+limpio,15,57,29,3,28,0.9062,0.5088,0.6517,0.0,4.513
+foto_realista,15,57,29,3,28,0.9062,0.5088,0.6517,0.0,4.493
