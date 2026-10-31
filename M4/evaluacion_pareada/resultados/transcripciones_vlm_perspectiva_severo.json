@@ -1,0 +1,152 @@
+{
+  "caso_01__p1": {
+    "doc_id": "caso_01__p1",
+    "texto": "Varón de 52 años, con sobrepeso (IMC 29.3 kg/m2) y vida sedentaria, que acude a consulta de medicina preventiva. En analíticas de control rutinario presenta glucemia plasmática en ayunas de 142 mg/dL y 138 mg/dL en dos tomas separadas, con una hemoglobina glicosilada (HbA1c) de 7.2%. No refiere antecedentes de enfermedad cardiovascular ni renal, y se encuentra asintomático, confirmándose el diagnóstico de diabetes mellitus tipo 2 de reciente comienzo.",
+    "backend": "vlm",
+    "segundos": 47.591,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_01_p1.jpg",
+    "sha256": "267036190e3ab13fe584f8f69b876bf6d6f086bb50e4a6670906c305bbf1ea32"
+  },
+  "caso_02__p1": {
+    "doc_id": "caso_02__p1",
+    "texto": "Mujer de 64 años con diagnóstico de DM2 desde hace 7 años en tratamiento con metformina 1000 mg cada 12 horas. Presenta antecedentes de hipertensión arterial y un infarto agudo de miocardio hace dos años. En su control periódico registra HbA1c de 8.1% y una tasa de filtración glomerular estimada de 55 mL/min/1.73m2 con microalbuminuria persistente.",
+    "backend": "vlm",
+    "segundos": 4.208,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_02_p1.jpg",
+    "sha256": "3b50b536f927e0c265b3380ea5495dbeeb7d2e0667f5a702efbbfacf57709df2"
+  },
+  "caso_03__p1": {
+    "doc_id": "caso_03__p1",
+    "texto": "paciente de 49 años que acude a urgencias por astenia marcada, polidipsia intensa, poliuria y pérdida involuntaria de 6 kg de peso en el último mes. Al examen físico presenta signos leves de deshidratación, con glucemia capilar al ingreso de 340 mg/dL y una HbA1c de 10.8%, datos de cetoacidosis diabética ni estado hiperosmolar en la gasometría arterial.",
+    "backend": "vlm",
+    "segundos": 4.062,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_03_p1.jpg",
+    "sha256": "b9d313d21f927511f28d04634fbcf092ccdd5589ae0026df993e79a895820afc"
+  },
+  "caso_04__p1": {
+    "doc_id": "caso_04__p1",
+    "texto": "Varón de 78 años con antecedentes de DM2 de 15 años de evolución, hipertensión y artrosis moderada. Vive solo y ha presentado dos episodios de mareo matutino asociados a glucemias capilares de 60 mg/dL bajo tratamiento con glibenclamida. En su analítica actual presenta HbA1c de 6.8% y aclaramiento de creatinina de 45 mL/min.",
+    "backend": "vlm",
+    "segundos": 3.886,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_04_p1.jpg",
+    "sha256": "74036613be47b3597080af10f47e77c9e5a714b1463c5a8360c001b1b25db17c"
+  },
+  "caso_05__p1": {
+    "doc_id": "caso_05__p1",
+    "texto": "paciente femenina de 56 años con diabetes mellitus tipo 2 diagnosticada hace 5 años, con regular control glucémico (última HbA1c 7.6%) en monoterapia con metformina. Acude a su control anual de prevención de complicaciones crónicas microvasculares sin síntomas visuales ni edemas periféricos.",
+    "backend": "vlm",
+    "segundos": 3.25,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_05_p1.jpg",
+    "sha256": "97fbf561fcb6507f2ea256bba6c28ab9f3d5776283e3e299dc4409f88e6db842"
+  },
+  "caso_06__p1": {
+    "doc_id": "caso_06__p1",
+    "texto": "Varón de 63 años con antecedentes de cardiopatía isquémica que consulta por disnea progresiva de esfuerzo clase funcional II-III según la NYHA, ortopnea de dos almohadas y edemas vespertinos en miembros inferiores. El ecocardiograma transtorácico confirma dilatación ventricular izquierda con fracción de eyeción reducida del 34% (FEVI reducida), diagnosticándose falla cardíaca crónica.",
+    "backend": "vlm",
+    "segundos": 4.132,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_06_p1.jpg",
+    "sha256": "17c6ba5474d38c025c56487663c0a5c1631f01ca3d2d460aad3ad1017b7a88d3"
+  },
+  "caso_07__p1": {
+    "doc_id": "caso_07__p1",
+    "texto": "acude al servicio de urgencias por empeoramiento clínico de 4 días caracterizado por aumento de 4 kg de peso, disnea paroxística nocturna, ingurgitación yugular a 45 grados y crepitantes basales bilaterales en la auscultación pulmonar.",
+    "backend": "vlm",
+    "segundos": 2.651,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_07_p1.jpg",
+    "sha256": "83a83619abae6c74e5038e3d052dfc626a8b8a6313a1746a773b4e89fe450788"
+  },
+  "caso_08__p1": {
+    "doc_id": "caso_08__p1",
+    "texto": "Varón de 58 años diagnosticado de falla cardíaca compensada de etiología no isquémica en clase funcional II de la NYHA, clínicamente estable y con tratamiento médico óptimo. Es derivado al programa multidisciplinario de cardiología preventiva para mejorar su capacidad funcional y calidad de vida.",
+    "backend": "vlm",
+    "segundos": 2.833,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_08_p1.jpg",
+    "sha256": "08f9f4707fb1a83197e9fdf5b9717d5970e00b92b071134bf03be4a2b18f5419"
+  },
+  "caso_09__p1": {
+    "doc_id": "caso_09__p1",
+    "texto": "Paciente de 69 años con insuficiencia cardíaca crónica por cardiopatía hipertensiva que asiste a consulta de enfermería y seguimiento clínico. Manifiesta dudas sobre las medidas no farmacológicas de estilo de vida que debe mantener en su domicilio para evitar ingresos hospitalarios repetidos.",
+    "backend": "vlm",
+    "segundos": 2.817,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_09_p1.jpg",
+    "sha256": "23220405a2a4b08e7d9c0b66e3fe9c580b113cf02843bf1743c77d6e48b5106f"
+  },
+  "caso_10__p1": {
+    "doc_id": "caso_10__p1",
+    "texto": "Varón de 60 años con diagnóstico reciente de falla cardíaca con FEVI del 32%, normotenso y con frecuencia cardíaca en reposo de 82 lpm en ritmo sinusal, actualmente recibiendo dosis bajas de enalapril y espironolactona, sin signos de congestión periférica ni pulmonar.",
+    "backend": "vlm",
+    "segundos": 3.22,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_10_p1.jpg",
+    "sha256": "e8eb1b1b7ae9adb64208aeccd2312ca0f9d18d900be40b8c5fced3aeaaa80af0"
+  },
+  "caso_11__p1": {
+    "doc_id": "caso_11__p1",
+    "texto": "Los sin antecedentes somáticos relevantes que acude a consulta médica por un cuadro de 2 meses de evolución consistente en tristeza persistente, anhedonia marcada, fatiga extrema, insomnio de despertar precoz y sentimientos recurrentes de culpa que interfieren en su ámbito laboral y familiar, cumpliendo criterios de episodio depresivo mayor.",
+    "backend": "vlm",
+    "segundos": 3.196,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_11_p1.jpg",
+    "sha256": "c9c62a31cee99f7563e2d0d156952265d92356d4d7a17c111d4b2b8c78d2461f"
+  },
+  "caso_12__p1": {
+    "doc_id": "caso_12__p1",
+    "texto": "Varón de 74 años, jubilado, con antecedentes de hipertrofia prostática benigna e hipertensión arterial, que acude acompañado por sus familiares debido a pérdida progresiva del interés por sus actividades cotidianas, apatía, aislamiento social y pérdida de peso de 6 semanas de evolución, diagnosticándose trastorno depresivo.",
+    "backend": "vlm",
+    "segundos": 3.183,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_12_p1.jpg",
+    "sha256": "a2ad821b6e9a608e313cb2b189366c3707a8c7ff842cd4eadbd8f7f6def4a106"
+  },
+  "caso_13__p1": {
+    "doc_id": "caso_13__p1",
+    "texto": "una mujer de 29 años que consulta por decaimiento anímico leve, dificultades de concentración y desánimo transitorio tras una separación de pareja que ha durado 4 semanas. Conserva la capacidad funcional básica en su trabajo y no presenta ideación autolítica ni síntomas psicóticos, orientándose como episodio depresivo leve.",
+    "backend": "vlm",
+    "segundos": 3.066,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_13_p1.jpg",
+    "sha256": "b143e0539892d17a7fed0b53fb52c6add12a314b202ff2d1da8472ec19cd9ba5"
+  },
+  "caso_14__p1": {
+    "doc_id": "caso_14__p1",
+    "texto": "Paciente de 46 años que completó 3 meses de tratamiento con sertralina 100 mg/día por un episodio depresivo mayor, logrando una remisión completa de los síntomas anímicos y recuperación total de su funcionalidad previa. Pregunta si ya puede suspender definitivamente el antidepresivo.",
+    "backend": "vlm",
+    "segundos": 2.943,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_14_p1.jpg",
+    "sha256": "c6cb2648d9bf76a2a3c3e0f164e7ab36fa34e8dfbbfe3e65dfd2bd0990ca4198"
+  },
+  "caso_15__p1": {
+    "doc_id": "caso_15__p1",
+    "texto": "Recién nacida de 36 semanas de gestación que presenta hematomas difusos y trombocitopenia grave con plaquetas de 8 x 10^9/L tras el parto, confirmándose sospecha de trombocitopenia fetal y neonatal aloinmune (TFNA) por incompatibilidad de antígenos plaquetarios materno-fetales.",
+    "backend": "vlm",
+    "segundos": 3.319,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/perspectiva_severo/caso_15_p1.jpg",
+    "sha256": "28f3dafac65a2e3264d53cfab8a8d7b84d9d2a94f06ef4331fffe86d7e5aaa3a"
+  }
+}

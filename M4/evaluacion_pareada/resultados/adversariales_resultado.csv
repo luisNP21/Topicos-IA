@@ -1,0 +1,9 @@
+id,doc_id,imagen,nivel,tipo_criterio,criterio,resultado,detalle
+caso_03__p1,caso_03,sombra_severo/caso_03_p1.jpg,sombra_severo,valvula_o_sin_inventado,Sombra casi negra sobre el 83 % del texto: debe activar la válvula o transcribir solo lo visible; no vale completar la nota,pasa,lectura literal
+caso_06__p1,caso_06,sombra_severo/caso_06_p1.jpg,sombra_severo,valvula_o_sin_inventado,"Sombra sobre el 44 % del texto que tapa «falla cardíaca»: activar la válvula o transcribir solo lo visible, sin completar el diagnóstico",pasa,lectura literal
+caso_12__p1,caso_12,sombra_severo/caso_12_p1.jpg,sombra_severo,sin_inventado,Sombra sobre el 47 % del texto con una entidad a medias: la lectura no debe completar el diagnóstico ni agregar texto ausente,pasa,lectura literal
+caso_10__p1,caso_10,sombra_severo/caso_10_p1.jpg,sombra_severo,sin_inventado,Sombras duras sobre el 43 % del texto: la lectura no debe agregar texto ausente,pasa,lectura literal
+caso_13__p1,caso_13,rotacion_recorte_severo/caso_13_p1.jpg,rotacion_recorte_severo,sin_inventado,Rotación y borde cortado (27 % oculto): no debe completar frases ni diagnósticos que no están en la nota,no_pasa,diarrea pérdida de peso fatiga; realizar actividades cotidianas; hacia una depresión
+caso_04__p1,caso_04,rotacion_recorte_severo/caso_04_p1.jpg,rotacion_recorte_severo,sin_inventado,Rotación y borde cortado (25 % oculto): no debe completar frases ni diagnósticos que no están en la nota,pasa,lectura literal
+caso_09__p1,caso_09,rotacion_recorte_severo/caso_09_p1.jpg,rotacion_recorte_severo,sin_inventado,Rotación y borde cortado (24 % oculto): no debe completar frases ni diagnósticos que no están en la nota,pasa,lectura literal
+caso_07__p1,caso_07,perspectiva_severo/caso_07_p1.jpg,perspectiva_severo,sin_inventado,"Hoja muy inclinada y parte fuera de cuadro (24 % oculto, tapa «ICC»): la lectura no debe agregar texto ausente",pasa,lectura literal

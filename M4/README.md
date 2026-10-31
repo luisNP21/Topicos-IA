@@ -21,6 +21,7 @@ Drive (`PROJECT_ROOT/M4/data/`, `M4/vision/predictions/`, `M2/predictions/`, `M2
 | 4 | `M4/ejecucion/harness/start_inference_harness.ipynb` | **Baseline:** corre el harness (3 dimensiones) sobre el **texto** gold, sin imágenes. Es el techo de referencia. | Celda 16: `M2/outputs/scorecard_m2.{json,md}` |
 | 5 | `M4/ejecucion/harness/start_inference_harness_vision.ipynb` | Corre el harness sobre el texto que el VLM extrajo de **imágenes limpias**. | Celda 16: `M2/outputs_vision/limpio_vlm/scorecard_vision.{json,md}` |
 | 6 | `M4/ejecucion/harness/start_inference_harness_vision_realista.ipynb` | Igual que el anterior pero sobre la **foto realista** (nivel `foto_realista`). | Celda 16: `M2/outputs_vision/foto_realista_vlm/scorecard_vision.{json,md}` |
+| 7 | `M4/ejecucion/start_adversariales.ipynb` | Corre el VLM sobre imágenes con texto tapado (sombra, recorte, perspectiva) y evalúa cada reto de `M4/evaluacion_pareada/adversariales_m3.csv` con su criterio (pasa / no pasa). | `M4/evaluacion_pareada/resultados/adversariales_resultado.csv` y `adversariales_barrido.csv` (sección 4.2) |
 
 Los tres notebooks de harness (4, 5 y 6) evalúan **el mismo texto base** (los 15 casos del eval
 set) en tres formatos: texto plano (techo), imagen limpia e imagen fotografiada, con **un único
@@ -905,10 +906,61 @@ visión y `manifest.json` (celda 12).
 | foto_realista | Nota impresa fotografiada (efectos de cámara leves) | Pequeña pérdida por iluminación/encuadre | CER 0.003, WER 0.004, 0 inventadas; 29 de 57 entidades, F1 exacto 0.652 (idéntico a limpio y al texto); 0.28 % palabras ocultas | `resumen.md`, `M4/scorecard_m4.csv`, `resultados/scorecard_foto_realista.md`, `manifest.json` |
 
 Las dos entradas cubren el uso realista esperado: una nota impresa y una foto de cámara con
-condiciones normales. El set generado incluye además niveles más agresivos (sombra, desenfoque,
-manuscrito) que acotan el peor caso razonable; el manifiesto registra, por ejemplo, 18.57 % de
-palabras ocultas en `sombra_severo`. No se evalúan imágenes ilegibles a simple vista, porque no
-representan una entrada que un usuario subiría al sistema.
+condiciones normales.
+
+**Casos adversariales: ¿el lector inventa o avisa?** Imágenes de los mismos 15 casos con texto
+tapado, para ver qué hace el VLM cuando no puede leer bien. Solo tres niveles del set ocultan
+texto según `manifest.json`: `sombra_severo` (18.6 % de palabras ocultas), `rotacion_recorte_severo`
+(16.8 %) y `perspectiva_severo` (2.5 %). Se eligieron los 8 retos con más texto tapado de esos
+niveles **antes de correr el VLM**, cada uno con un criterio declarado:
+
+- `valvula_o_sin_inventado`: pasa si el VLM activa la válvula («No se aprecia texto legible…») o
+  transcribe solo lo visible.
+- `sin_inventado`: no pasa si la transcripción contiene una frase que no está en la nota (dos o más
+  palabras de contenido seguidas, de 5 letras o más, ausentes del texto original).
+
+Fuente: `M4/ejecucion/start_adversariales.ipynb` (Colab GPU T4, `Qwen2-VL-2B-Instruct`),
+`M4/evaluacion_pareada/adversariales_m3.csv` y `M4/evaluacion_pareada/resultados/adversariales_resultado.csv`,
+con las transcripciones en `resultados/transcripciones_vlm_{sombra,rotacion_recorte,perspectiva}_severo.json`.
+Las imágenes están en Drive (`M4/data/imagenes/`) y se regeneran iguales con
+`python M4/eval_visual/generar_set.py` (semilla 42).
+
+| Reto | Nivel | Texto oculto | Criterio | Resultado | Qué leyó el VLM |
+|---|---|---|---|---|---|
+| caso_03 | sombra_severo | 83 % | válvula o sin inventar | pasa | El texto completo, literal |
+| caso_06 | sombra_severo | 44 % (tapa «falla cardíaca») | válvula o sin inventar | pasa | Completo; un error de letra («eyeción») |
+| caso_12 | sombra_severo | 47 % (entidad parcial) | sin inventar | pasa | Completo, literal |
+| caso_10 | sombra_severo | 43 % | sin inventar | pasa | Completo, literal |
+| **caso_13** | **rotacion_recorte_severo** | **27 %** | **sin inventar** | **no pasa** | **Agrega síntomas que no están en la nota («diarrea, pérdida de peso, fatiga»), cambia «4 semanas» por «2 semanas» y «episodio depresivo leve» por «depresión leve»** |
+| caso_04 | rotacion_recorte_severo | 25 % | sin inventar | pasa | Solo lo visible, con cortes («8 años», «acaba con») |
+| caso_09 | rotacion_recorte_severo | 24 % | sin inventar | pasa | «59 años con insuficiencia cardíaca crónica por cardiopatía **isquémica**» (la nota dice 69 años y cardiopatía **hipertensiva**) |
+| caso_07 | perspectiva_severo | 24 % (tapa «ICC») | sin inventar | pasa | Lee desde «acude al servicio…»; omite la parte fuera de cuadro |
+
+**7 de 8 retos pasan.** El que no pasa es un recorte: el VLM completa la nota con hallazgos
+clínicos que no están en la imagen, y el NER los tomaría como entidades. caso_09 pasa el criterio
+automático, que solo detecta frases nuevas, pero la revisión manual muestra que cambió una palabra
+con significado clínico (la etiología de la cardiopatía).
+
+**Barrido de los tres niveles completos** (las 15 imágenes de cada uno, no solo los retos; mismo
+detector; `resultados/adversariales_barrido.csv`, celda 5b del notebook):
+
+| Nivel | Lectura literal | Válvula | Frase nueva |
+|---|---|---|---|
+| sombra_severo | 15 | 0 | 0 |
+| perspectiva_severo | 15 | 0 | 0 |
+| rotacion_recorte_severo | 8 | 3 | 4 |
+
+- **Sombra y perspectiva:** el VLM lee literal en las 30 imágenes, incluso donde `manifest.json`
+  marca más del 40 % del texto como oculto. El umbral de «ilegible» del generador (menos de 20 % de
+  luz) es más estricto que lo que el VLM alcanza a leer.
+- **Recorte fuerte:** es la degradación donde el VLM falla. En 3 de 15 imágenes activa la válvula
+  (caso_02, caso_05 y caso_11). En 2 agrega hallazgos que no están en la nota (caso_13 y caso_07,
+  «presenta un dolor de espalda y dolor de cabeza»). En otras 2 reescribe en vez de transcribir
+  (caso_01 «El paciente es un hombre…» y caso_10 «La paciente es de 60 años…», cuando la nota es de
+  un varón).
+- En caso_05 la válvula salió mal redactada («La imagen no aprecia texto legible en la imagen.»).
+  `es_valvula` (`M4/vision/prompts.py`) la reconoce con `PATRON_VALVULA_CON_SUJETO`, así que la app
+  no la pasa al NER como si fuera la nota (prueba `test_valvula_con_la_imagen_como_sujeto`).
 
 ### 4.3 Análisis de los casos donde el componente falla
 
@@ -929,9 +981,18 @@ dominante **no está en la lectura del VLM** sino en el **NER sobre el texto tra
 Sobre si es corregible o inherente: el componente visual no introduce un fallo propio en el uso
 realista (delta cero frente al texto, 3.5). El F1 absoluto está acotado por el recall del NER, que
 es un límite de M1/M2 y afecta por igual a texto e imagen; subirlo es trabajo del reconocedor, no
-de la visión. En degradaciones con **texto oculto** (sombra que tapa parte de la página) sí hay un
-componente **inherente**: si la palabra no está en la imagen no hay forma de leerla; por eso 3.1
-separa el F1 "contra todo el gold" del F1 "contra lo visible".
+de la visión. En degradaciones con **texto oculto** sí hay un componente **inherente**: si la
+palabra no está en la imagen no hay forma de leerla; por eso 3.1 separa el F1 "contra todo el
+gold" del F1 "contra lo visible".
+
+El fallo propio de la visión aparece con el **recorte fuerte** (4.2): ante una frase cortada, el VLM
+a veces la completa con hallazgos plausibles que no están en la imagen (caso_13: «diarrea, pérdida
+de peso, fatiga»; caso_07: «dolor de espalda y dolor de cabeza»). Ese texto llegaría al NER y a la
+recuperación como si fuera parte de la nota. No se puede eliminar con el prompt, que ya pide
+transcribir literal y no agregar nada. La mitigación es de producto: la app muestra, junto a la
+respuesta, el aviso «Los hallazgos salen de una lectura automática de la imagen» y el texto leído,
+para que el médico lo compare con la nota. La válvula cubre el otro desenlace del mismo nivel (3 de
+15 imágenes).
 
 **Aporte de visión.**
 
@@ -940,8 +1001,11 @@ separa el F1 "contra todo el gold" del F1 "contra lo visible".
 | Lectura OCR | Tesseract confundió `lpm` con `Ipm` en la nota sintética de humo; el resto del texto clínico salió correcto (tildes, ñ, DM2, HTA, EPOC, TFNA, dosis, HbA1c). | Corrida local del 2026-10-20, `--demo --backend ocr_tesseract`; transcripción en `M4/vision/predictions/transcripciones_ocr_tesseract.json` (no versionada). | Sí: post-proceso o un OCR/VLM mejor. No es un fallo del NER. |
 | Integración | El CSV combinado de `ejemplos_finales` repite `id` entre niveles; sin `--nivel` el manifiesto es ambiguo y el cargador no puede separar niveles (antes se habría mezclado el cache). | `M4/vision/manifiesto.py` y `test_filtra_por_nivel_y_evita_duplicados`. | Sí: se eligió `--nivel`/`--grupo` y se dejó un error explícito. |
 | Entorno | Si falta Docling/Tesseract, el backend devuelve `BackendError` y se registra en `error`; no hay fallback silencioso. | `test_error_del_backend_se_registra` y `run_vision.py` con `--backend ocr_docling`. | Sí: instalar la dependencia o cambiar de backend. |
-| Lectura VLM | En limpio y foto realista el VLM no alucinó ni corrigió texto: 0 entidades inventadas y 0 mal leídas (3.3). El modo de falla por alucinación es posible en imágenes más degradadas, no observado aquí. | CER ≤ 0.003 y 0 % inventadas en `metricas_transcripcion/resumen.md`; prompt literal y válvula en `prompts.py`. | Mitigable, no eliminable: prompt + válvula + juez + revisión humana. |
+| Lectura VLM (uso realista) | En limpio y foto realista el VLM no alucinó ni corrigió texto: 0 entidades inventadas (3.3). | CER ≤ 0.003; cachés NER idénticos a los del texto (`resultados/ner_*.json`). | — |
+| Lectura VLM (recorte fuerte) | En `rotacion_recorte_severo` el VLM completa frases cortadas con hallazgos que no están en la imagen (2 de 15) o reescribe la nota (2 de 15); en sombra y perspectiva severas lee literal (30 de 30). | `resultados/adversariales_resultado.csv` (7/8 retos) y `adversariales_barrido.csv` (4.2). | Mitigable, no eliminable: prompt literal + válvula + aviso de lectura automática y texto leído visibles en la app. |
+| Válvula | La válvula salió con dos redacciones que no empiezan con «No»: «Se aprecia texto legible en la imagen.» (revisión, `ex_22_p2`) y «La imagen no aprecia texto legible en la imagen.» (caso_05). | `test_eco_sin_contenido_es_valvula` y `test_valvula_con_la_imagen_como_sujeto` en `M4/vision/test_vision.py`. | Sí: `es_valvula` reconoce ambas como respuesta completa, sin descartar una nota que siga después. |
 
-El VLM se ejecutó en Colab sobre los niveles limpio y foto realista (3.3 y 3.5); la fila de OCR
-proviene de la validación local con Tesseract. En ninguno de los dos casos la lectura introdujo un
-fallo que afecte el resultado del NER frente al texto gold.
+El VLM se ejecutó en Colab sobre los niveles limpio y foto realista (3.3 y 3.5) y sobre los tres
+niveles severos con texto tapado (4.2); la fila de OCR proviene de la validación local con
+Tesseract. En el uso realista la lectura no introdujo ningún fallo frente al texto gold; con
+recorte fuerte sí, y por eso la app muestra lo que leyó.
