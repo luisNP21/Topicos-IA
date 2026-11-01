@@ -3,7 +3,10 @@ proyecto:
   seed_global: 42
 
 rutas:
-  gold_set: "M2/eval_harness/gold_examples_20.jsonl"
+  # Mismo gold que M2/run_inference/config_vision.yaml (eval_set_path): los 15
+  # casos de M3 con sus 57 entidades. Relativo a PROJECT_ROOT; en Colab los
+  # notebooks de M4/ejecucion/harness/ lo copian a Drive y sobrescriben la ruta.
+  gold_set: "M4/eval_set/eval_set_casos.jsonl"
   # Outputs separados del baseline de texto para no pisar scorecard_m2.*
   outputs_dir: "M2/outputs_vision"
   # Apunta al config de run_inference con fuente.tipo=vision. De aquí el harness

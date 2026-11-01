@@ -63,12 +63,22 @@ def _ruta(project_root: Path, valor: str) -> Path:
     return p if p.is_absolute() else project_root / p
 
 
+GOLD_M4 = REPO_ROOT / "M4/eval_set/eval_set_casos.jsonl"
+
+
 def cargar_eval_set_m3(ruta: Path) -> list[dict]:
-    """Carga M3/ejecucion/eval_set_casos.json con el mismo esquema que el gold de M2 (caso_01..caso_15)."""
-    jsonl_candidato = ruta.parent.parent / "M4/eval_set/eval_set_casos.jsonl"
-    if jsonl_candidato.exists():
-        with open(jsonl_candidato, "r", encoding="utf-8") as f:
-            return [json.loads(line) for line in f if line.strip()]
+    """Gold de los 15 casos de M3 (caso_01..caso_15) con el esquema del gold de M2.
+
+    Usa el mismo gold que el harness, `M4/eval_set/eval_set_casos.jsonl`, para que la
+    auditoría de entidades sume lo mismo que el harness. Solo si no existe cae a `ruta`
+    (`M3/ejecucion/eval_set_casos.json`, una entidad por caso).
+    """
+    if GOLD_M4.exists():
+        with open(GOLD_M4, "r", encoding="utf-8") as f:
+            registros = [json.loads(line) for line in f if line.strip()]
+        log(f"Gold: {GOLD_M4.relative_to(REPO_ROOT)} | {len(registros)} casos, "
+            f"{sum(len(r.get('entities_gold') or []) for r in registros)} entidades")
+        return registros
     if not ruta.exists():
         raise FileNotFoundError(f"Eval set de M3 no encontrado: {ruta}")
     casos = cargar_json(ruta)

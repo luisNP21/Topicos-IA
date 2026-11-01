@@ -94,14 +94,13 @@ es tiempo de GPU/CPU, no tokens de una API.
   segundo baseline para comparar. La app lo usa cuando no hay GPU (sección 1.6); esta
   validación local no cubrió Docling, solo Tesseract.
 
-**Parámetros del set.** El manifiesto se filtra por `nivel` (`limpio`, `sombra_severo`, etc.) y
-opcionalmente por `grupo` (`nucleo`/`retos`). La muestra versionada
-`M4/eval_set/ejemplos_finales/ejemplos.csv` combina niveles y repite `id`; sin `--nivel` el
-cargador falla con un mensaje explícito. El set completo generado fuera de git usa
-`M4/data/imagenes/casos/<nivel>.csv`.
+**Parámetros del set.** El set generado (fuera de git, en `PROJECT_ROOT/M4/data/imagenes/`) tiene un
+CSV por nivel, `M4/data/imagenes/casos/<nivel>.csv`, con un `id` único por imagen. El manifiesto
+también se puede filtrar por `nivel` (`limpio`, `sombra_severo`, etc.) y `grupo`; si un CSV combina
+niveles y repite `id`, sin `--nivel` el cargador falla con un mensaje explícito.
 
-**Latencia y costo (medidos).** En la corrida de `run_inference.py` sobre la muestra `limpio`
-(3 páginas, Windows, CPU), Tesseract tardó **1.732 s de promedio** (2.705, 1.394 y 1.097 s por
+**Latencia y costo (medidos).** En la corrida de `run_inference.py` sobre la muestra anterior
+`limpio` (3 notas de DisTEMIST, 3 páginas, Windows, CPU), Tesseract tardó **1.732 s de promedio** (2.705, 1.394 y 1.097 s por
 página); la corrida independiente de `run_vision.py` dio **1.1–2.4 s** por página. Fuente:
 corrida local del 2026-10-20, `vision_meta.json` (no versionado). El VLM no se ejecutó en local: la
 app reporta **75.7 s por página en T4** (fuente: sección 1.6, medición de la app). No hay costo de
@@ -175,9 +174,11 @@ M4/vision/
 
 **Config de integración (M2).** `M2/run_inference/config_vision.yaml` añade
 `fuente.tipo: "vision"`, `fuente.nivel`, `fuente.grupo`, `fuente.imagenes_dir` y un
-`output_path` por nivel. La muestra versionada se usa con `nivel: "limpio"`; para el set completo
-se cambia a `M4/data/imagenes/casos/<nivel>.csv` y `imagenes_dir: M4/data/imagenes`. El
-`M2/harness/config_vision.yaml` apunta a ese config de inferencia.
+`output_path` por nivel. Viene configurado para el nivel `limpio` del set generado
+(`manifest: M4/data/imagenes/casos/limpio.csv`, `imagenes_dir: M4/data/imagenes`) y con el gold
+`eval_set_path: M4/eval_set/eval_set_casos.jsonl`; para otro nivel se cambian `manifest`, `nivel` y
+`output_path`. El `M2/harness/config_vision.yaml` apunta a ese config de inferencia y usa el mismo
+gold.
 
 ### 1.5 Integración con el cache de predicciones y el harness
 
@@ -331,37 +332,38 @@ Se necesita `PROJECT_ROOT` en el `.env`; `GROQ_API_KEY` solo para la generación
 **Pruebas y demo.**
 
 ```bash
-python M4/vision/test_vision.py                         # 31/31
+python M4/vision/test_vision.py                         # 34/34
+python M4/evaluacion_pareada/test_evaluacion_pareada.py # 12/12
 python M4/vision/run_vision.py --config M4/vision/config.yaml --demo --backend fake
 python M4/vision/run_vision.py --config M4/vision/config.yaml --demo --backend ocr_tesseract
 ```
 
-**Muestra versionada (nivel limpio).**
+**Set generado (nivel limpio).** Requiere el set en `PROJECT_ROOT/M4/data/imagenes/`
+(`python M4/eval_visual/generar_set.py`, o en Drive desde `start_eval_visual.ipynb`).
 
 ```bash
 python M4/vision/run_vision.py --config M4/vision/config.yaml \
-  --manifest M4/eval_set/ejemplos_finales/ejemplos.csv \
-  --nivel limpio --backend ocr_tesseract
+  --manifest M4/data/imagenes/casos/limpio.csv --backend vlm
 
 python M2/run_inference/run_inference.py --config config_vision.yaml
 python M2/harness/run_harness.py --config M2/harness/config_vision.yaml --solo exact
 ```
 
-`config_vision.yaml` ya apunta a la muestra y a `nivel: limpio`; su `fuente.backend` por defecto es
-`vlm`. Para CPU, cambiar `fuente.backend` a `ocr_tesseract`. El gold del harness es
-`M4/eval_set/eval_set_casos.jsonl`; los notebooks de `M4/ejecucion/harness/` lo copian a Drive en
-cada corrida, y sus `doc_id` deben cubrir los del manifiesto.
+`config_vision.yaml` ya apunta al nivel `limpio` del set generado y al gold
+`M4/eval_set/eval_set_casos.jsonl` (rutas relativas a `PROJECT_ROOT`); su `fuente.backend` por
+defecto es `vlm`. Para CPU, cambiar `fuente.backend` a `ocr_tesseract`. En Colab, los notebooks de
+`M4/ejecucion/harness/` copian el gold a Drive en cada corrida; sus `doc_id` deben cubrir los del
+manifiesto.
 
-**Set completo y VLM.**
+**Otros niveles y VLM.**
 
 ```bash
 python M4/vision/run_vision.py --config M4/vision/config.yaml \
   --manifest M4/data/imagenes/casos/sombra_severo.csv --backend vlm
 ```
 
-Para el set completo, ajustar `fuente.manifest`, `fuente.nivel`, `fuente.imagenes_dir` y
-`output_path` en `M2/run_inference/config_vision.yaml`. El VLM requiere GPU (T4 en Colab); en CPU
-es muy lento. La validación local se hizo con Tesseract, no con el VLM.
+Para otro nivel, ajustar `fuente.manifest`, `fuente.nivel` y `output_path` en
+`M2/run_inference/config_vision.yaml`. El VLM requiere GPU (T4 en Colab); en CPU es muy lento.
 
 **Reproducibilidad.** `seed_global: 42`; el VLM usa `do_sample=False`; el OCR es determinista.
 Los caches y salidas están en `.gitignore` y no se versionan.
@@ -740,10 +742,10 @@ notebook bajo el sistema `simulado` **no son del sistema**: son transcripciones 
 inyectados que solo validan que el módulo de métricas mide bien (ver "Validación del módulo").
 
 Los niveles reportados (`limpio` y `foto_realista`) cubren el uso realista esperado del sistema:
-una nota impresa y una foto de cámara con iluminación y encuadre normales. El set incluye además
-degradaciones más agresivas (sombra, desenfoque, manuscrito) que acotan el peor caso razonable; no
-se evalúan imágenes ilegibles a simple vista, porque no se espera que un usuario suba al sistema
-una foto donde ni una persona puede leer las letras.
+una nota impresa y una foto de cámara con iluminación y encuadre normales. El peor caso se mide
+aparte, con los niveles que tapan texto (sombra, recorte y perspectiva severos, sección 4.2): ahí se
+prueba la válvula, que el VLM activó en 3 de las 15 imágenes con recorte fuerte, y se ve qué hace
+cuando no la activa.
 
 ### 3.4 Línea base de la última entrega
 
@@ -891,8 +893,9 @@ texto y degradándolo de forma controlada. Fuente de las cifras: `manifest.json`
   entrada. Es el mismo contenido en los tres formatos (texto, imagen limpia, foto).
 
 Estas degradaciones (sombra, desenfoque, foto de cámara, manuscrito) cubren el rango realista de
-lo que un usuario subiría al sistema. No se incluyen imágenes ilegibles a simple vista, porque no
-representan un uso esperado.
+lo que un usuario subiría al sistema. El peor caso, una imagen donde parte del texto no se puede
+leer, se incluye a propósito en los casos adversariales (4.2): es el único caso en el que se puede
+comprobar si el lector activa la válvula o inventa.
 
 ### 4.2 Casos propios del dominio
 
@@ -923,7 +926,12 @@ Fuente: `M4/ejecucion/start_adversariales.ipynb` (Colab GPU T4, `Qwen2-VL-2B-Ins
 `M4/evaluacion_pareada/adversariales_m3.csv` y `M4/evaluacion_pareada/resultados/adversariales_resultado.csv`,
 con las transcripciones en `resultados/transcripciones_vlm_{sombra,rotacion_recorte,perspectiva}_severo.json`.
 Las imágenes están en Drive (`M4/data/imagenes/`) y se regeneran iguales con
-`python M4/eval_visual/generar_set.py` (semilla 42).
+`python M4/eval_visual/generar_set.py` (semilla 42). Los retos son del mismo set que mide el
+harness (los 15 casos de M3); la muestra anterior `M4/eval_set/ejemplos_finales/`, con notas de
+DisTEMIST (`ex_*`), ya no forma parte del repo. Los retos de la revisión sobre esa muestra
+(`M4/evaluacion_pareada/adversariales.csv`) y su resultado (4 de 5 pasan; `ex_30_p2` con recorte
+completa la nota con «enfermedad pulmonar obstructiva crónica») se conservan como referencia en
+`M4/evaluacion_pareada/resultados_revision/adversariales_resultado.csv`.
 
 | Reto | Nivel | Texto oculto | Criterio | Resultado | Qué leyó el VLM |
 |---|---|---|---|---|---|
