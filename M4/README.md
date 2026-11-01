@@ -17,7 +17,7 @@ Drive (`PROJECT_ROOT/M4/data/`, `M4/vision/predictions/`, `M2/predictions/`, `M2
 |---|---|---|---|
 | 1 | `M4/ejecucion/start_eval_visual.ipynb` | Genera las imágenes sintéticas de las notas clínicas con degradaciones realistas (sombra, desenfoque, foto de cámara, manuscrito) que sirven de entrada al modelo de visión. | Celda 7 (muestra) y celda 12 (set completo): imágenes y `manifest.json` en `M4/data/imagenes/` |
 | 2 | `M4/ejecucion/start_vision.ipynb` | Corre el VLM para transcribir cada imagen a texto. Solo ejecución, sin métricas. | Caches de transcripción en `M4/vision/predictions/` |
-| 3 | `M4/ejecucion/start_metricas.ipynb` | Mide la calidad de la transcripción del VLM (CER, WER, lectura de entidades, auditoría de inventadas). | Celda 18: `M4/outputs/metricas_transcripcion/resumen.md` |
+| 3 | `M4/ejecucion/start_metricas.ipynb` | Mide la calidad de la transcripción del VLM (CER, WER, lectura de entidades, auditoría de inventadas). | Celda 8: `M4/outputs/metricas_transcripcion/resumen.md` (versionado en `M4/evaluacion_pareada/resultados/resumen_metricas_transcripcion.md`) |
 | 4 | `M4/ejecucion/harness/start_inference_harness.ipynb` | **Baseline:** corre el harness (3 dimensiones) sobre el **texto** gold, sin imágenes. Es el techo de referencia. | Celda 16: `M2/outputs/scorecard_m2.{json,md}` |
 | 5 | `M4/ejecucion/harness/start_inference_harness_vision.ipynb` | Corre el harness sobre el texto que el VLM extrajo de **imágenes limpias**. | Celda 16: `M2/outputs_vision/limpio_vlm/scorecard_vision.{json,md}` |
 | 6 | `M4/ejecucion/harness/start_inference_harness_vision_realista.ipynb` | Igual que el anterior pero sobre la **foto realista** (nivel `foto_realista`). | Celda 16: `M2/outputs_vision/foto_realista_vlm/scorecard_vision.{json,md}` |
@@ -713,32 +713,39 @@ que no se generaron afirmaciones para el juez.
 **Limitación.** Si el mismo Qwen2-VL transcribe y juzga, hay riesgo de auto-preferencia; la pregunta
 se ancla a la imagen y no a la transcripción, y una muestra debe revisarse a mano.
 
-**Resultados.** Fuente: `start_metricas.ipynb` (celda 18) del 26-10-2026,
-`M4/outputs/metricas_transcripcion/resumen.md`. Backend `vlm`. Referencia: texto **visible**.
-Hay transcripciones reales para dos niveles (`limpio` y `foto_realista`), 15 de 15 documentos:
+**Resultados.** Fuente: `M4/ejecucion/start_metricas.ipynb` (celda 8),
+`M4/outputs/metricas_transcripcion/resumen.md`, versionado en
+`M4/evaluacion_pareada/resultados/resumen_metricas_transcripcion.md`. Backend `vlm`. Referencia:
+texto **visible**. Gold: `M4/eval_set/eval_set_casos.jsonl` (15 casos, 57 entidades), el mismo del
+harness. Hay transcripciones reales para dos niveles (`limpio` y `foto_realista`), 15 de 15
+documentos:
 
-| Sistema | Nivel | Docs | CER visible | WER visible | CER sin tildes |
-|---|---|---|---|---|---|
-| vlm | limpio | 15/15 | 0.000 | 0.001 | 0.000 |
-| vlm | foto_realista | 15/15 | 0.003 | 0.004 | 0.003 |
+| Sistema | Nivel | Docs | CER visible | WER visible | CER sin tildes | Entidades leídas | Inventadas | Mal leídas |
+|---|---|---|---|---|---|---|---|---|
+| vlm | limpio | 15/15 | 0.000 | 0.001 | 0.000 | 100.0 % | 0.0 % | 0.0 % |
+| vlm | foto_realista | 15/15 | 0.003 | 0.004 | 0.003 | 100.0 % | 0.0 % | 0.0 % |
 
-**Origen de las entidades predichas por el NER**, con el mismo gold del harness (57 entidades).
-Fuente: `python M4/evaluacion_pareada/auditar_entidades.py --gold M4/eval_set/eval_set_casos.jsonl`
+**Entidades leídas** es la fracción de las entidades del gold visibles en la imagen que aparecen
+escritas tal cual en la transcripción; no depende del NER.
+
+**Origen de las entidades predichas por el NER**, con el mismo gold del harness. Fuente: el mismo
+`resumen.md`; `python M4/evaluacion_pareada/auditar_entidades.py --gold M4/eval_set/eval_set_casos.jsonl`
 sobre los cachés NER de `M4/evaluacion_pareada/resultados/` (`ner_texto.json`, `ner_limpio.json`,
-`ner_foto_realista.json`):
+`ner_foto_realista.json`) da las mismas cifras:
 
-| Entrada | Predichas | Acierto | FP del NER | Inventada |
-|---|---|---|---|---|
-| texto (techo) | 32 | 29 | 3 | 0 |
-| limpio | 32 | 29 | 3 | 0 |
-| foto_realista | 32 | 29 | 3 | 0 |
+| Entrada | Predichas | Acierto | FP del NER | Texto extra | Mal leída | Inventada |
+|---|---|---|---|---|---|---|
+| texto (techo) | 32 | 29 | 3 | — | — | 0 |
+| limpio | 32 | 29 | 3 | 0 | 0 | 0 |
+| foto_realista | 32 | 29 | 3 | 0 | 0 | 0 |
 
 Lectura: en imágenes limpias y en la foto realista el VLM transcribe casi sin error de carácter
-(CER ≤ 0.003) y **no inventa** ninguna entidad: las 32 entidades que el NER extrae de la imagen
-son **exactamente las mismas 32** que extrae del texto (los tres cachés NER son idénticos). Los 3
-FP son del NER, no de la visión: aparecen igual sobre el texto. La auditoría suma lo mismo que el
-harness (29 aciertos, 3 FP; 3.5), y la pérdida de F1 es de **recall** del NER, no de lectura. Las cifras de CER/WER más altas que aparecen en el
-notebook bajo el sistema `simulado` **no son del sistema**: son transcripciones con errores
+(CER ≤ 0.003), escribe tal cual el 100 % de las entidades visibles del gold y **no inventa**
+ninguna: las 32 entidades que el NER extrae de la imagen son **exactamente las mismas 32** que
+extrae del texto (los tres cachés NER son idénticos). Los 3 FP son del NER, no de la visión:
+aparecen igual sobre el texto. La auditoría suma lo mismo que el harness (29 aciertos, 3 FP; 3.5),
+y la pérdida de F1 es de **recall** del NER, no de lectura. Las cifras de CER/WER más altas que
+aparecen en el notebook bajo el sistema `simulado` **no son del sistema**: son transcripciones con errores
 inyectados que solo validan que el módulo de métricas mide bien (ver "Validación del módulo").
 
 Los niveles reportados (`limpio` y `foto_realista`) cubren el uso realista esperado del sistema:
