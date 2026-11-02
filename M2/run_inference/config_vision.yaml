@@ -26,9 +26,12 @@ chunking:
   window_words: 277
   overlap_words: 50
 
-# El gold set del harness. Para M4 debe tener los mismos doc_id que el
-# manifiesto de imágenes (el gold es el texto original anotado).
-eval_set_path: "M2/eval_harness/gold_examples_20.jsonl"
+# El gold set del harness: los 15 casos de M3 con sus 57 entidades, el mismo
+# para texto y visión. Tiene los mismos doc_id que el manifiesto de imágenes
+# (caso_01..caso_15). Ruta relativa a PROJECT_ROOT: en local, PROJECT_ROOT es
+# la raíz del repo; en Colab, los notebooks de M4/ejecucion/harness/ copian
+# este archivo a Drive y sobrescriben la ruta.
+eval_set_path: "M4/eval_set/eval_set_casos.jsonl"
 
 normalizacion:
   activa: false
@@ -40,18 +43,15 @@ fuente:
   backend: "vlm"
   # Config del módulo de visión (backends, prompts, idioma OCR).
   vision_config: "M4/vision/config.yaml"
-  # Manifiesto de imágenes con doc_id que coincidan con el gold set.
+  # Manifiesto de imágenes con doc_id que coincidan con el gold set: un CSV por
+  # nivel del set que genera M4/eval_visual (en PROJECT_ROOT/M4/data/imagenes/,
+  # fuera de git; se regenera con python M4/eval_visual/generar_set.py).
   # null -> usa rutas.manifest de M4/vision/config.yaml.
-  #
-  # Muestra versionada (varios niveles en un CSV): elegir `nivel`.
-  # Set completo generado fuera de git: usar
-  #   manifest: M4/data/imagenes/casos/<nivel>.csv
-  #   imagenes_dir: M4/data/imagenes
-  manifest: "M4/eval_set/ejemplos_finales/ejemplos.csv"
+  manifest: "M4/data/imagenes/casos/limpio.csv"
   nivel: "limpio"
   grupo: null
   # null -> usa rutas.imagenes_dir de M4/vision/config.yaml.
-  imagenes_dir: "M4/eval_set/ejemplos_finales"
+  imagenes_dir: "M4/data/imagenes"
 
 # Cache de predicciones específico de la fuente visual. El harness de visión
 # apunta aquí. El sidecar de metadatos queda en el mismo directorio como

@@ -49,8 +49,23 @@ PATRON_ECO_SIN_CONTENIDO = re.compile(
 )
 
 
+# Negativa de lectura con "la imagen" como sujeto (p. ej. "La imagen no aprecia texto
+# legible en la imagen."). Se observó con Qwen2-VL-2B en rotacion_recorte_severo/caso_05:
+# es la válvula mal redactada y no empieza con "no", así que PATRON_VALVULA no la ve.
+# Debe ser toda la respuesta, para no descartar una nota que siga después de la frase.
+PATRON_VALVULA_CON_SUJETO = re.compile(
+    r"^\s*(en\s+)?(la|esta)\s+imagen\s+no\s+(se\s+)?(aprecia|ve|observa|contiene|tiene|muestra|hay)\s+"
+    r"(ningún\s+|un\s+|una\s+|el\s+)?texto(\s+legible)?(\s+en\s+la\s+imagen)?\s*\.?\s*$",
+    re.IGNORECASE,
+)
+
+
 def es_valvula(texto: str | None) -> bool:
     """True si la salida del backend equivale a 'no hay texto legible'."""
     if not texto or not texto.strip():
         return True
-    return bool(PATRON_VALVULA.match(texto) or PATRON_ECO_SIN_CONTENIDO.match(texto))
+    return bool(
+        PATRON_VALVULA.match(texto)
+        or PATRON_ECO_SIN_CONTENIDO.match(texto)
+        or PATRON_VALVULA_CON_SUJETO.match(texto)
+    )

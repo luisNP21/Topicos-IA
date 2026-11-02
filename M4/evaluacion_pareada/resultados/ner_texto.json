@@ -1,0 +1,64 @@
+{
+  "caso_01": [
+    "diabetes mellitus tipo 2",
+    "enfermedad cardiovascular",
+    "sobrepeso"
+  ],
+  "caso_02": [
+    "dm2",
+    "hipertensión arterial",
+    "infarto agudo de miocardio"
+  ],
+  "caso_03": [
+    "cetoacidosis diabética",
+    "deshidratación",
+    "estado hiperosmolar"
+  ],
+  "caso_04": [
+    "artrosis moderada",
+    "dm2",
+    "hipertensión"
+  ],
+  "caso_05": [
+    "complicaciones crónicas microvasculares",
+    "diabetes mellitus tipo 2"
+  ],
+  "caso_06": [
+    "cardiopatía isquémica",
+    "dilatación ventricular izquierda",
+    "falla cardíaca crónica"
+  ],
+  "caso_07": [
+    "icc"
+  ],
+  "caso_08": [
+    "falla cardíaca compensada"
+  ],
+  "caso_09": [
+    "insuficiencia cardíaca crónica por cardiopatía hipertensiva"
+  ],
+  "caso_10": [
+    "falla cardíaca"
+  ],
+  "caso_11": [
+    "episodio depresivo mayor"
+  ],
+  "caso_12": [
+    "hipertensión arterial",
+    "hipertrofia prostática benigna",
+    "trastorno depresivo"
+  ],
+  "caso_13": [
+    "episodio depresivo leve",
+    "ideación autolítica"
+  ],
+  "caso_14": [
+    "episodio depresivo mayor"
+  ],
+  "caso_15": [
+    "hematomas difusos",
+    "tfna) por incompatibilidad de antígenos plaquetarios",
+    "trombocitopenia fetal y neonatal aloinmune",
+    "trombocitopenia grave"
+  ]
+}

@@ -17,21 +17,25 @@ Drive (`PROJECT_ROOT/M4/data/`, `M4/vision/predictions/`, `M2/predictions/`, `M2
 |---|---|---|---|
 | 1 | `M4/ejecucion/start_eval_visual.ipynb` | Genera las imágenes sintéticas de las notas clínicas con degradaciones realistas (sombra, desenfoque, foto de cámara, manuscrito) que sirven de entrada al modelo de visión. | Celda 7 (muestra) y celda 12 (set completo): imágenes y `manifest.json` en `M4/data/imagenes/` |
 | 2 | `M4/ejecucion/start_vision.ipynb` | Corre el VLM para transcribir cada imagen a texto. Solo ejecución, sin métricas. | Caches de transcripción en `M4/vision/predictions/` |
-| 3 | `M4/ejecucion/start_metricas.ipynb` | Mide la calidad de la transcripción del VLM (CER, WER, lectura de entidades, auditoría de inventadas). | Celda 18: `M4/outputs/metricas_transcripcion/resumen.md` |
+| 3 | `M4/ejecucion/start_metricas.ipynb` | Mide la calidad de la transcripción del VLM (CER, WER, lectura de entidades, auditoría de inventadas). | Celda 8: `M4/outputs/metricas_transcripcion/resumen.md` (versionado en `M4/evaluacion_pareada/resultados/resumen_metricas_transcripcion.md`) |
 | 4 | `M4/ejecucion/harness/start_inference_harness.ipynb` | **Baseline:** corre el harness (3 dimensiones) sobre el **texto** gold, sin imágenes. Es el techo de referencia. | Celda 16: `M2/outputs/scorecard_m2.{json,md}` |
 | 5 | `M4/ejecucion/harness/start_inference_harness_vision.ipynb` | Corre el harness sobre el texto que el VLM extrajo de **imágenes limpias**. | Celda 16: `M2/outputs_vision/limpio_vlm/scorecard_vision.{json,md}` |
 | 6 | `M4/ejecucion/harness/start_inference_harness_vision_realista.ipynb` | Igual que el anterior pero sobre la **foto realista** (nivel `foto_realista`). | Celda 16: `M2/outputs_vision/foto_realista_vlm/scorecard_vision.{json,md}` |
+| 7 | `M4/ejecucion/start_adversariales.ipynb` | Corre el VLM sobre imágenes con texto tapado (sombra, recorte, perspectiva) y evalúa cada reto de `M4/evaluacion_pareada/adversariales_m3.csv` con su criterio (pasa / no pasa). | `M4/evaluacion_pareada/resultados/adversariales_resultado.csv` y `adversariales_barrido.csv` (sección 4.2) |
 
 Los tres notebooks de harness (4, 5 y 6) evalúan **el mismo texto base** (los 15 casos del eval
-set) en tres formatos: texto plano (techo), imagen limpia e imagen fotografiada. Los gold
-`gold_casos.jsonl`, `gold_m4_limpio.jsonl` y `gold_m4_foto_realista.jsonl` tienen **el mismo
-contenido**: cambia el nombre y el formato de la entrada, no los documentos ni sus entidades.
-Comparten el harness de M2 sin modificarlo; solo cambia la fuente del texto que entra al NER (ver
-sección 3.2).
+set) en tres formatos: texto plano (techo), imagen limpia e imagen fotografiada, con **un único
+gold**: `M4/eval_set/eval_set_casos.jsonl` (15 casos, 57 entidades). Los tres notebooks lo leen del
+repo clonado (`gold_casos.jsonl`, `gold_m4_limpio.jsonl` y `gold_m4_foto_realista.jsonl` son copias
+de ese archivo en Drive). Comparten el harness de M2 sin modificarlo; solo cambia la fuente del
+texto que entra al NER (ver sección 3.2).
 
-> **Estado de la corrida reportada (26-10-2026, Colab GPU T4).** Los números de las secciones
-> 3.2–3.5 salen de esta tanda. Como los tres gold comparten el mismo texto base, los deltas entre
-> el baseline de texto y las corridas de visión son directamente comparables.
+> **Resultados versionados.** La tabla pareada texto / limpio / foto realista está en
+> `M4/scorecard_m4.csv`, generada por `M4/evaluacion_pareada/delta_pareado.py` (notebook 6, última
+> celda), que se niega a calcular el delta si los gold de las corridas no coinciden. Las salidas del
+> harness de las tres corridas (`resultado_dimension1_*.json`, cachés NER, sidecars de visión y
+> scorecards) están en `M4/evaluacion_pareada/resultados/`. Los números de las secciones 3.3–3.7
+> salen de esos archivos.
 
 ---
 
@@ -90,14 +94,13 @@ es tiempo de GPU/CPU, no tokens de una API.
   segundo baseline para comparar. La app lo usa cuando no hay GPU (sección 1.6); esta
   validación local no cubrió Docling, solo Tesseract.
 
-**Parámetros del set.** El manifiesto se filtra por `nivel` (`limpio`, `sombra_severo`, etc.) y
-opcionalmente por `grupo` (`nucleo`/`retos`). La muestra versionada
-`M4/eval_set/ejemplos_finales/ejemplos.csv` combina niveles y repite `id`; sin `--nivel` el
-cargador falla con un mensaje explícito. El set completo generado fuera de git usa
-`M4/data/imagenes/casos/<nivel>.csv`.
+**Parámetros del set.** El set generado (fuera de git, en `PROJECT_ROOT/M4/data/imagenes/`) tiene un
+CSV por nivel, `M4/data/imagenes/casos/<nivel>.csv`, con un `id` único por imagen. El manifiesto
+también se puede filtrar por `nivel` (`limpio`, `sombra_severo`, etc.) y `grupo`; si un CSV combina
+niveles y repite `id`, sin `--nivel` el cargador falla con un mensaje explícito.
 
-**Latencia y costo (medidos).** En la corrida de `run_inference.py` sobre la muestra `limpio`
-(3 páginas, Windows, CPU), Tesseract tardó **1.732 s de promedio** (2.705, 1.394 y 1.097 s por
+**Latencia y costo (medidos).** En la corrida de `run_inference.py` sobre la muestra anterior
+`limpio` (3 notas de DisTEMIST, 3 páginas, Windows, CPU), Tesseract tardó **1.732 s de promedio** (2.705, 1.394 y 1.097 s por
 página); la corrida independiente de `run_vision.py` dio **1.1–2.4 s** por página. Fuente:
 corrida local del 2026-10-20, `vision_meta.json` (no versionado). El VLM no se ejecutó en local: la
 app reporta **75.7 s por página en T4** (fuente: sección 1.6, medición de la app). No hay costo de
@@ -171,9 +174,11 @@ M4/vision/
 
 **Config de integración (M2).** `M2/run_inference/config_vision.yaml` añade
 `fuente.tipo: "vision"`, `fuente.nivel`, `fuente.grupo`, `fuente.imagenes_dir` y un
-`output_path` por nivel. La muestra versionada se usa con `nivel: "limpio"`; para el set completo
-se cambia a `M4/data/imagenes/casos/<nivel>.csv` y `imagenes_dir: M4/data/imagenes`. El
-`M2/harness/config_vision.yaml` apunta a ese config de inferencia.
+`output_path` por nivel. Viene configurado para el nivel `limpio` del set generado
+(`manifest: M4/data/imagenes/casos/limpio.csv`, `imagenes_dir: M4/data/imagenes`) y con el gold
+`eval_set_path: M4/eval_set/eval_set_casos.jsonl`; para otro nivel se cambian `manifest`, `nivel` y
+`output_path`. El `M2/harness/config_vision.yaml` apunta a ese config de inferencia y usa el mismo
+gold.
 
 ### 1.5 Integración con el cache de predicciones y el harness
 
@@ -327,37 +332,38 @@ Se necesita `PROJECT_ROOT` en el `.env`; `GROQ_API_KEY` solo para la generación
 **Pruebas y demo.**
 
 ```bash
-python M4/vision/test_vision.py                         # 31/31
+python M4/vision/test_vision.py                         # 34/34
+python M4/evaluacion_pareada/test_evaluacion_pareada.py # 12/12
 python M4/vision/run_vision.py --config M4/vision/config.yaml --demo --backend fake
 python M4/vision/run_vision.py --config M4/vision/config.yaml --demo --backend ocr_tesseract
 ```
 
-**Muestra versionada (nivel limpio).**
+**Set generado (nivel limpio).** Requiere el set en `PROJECT_ROOT/M4/data/imagenes/`
+(`python M4/eval_visual/generar_set.py`, o en Drive desde `start_eval_visual.ipynb`).
 
 ```bash
 python M4/vision/run_vision.py --config M4/vision/config.yaml \
-  --manifest M4/eval_set/ejemplos_finales/ejemplos.csv \
-  --nivel limpio --backend ocr_tesseract
+  --manifest M4/data/imagenes/casos/limpio.csv --backend vlm
 
 python M2/run_inference/run_inference.py --config config_vision.yaml
 python M2/harness/run_harness.py --config M2/harness/config_vision.yaml --solo exact
 ```
 
-`config_vision.yaml` ya apunta a la muestra y a `nivel: limpio`; su `fuente.backend` por defecto es
-`vlm`. Para CPU, cambiar `fuente.backend` a `ocr_tesseract`. El harness usa
-`M2/eval_harness/gold_casos.jsonl`; hay que asegurar que exista y que cubra los `doc_id` del
+`config_vision.yaml` ya apunta al nivel `limpio` del set generado y al gold
+`M4/eval_set/eval_set_casos.jsonl` (rutas relativas a `PROJECT_ROOT`); su `fuente.backend` por
+defecto es `vlm`. Para CPU, cambiar `fuente.backend` a `ocr_tesseract`. En Colab, los notebooks de
+`M4/ejecucion/harness/` copian el gold a Drive en cada corrida; sus `doc_id` deben cubrir los del
 manifiesto.
 
-**Set completo y VLM.**
+**Otros niveles y VLM.**
 
 ```bash
 python M4/vision/run_vision.py --config M4/vision/config.yaml \
   --manifest M4/data/imagenes/casos/sombra_severo.csv --backend vlm
 ```
 
-Para el set completo, ajustar `fuente.manifest`, `fuente.nivel`, `fuente.imagenes_dir` y
-`output_path` en `M2/run_inference/config_vision.yaml`. El VLM requiere GPU (T4 en Colab); en CPU
-es muy lento. La validación local se hizo con Tesseract, no con el VLM.
+Para otro nivel, ajustar `fuente.manifest`, `fuente.nivel` y `output_path` en
+`M2/run_inference/config_vision.yaml`. El VLM requiere GPU (T4 en Colab); en CPU es muy lento.
 
 **Reproducibilidad.** `seed_global: 42`; el VLM usa `do_sample=False`; el OCR es determinista.
 Los caches y salidas están en `.gitignore` y no se versionan.
@@ -472,6 +478,17 @@ abordamos en varias capas:
 impresa o escrita a mano, y luego se degrada. **El gold no cambia: sigue siendo el texto original
 y sus entidades.** Cada imagen conserva el `doc_id` del eval set, el mismo que usa el harness, así
 que un sistema que lea las imágenes se evalúa sin cambiar el gold.
+
+**Gold de entidades.** `M4/eval_set/eval_set_casos.jsonl`: 15 casos y 57 entidades, el mismo
+archivo para texto, imagen limpia y foto realista. Lo anotó el equipo sobre el `input` de cada
+caso de M3. Se anotan como entidades las menciones de enfermedad o hallazgo clínico que aparecen
+escritas en la nota, sin normalizarlas; las menciones en negación («sin signos de congestión
+periférica», «sin datos de cetoacidosis diabética») también cuentan, porque el NER no distingue
+negación. El término de consulta de M3 (`entidad`) se guarda en el campo `entidad_m3` y no forma
+parte del gold, porque es el tema del caso y no siempre está escrito en la nota. Todas las
+entidades aparecen literalmente en el texto de su caso:
+`python M4/evaluacion_pareada/verificar_gold.py --literal M4/eval_set/eval_set_casos.jsonl`
+devuelve 0 no literales.
 
 **Cómo se genera.** `python M4/eval_visual/generar_set.py` (en Colab,
 `M4/ejecucion/start_eval_visual.ipynb`). La configuración completa está en
@@ -696,35 +713,46 @@ que no se generaron afirmaciones para el juez.
 **Limitación.** Si el mismo Qwen2-VL transcribe y juzga, hay riesgo de auto-preferencia; la pregunta
 se ancla a la imagen y no a la transcripción, y una muestra debe revisarse a mano.
 
-**Resultados.** Fuente: `start_metricas.ipynb` (celda 18) del 26-10-2026,
-`M4/outputs/metricas_transcripcion/resumen.md`. Backend `vlm`. Referencia: texto **visible**.
-Hay transcripciones reales para dos niveles (`limpio` y `foto_realista`), 15 de 15 documentos:
+**Resultados.** Fuente: `M4/ejecucion/start_metricas.ipynb` (celda 8),
+`M4/outputs/metricas_transcripcion/resumen.md`, versionado en
+`M4/evaluacion_pareada/resultados/resumen_metricas_transcripcion.md`. Backend `vlm`. Referencia:
+texto **visible**. Gold: `M4/eval_set/eval_set_casos.jsonl` (15 casos, 57 entidades), el mismo del
+harness. Hay transcripciones reales para dos niveles (`limpio` y `foto_realista`), 15 de 15
+documentos:
 
 | Sistema | Nivel | Docs | CER visible | WER visible | CER sin tildes | Entidades leídas | Inventadas | Mal leídas |
 |---|---|---|---|---|---|---|---|---|
 | vlm | limpio | 15/15 | 0.000 | 0.001 | 0.000 | 100.0 % | 0.0 % | 0.0 % |
 | vlm | foto_realista | 15/15 | 0.003 | 0.004 | 0.003 | 100.0 % | 0.0 % | 0.0 % |
 
-Origen de las entidades predichas por el NER (del mismo resumen):
+**Entidades leídas** es la fracción de las entidades del gold visibles en la imagen que aparecen
+escritas tal cual en la transcripción; no depende del NER.
 
-| Sistema | Nivel | Predichas | Acierto | FP del NER | Texto extra | Mal leída | Inventada |
-|---|---|---|---|---|---|---|---|
-| vlm | limpio | 32 | 7 | 25 | 0 | 0 | 0 |
-| vlm | foto_realista | 32 | 7 | 25 | 0 | 0 | 0 |
+**Origen de las entidades predichas por el NER**, con el mismo gold del harness. Fuente: el mismo
+`resumen.md`; `python M4/evaluacion_pareada/auditar_entidades.py --gold M4/eval_set/eval_set_casos.jsonl`
+sobre los cachés NER de `M4/evaluacion_pareada/resultados/` (`ner_texto.json`, `ner_limpio.json`,
+`ner_foto_realista.json`) da las mismas cifras:
+
+| Entrada | Predichas | Acierto | FP del NER | Texto extra | Mal leída | Inventada |
+|---|---|---|---|---|---|---|
+| texto (techo) | 32 | 29 | 3 | — | — | 0 |
+| limpio | 32 | 29 | 3 | 0 | 0 | 0 |
+| foto_realista | 32 | 29 | 3 | 0 | 0 | 0 |
 
 Lectura: en imágenes limpias y en la foto realista el VLM transcribe casi sin error de carácter
-(CER ≤ 0.003) y **no inventa ni lee mal** ninguna entidad del gold (0 % en ambas). Las 25
-"FP del NER" por nivel no son fallos de la visión: son entidades que el NER produce y que no están
-en el gold, el mismo comportamiento que tendría sobre texto limpio (por eso la pérdida de F1 de la
-sección 3.5 es de **recall**, no de lectura). Las cifras de CER/WER más altas que aparecen en el
-notebook bajo el sistema `simulado` **no son del sistema**: son transcripciones con errores
+(CER ≤ 0.003), escribe tal cual el 100 % de las entidades visibles del gold y **no inventa**
+ninguna: las 32 entidades que el NER extrae de la imagen son **exactamente las mismas 32** que
+extrae del texto (los tres cachés NER son idénticos). Los 3 FP son del NER, no de la visión:
+aparecen igual sobre el texto. La auditoría suma lo mismo que el harness (29 aciertos, 3 FP; 3.5),
+y la pérdida de F1 es de **recall** del NER, no de lectura. Las cifras de CER/WER más altas que
+aparecen en el notebook bajo el sistema `simulado` **no son del sistema**: son transcripciones con errores
 inyectados que solo validan que el módulo de métricas mide bien (ver "Validación del módulo").
 
 Los niveles reportados (`limpio` y `foto_realista`) cubren el uso realista esperado del sistema:
-una nota impresa y una foto de cámara con iluminación y encuadre normales. El set incluye además
-degradaciones más agresivas (sombra, desenfoque, manuscrito) que acotan el peor caso razonable; no
-se evalúan imágenes ilegibles a simple vista, porque no se espera que un usuario suba al sistema
-una foto donde ni una persona puede leer las letras.
+una nota impresa y una foto de cámara con iluminación y encuadre normales. El peor caso se mide
+aparte, con los niveles que tapan texto (sombra, recorte y perspectiva severos, sección 4.2): ahí se
+prueba la válvula, que el VLM activó en 3 de las 15 imágenes con recorte fuerte, y se ve qué hace
+cuando no la activa.
 
 ### 3.4 Línea base de la última entrega
 
@@ -736,60 +764,67 @@ Modelo NER: Clinical BERT (`PlanTL-GOB-ES/roberta-base-biomedical-clinical-es`) 
 `M1/saved_models/clinical_bert-distemist-lora`; chunking 277/50; semilla 42.
 
 **Valores por dimensión.** Fuente: `start_inference_harness.ipynb` (celda 14),
-`M2/outputs/scorecard_m2.{json,md}`, gold `gold_casos.jsonl` (los mismos 15 casos de M4),
-26-10-2026. Es el mismo texto base de las corridas de visión (3.5), evaluado en formato de texto
-plano, así que el delta de 3.5 es una comparación directa.
+`M2/outputs/scorecard_m2.{json,md}` (versionados en
+`M4/evaluacion_pareada/resultados/scorecard_texto.md` y `resultado_dimension1_texto.json`), gold
+`M4/eval_set/eval_set_casos.jsonl` (15 casos, 57 entidades). Es el mismo texto base y el mismo
+gold de las corridas de visión (3.5), evaluado en formato de texto plano, así que el delta de 3.5
+es una comparación directa.
 
 | Dimensión | Precision | Recall | F1 / score |
 |---|---|---|---|
-| Exact-match | 0.906 | 0.468 | 0.617 |
-| Similitud semántica | 0.969 | 0.500 | 0.660 |
-| LLM-as-judge (1–5) | — | — | 4.417 |
-| Aciertos de dominio (sí/no) | — | — | 0.333 |
+| Exact-match | 0.906 | 0.509 | 0.652 |
+| Similitud semántica | 0.969 | 0.544 | 0.697 |
+| LLM-as-judge (1–5) | — | — | 4.483 |
+| Aciertos de dominio (sí/no) | — | — | 0.400 |
 
-El recall del NER ya es bajo (0.468) **sobre el propio texto gold**: de 62 entidades, encuentra 29
-y pierde 33. Es una característica del NER en estos 15 casos, no un efecto de la visión. Esto fija
+El recall del NER ya es bajo (0.509) **sobre el propio texto gold**: de 57 entidades, encuentra 29
+y pierde 28. Es una característica del NER en estos 15 casos, no un efecto de la visión. Esto fija
 el techo real que la visión debe igualar.
 
 ### 3.5 Resultados y delta
 
 Fuente: `start_inference_harness_vision.ipynb` y `start_inference_harness_vision_realista.ipynb`
-(celda 16), `M2/outputs_vision/{limpio_vlm,foto_realista_vlm}/scorecard_vision.{json,md}`, gold
-`gold_m4_limpio.jsonl` y `gold_m4_foto_realista.jsonl`, backend `vlm`, 26-10-2026. Son el mismo
-texto base del baseline de 3.4, en formato de imagen, así que el Δ es una comparación directa.
+(celda 16), `M2/outputs_vision/{limpio_vlm,foto_realista_vlm}/scorecard_vision.{json,md}`
+(versionados en `M4/evaluacion_pareada/resultados/`), gold `M4/eval_set/eval_set_casos.jsonl`,
+backend `vlm`. Son el mismo texto base y el mismo gold del baseline de 3.4, en formato de imagen,
+así que el Δ es una comparación directa. La tabla pareada de la dimensión exacta es
+`M4/scorecard_m4.csv` (`delta_pareado.py`), y la sección 8 de los dos notebooks de visión muestra
+la misma comparación con las tres dimensiones.
 
-| Sistema | Nivel | Exacto | Δ | Semántico | Δ | Juez | Δ | Fuente |
-|---|---|---|---|---|---|---|---|---|
-| texto gold (techo) | — | 0.617 | — | 0.660 | — | 4.417 | — | `M2/outputs/scorecard_m2.json` |
-| imagen → VLM → NER | limpio | 0.617 | 0.000 | 0.660 | 0.000 | 4.417 | 0.000 | `limpio_vlm/scorecard_vision.json` |
-| imagen → VLM → NER | foto_realista | 0.617 | 0.000 | 0.660 | 0.000 | 4.417 | 0.000 | `foto_realista_vlm/scorecard_vision.json` |
+| Sistema | Nivel | TP / FP / FN | Exacto | Δ | Semántico | Δ | Juez | Δ | Latencia (s/caso) |
+|---|---|---|---|---|---|---|---|---|---|
+| texto gold (techo) | — | 29 / 3 / 28 | 0.652 | — | 0.697 | — | 4.483 | — | — |
+| imagen → VLM → NER | limpio | 29 / 3 / 28 | 0.652 | 0.000 | 0.697 | 0.000 | 4.483 | 0.000 | 4.513 |
+| imagen → VLM → NER | foto_realista | 29 / 3 / 28 | 0.652 | 0.000 | 0.697 | 0.000 | 4.483 | 0.000 | 4.493 |
 
-**El delta es cero en las tres dimensiones.** Sobre los mismos 15 casos, leer la nota desde una
-imagen (limpia o foto realista) da **exactamente** el mismo resultado que leerla del texto gold:
-F1 exacto 0.617, F1 semántico 0.660, juez 4.417. La visión alcanza su techo; no pierde nada frente
-al texto en el uso realista.
+**El delta es cero en las tres dimensiones.** Sobre los mismos 15 casos y las mismas 57
+entidades, leer la nota desde una imagen (limpia o foto realista) da **exactamente** el mismo
+resultado que leerla del texto gold: 29 de 57 entidades, F1 exacto 0.652, F1 semántico 0.697,
+juez 4.483. La visión alcanza su techo; no pierde nada frente al texto en el uso realista.
 
 Detalle de la dimensión exacta (micro-PRF1, idéntico en las tres corridas): precision 0.906,
-recall 0.468, F1 0.617 (tp 29, fp 3, fn 33). El recall bajo **no es de la visión**: el baseline de
-texto (3.4) da los mismos 0.468, así que la distancia al techo teórico es del NER sobre estos
+recall 0.509, F1 0.652 (tp 29, fp 3, fn 28). El recall bajo **no es de la visión**: el baseline de
+texto (3.4) da los mismos 0.509, así que la distancia al techo teórico es del NER sobre estos
 casos, no de leer desde imagen. El VLM transcribe sin error relevante (3.3, CER casi nulo), por eso
 reproduce el resultado del texto.
 
 **Por qué los tres niveles dan lo mismo.** `foto_realista` casi no degrada la transcripción
 respecto a `limpio` (CER 0.000 vs. 0.003 en 3.3) y ambos reproducen el texto gold, así que el NER
-recibe el mismo texto en los tres casos y produce las mismas entidades. Las únicas diferencias
-entre las dos corridas de imagen son la latencia (4.513 vs. 4.493 s/caso) y el test de posición del
-juez (7/14 vs. 6/14 empates); las métricas de clasificación son idénticas.
+recibe el mismo texto en los tres casos y produce las mismas 32 entidades (3.3). La única
+diferencia entre las dos corridas de imagen es la latencia (4.513 vs. 4.493 s/caso); las métricas
+de clasificación y el juez son idénticos.
 
-**Costo de operar la visión** (sidecars `vision_vlm_*.vision_meta.json`): 15 casos, 15 OK, 0
-errores, 0 válvulas en ambos niveles; latencia media **4.513 s/caso** (`limpio`) y **4.493 s/caso**
-(`foto_realista`). Ninguna imagen quedó ilegible. Ese tiempo es el único costo de la visión: las
-métricas de calidad no cambian.
+**Costo de operar la visión** (sidecars `vision_meta_limpio.json` y `vision_meta_foto_realista.json`
+en `M4/evaluacion_pareada/resultados/`): 15 casos, 15 OK, 0 errores, 0 válvulas en ambos niveles;
+latencia media **4.513 s/caso** (`limpio`) y **4.493 s/caso** (`foto_realista`), medida al
+transcribir con el VLM en Colab GPU T4 (las corridas del harness reutilizan esas transcripciones
+del caché de `M4/vision/predictions/`). Ninguna imagen quedó ilegible. Ese tiempo es el único costo
+de la visión: las métricas de calidad no cambian.
 
-> **Lectura del juez.** El juez da 4.417 y 0.333 de aciertos de dominio, iguales al baseline de
-> texto (3.4), porque evalúa la misma respuesta. El test de posición quedó con 43–50 % de empates
-> sobre estos 15 casos; con tan pocos ejemplos el juez es inestable, pero al ser idéntico entre
-> texto e imagen no afecta la conclusión del delta cero.
+> **Lectura del juez.** El juez da 4.483 y 0.400 de aciertos de dominio (6 de 15), iguales al
+> baseline de texto (3.4), porque evalúa la misma respuesta. El test de posición quedó con 6/13
+> empates (46 %) en las tres corridas; con tan pocos ejemplos el juez es inestable, pero al ser
+> idéntico entre texto e imagen no afecta la conclusión del delta cero.
 
 Los niveles `limpio` y `foto_realista` representan el uso realista esperado del sistema. El
 backend OCR clásico (Docling/Tesseract) no se evaluó; sería una comparación adicional opcional,
@@ -802,31 +837,32 @@ de fidelidad visual de 3.3.
 
 **Medido (con fuente):**
 - Con imágenes **limpias** y con **foto realista**, el VLM transcribe casi sin error (CER 0.000 y
-  0.003; WER 0.001 y 0.004; 3.3) y lee el 100 % de las entidades visibles, sin inventar ninguna.
+  0.003; WER 0.001 y 0.004; 3.3), y el NER extrae de la imagen las mismas 32 entidades que del
+  texto, sin ninguna inventada (3.3).
 - El sistema imagen→VLM→NER da **exactamente el mismo resultado que el texto gold** sobre los
-  mismos 15 casos: F1 exacto 0.617, F1 semántico 0.660, juez 4.417. Delta cero en las tres
-  dimensiones (3.4 vs. 3.5).
-- El recall de 0.468 ya está presente en el baseline de texto: es del NER, no de la visión.
+  mismos 15 casos y 57 entidades: 29 aciertos, F1 exacto 0.652, F1 semántico 0.697, juez 4.483.
+  Delta cero en las tres dimensiones (3.4 vs. 3.5; `M4/scorecard_m4.csv`).
+- El recall de 0.509 ya está presente en el baseline de texto: es del NER, no de la visión.
 - `foto_realista` da el **mismo** resultado de clasificación que `limpio`: la foto no añade un
   costo de lectura medible.
 - El costo de operar el VLM es **~4.5 s por documento** (4.513 limpio, 4.493 foto; sidecars),
   frente a la lectura instantánea del texto gold. Es el único costo de usar la visión.
 
 **Supuesto, no medido:**
-- Que el recall del NER (0.468) se podría subir mejorando el reconocedor o el formato del texto:
+- Que el recall del NER (0.509) se podría subir mejorando el reconocedor o el formato del texto:
   afecta por igual a texto e imagen, así que es una vía de mejora de M1/M2, no de la visión.
 
 ### 3.7 Dónde el componente no aportó
 
 
 Sobre los 15 casos del uso realista, el componente **iguala** al texto en todas las dimensiones de
-clasificación: F1 exacto 0.617, F1 semántico 0.660 y juez 4.417, idénticos al baseline de texto
+clasificación: F1 exacto 0.652, F1 semántico 0.697 y juez 4.483, idénticos al baseline de texto
 (3.4). El delta es cero. Para el patrón *input* eso es el mejor resultado posible: la visión no
 puede superar al texto —su techo **es** el texto— y aquí lo alcanza sin pérdida, con un costo de
 ~4.5 s por documento.
 
 Dicho de otro modo, **no hay una dimensión donde la visión reste**. El recall del NER es bajo
-(0.468), pero ese límite ya existe sobre el texto gold: no lo introduce la visión. El VLM lee sin
+(0.509), pero ese límite ya existe sobre el texto gold: no lo introduce la visión. El VLM lee sin
 error relevante (CER casi nulo, 0 inventadas) y reproduce el texto, así que el NER recibe lo mismo
 que recibiría escribiendo la nota a mano.
 
@@ -864,8 +900,9 @@ texto y degradándolo de forma controlada. Fuente de las cifras: `manifest.json`
   entrada. Es el mismo contenido en los tres formatos (texto, imagen limpia, foto).
 
 Estas degradaciones (sombra, desenfoque, foto de cámara, manuscrito) cubren el rango realista de
-lo que un usuario subiría al sistema. No se incluyen imágenes ilegibles a simple vista, porque no
-representan un uso esperado.
+lo que un usuario subiría al sistema. El peor caso, una imagen donde parte del texto no se puede
+leer, se incluye a propósito en los casos adversariales (4.2): es el único caso en el que se puede
+comprobar si el lector activa la válvula o inventa.
 
 ### 4.2 Casos propios del dominio
 
@@ -875,25 +912,81 @@ visión y `manifest.json` (celda 12).
 
 | ID | Descripción | Fallo esperado | Resultado observado | Evidencia |
 |---|---|---|---|---|
-| limpio | Nota impresa sin degradar (control) | Ninguno; es el techo visual | CER 0.000, WER 0.001, 0 inventadas; F1 exacto 0.617 (recall 0.468) | `resumen.md`, `limpio_vlm/scorecard_vision.json` |
-| foto_realista | Nota impresa fotografiada (efectos de cámara leves) | Pequeña pérdida por iluminación/encuadre | CER 0.003, WER 0.004, 0 inventadas; F1 exacto 0.617 (idéntico a limpio); 0.28 % palabras ocultas | `resumen.md`, `foto_realista_vlm/scorecard_vision.json`, `manifest.json` |
+| limpio | Nota impresa sin degradar (control) | Ninguno; es el techo visual | CER 0.000, WER 0.001, 0 inventadas; 29 de 57 entidades, F1 exacto 0.652 (recall 0.509), igual al texto | `resumen.md`, `M4/scorecard_m4.csv`, `resultados/scorecard_limpio.md` |
+| foto_realista | Nota impresa fotografiada (efectos de cámara leves) | Pequeña pérdida por iluminación/encuadre | CER 0.003, WER 0.004, 0 inventadas; 29 de 57 entidades, F1 exacto 0.652 (idéntico a limpio y al texto); 0.28 % palabras ocultas | `resumen.md`, `M4/scorecard_m4.csv`, `resultados/scorecard_foto_realista.md`, `manifest.json` |
 
 Las dos entradas cubren el uso realista esperado: una nota impresa y una foto de cámara con
-condiciones normales. El set generado incluye además niveles más agresivos (sombra, desenfoque,
-manuscrito) que acotan el peor caso razonable; el manifiesto registra, por ejemplo, 18.57 % de
-palabras ocultas en `sombra_severo`. No se evalúan imágenes ilegibles a simple vista, porque no
-representan una entrada que un usuario subiría al sistema.
+condiciones normales.
+
+**Casos adversariales: ¿el lector inventa o avisa?** Imágenes de los mismos 15 casos con texto
+tapado, para ver qué hace el VLM cuando no puede leer bien. Solo tres niveles del set ocultan
+texto según `manifest.json`: `sombra_severo` (18.6 % de palabras ocultas), `rotacion_recorte_severo`
+(16.8 %) y `perspectiva_severo` (2.5 %). Se eligieron los 8 retos con más texto tapado de esos
+niveles **antes de correr el VLM**, cada uno con un criterio declarado:
+
+- `valvula_o_sin_inventado`: pasa si el VLM activa la válvula («No se aprecia texto legible…») o
+  transcribe solo lo visible.
+- `sin_inventado`: no pasa si la transcripción contiene una frase que no está en la nota (dos o más
+  palabras de contenido seguidas, de 5 letras o más, ausentes del texto original).
+
+Fuente: `M4/ejecucion/start_adversariales.ipynb` (Colab GPU T4, `Qwen2-VL-2B-Instruct`),
+`M4/evaluacion_pareada/adversariales_m3.csv` y `M4/evaluacion_pareada/resultados/adversariales_resultado.csv`,
+con las transcripciones en `resultados/transcripciones_vlm_{sombra,rotacion_recorte,perspectiva}_severo.json`.
+Las imágenes están en Drive (`M4/data/imagenes/`) y se regeneran iguales con
+`python M4/eval_visual/generar_set.py` (semilla 42). Los retos son del mismo set que mide el
+harness (los 15 casos de M3); la muestra anterior `M4/eval_set/ejemplos_finales/`, con notas de
+DisTEMIST (`ex_*`), ya no forma parte del repo. Los retos de la revisión sobre esa muestra
+(`M4/evaluacion_pareada/adversariales.csv`) y su resultado (4 de 5 pasan; `ex_30_p2` con recorte
+completa la nota con «enfermedad pulmonar obstructiva crónica») se conservan como referencia en
+`M4/evaluacion_pareada/resultados_revision/adversariales_resultado.csv`.
+
+| Reto | Nivel | Texto oculto | Criterio | Resultado | Qué leyó el VLM |
+|---|---|---|---|---|---|
+| caso_03 | sombra_severo | 83 % | válvula o sin inventar | pasa | El texto completo, literal |
+| caso_06 | sombra_severo | 44 % (tapa «falla cardíaca») | válvula o sin inventar | pasa | Completo; un error de letra («eyeción») |
+| caso_12 | sombra_severo | 47 % (entidad parcial) | sin inventar | pasa | Completo, literal |
+| caso_10 | sombra_severo | 43 % | sin inventar | pasa | Completo, literal |
+| **caso_13** | **rotacion_recorte_severo** | **27 %** | **sin inventar** | **no pasa** | **Agrega síntomas que no están en la nota («diarrea, pérdida de peso, fatiga»), cambia «4 semanas» por «2 semanas» y «episodio depresivo leve» por «depresión leve»** |
+| caso_04 | rotacion_recorte_severo | 25 % | sin inventar | pasa | Solo lo visible, con cortes («8 años», «acaba con») |
+| caso_09 | rotacion_recorte_severo | 24 % | sin inventar | pasa | «59 años con insuficiencia cardíaca crónica por cardiopatía **isquémica**» (la nota dice 69 años y cardiopatía **hipertensiva**) |
+| caso_07 | perspectiva_severo | 24 % (tapa «ICC») | sin inventar | pasa | Lee desde «acude al servicio…»; omite la parte fuera de cuadro |
+
+**7 de 8 retos pasan.** El que no pasa es un recorte: el VLM completa la nota con hallazgos
+clínicos que no están en la imagen, y el NER los tomaría como entidades. caso_09 pasa el criterio
+automático, que solo detecta frases nuevas, pero la revisión manual muestra que cambió una palabra
+con significado clínico (la etiología de la cardiopatía).
+
+**Barrido de los tres niveles completos** (las 15 imágenes de cada uno, no solo los retos; mismo
+detector; `resultados/adversariales_barrido.csv`, celda 5b del notebook):
+
+| Nivel | Lectura literal | Válvula | Frase nueva |
+|---|---|---|---|
+| sombra_severo | 15 | 0 | 0 |
+| perspectiva_severo | 15 | 0 | 0 |
+| rotacion_recorte_severo | 8 | 3 | 4 |
+
+- **Sombra y perspectiva:** el VLM lee literal en las 30 imágenes, incluso donde `manifest.json`
+  marca más del 40 % del texto como oculto. El umbral de «ilegible» del generador (menos de 20 % de
+  luz) es más estricto que lo que el VLM alcanza a leer.
+- **Recorte fuerte:** es la degradación donde el VLM falla. En 3 de 15 imágenes activa la válvula
+  (caso_02, caso_05 y caso_11). En 2 agrega hallazgos que no están en la nota (caso_13 y caso_07,
+  «presenta un dolor de espalda y dolor de cabeza»). En otras 2 reescribe en vez de transcribir
+  (caso_01 «El paciente es un hombre…» y caso_10 «La paciente es de 60 años…», cuando la nota es de
+  un varón).
+- En caso_05 la válvula salió mal redactada («La imagen no aprecia texto legible en la imagen.»).
+  `es_valvula` (`M4/vision/prompts.py`) la reconoce con `PATRON_VALVULA_CON_SUJETO`, así que la app
+  no la pasa al NER como si fuera la nota (prueba `test_valvula_con_la_imagen_como_sujeto`).
 
 ### 4.3 Análisis de los casos donde el componente falla
 
 En los niveles evaluados (`limpio` y `foto_realista`, el uso realista del sistema), el fallo
 dominante **no está en la lectura del VLM** sino en el **NER sobre el texto transcrito**:
 
-- **Lectura del VLM (OK en limpio y foto):** CER ≤ 0.003 y 100 % de entidades leídas, 0 inventadas
-  (3.3). La etapa de visión no es la que rompe en imágenes legibles; `foto_realista` iguala a
-  `limpio` en todas las dimensiones de clasificación (3.5).
-- **NER (aquí está el límite del F1):** en ambos niveles, recall 0.468 con precisión 0.906
-  (fn 33, fp 3; `*_vlm/resultado_dimension1.json`). Ese mismo recall aparece en el baseline de
+- **Lectura del VLM (OK en limpio y foto):** CER ≤ 0.003, 0 inventadas y las mismas 32 entidades
+  NER que sobre el texto (3.3). La etapa de visión no es la que rompe en imágenes legibles;
+  `foto_realista` iguala a `limpio` en todas las dimensiones de clasificación (3.5).
+- **NER (aquí está el límite del F1):** en ambos niveles, recall 0.509 con precisión 0.906
+  (fn 28, fp 3; `resultados/resultado_dimension1_{limpio,foto_realista}.json`). Ese mismo recall aparece en el baseline de
   texto (3.4): el NER produce exactamente las mismas entidades desde el texto del VLM que desde el
   texto gold, porque la transcripción es casi idéntica (CER casi nulo). El límite del F1 es del
   NER de M1/M2, no del componente visual.
@@ -903,9 +996,18 @@ dominante **no está en la lectura del VLM** sino en el **NER sobre el texto tra
 Sobre si es corregible o inherente: el componente visual no introduce un fallo propio en el uso
 realista (delta cero frente al texto, 3.5). El F1 absoluto está acotado por el recall del NER, que
 es un límite de M1/M2 y afecta por igual a texto e imagen; subirlo es trabajo del reconocedor, no
-de la visión. En degradaciones con **texto oculto** (sombra que tapa parte de la página) sí hay un
-componente **inherente**: si la palabra no está en la imagen no hay forma de leerla; por eso 3.1
-separa el F1 "contra todo el gold" del F1 "contra lo visible".
+de la visión. En degradaciones con **texto oculto** sí hay un componente **inherente**: si la
+palabra no está en la imagen no hay forma de leerla; por eso 3.1 separa el F1 "contra todo el
+gold" del F1 "contra lo visible".
+
+El fallo propio de la visión aparece con el **recorte fuerte** (4.2): ante una frase cortada, el VLM
+a veces la completa con hallazgos plausibles que no están en la imagen (caso_13: «diarrea, pérdida
+de peso, fatiga»; caso_07: «dolor de espalda y dolor de cabeza»). Ese texto llegaría al NER y a la
+recuperación como si fuera parte de la nota. No se puede eliminar con el prompt, que ya pide
+transcribir literal y no agregar nada. La mitigación es de producto: la app muestra, junto a la
+respuesta, el aviso «Los hallazgos salen de una lectura automática de la imagen» y el texto leído,
+para que el médico lo compare con la nota. La válvula cubre el otro desenlace del mismo nivel (3 de
+15 imágenes).
 
 **Aporte de visión.**
 
@@ -914,8 +1016,11 @@ separa el F1 "contra todo el gold" del F1 "contra lo visible".
 | Lectura OCR | Tesseract confundió `lpm` con `Ipm` en la nota sintética de humo; el resto del texto clínico salió correcto (tildes, ñ, DM2, HTA, EPOC, TFNA, dosis, HbA1c). | Corrida local del 2026-10-20, `--demo --backend ocr_tesseract`; transcripción en `M4/vision/predictions/transcripciones_ocr_tesseract.json` (no versionada). | Sí: post-proceso o un OCR/VLM mejor. No es un fallo del NER. |
 | Integración | El CSV combinado de `ejemplos_finales` repite `id` entre niveles; sin `--nivel` el manifiesto es ambiguo y el cargador no puede separar niveles (antes se habría mezclado el cache). | `M4/vision/manifiesto.py` y `test_filtra_por_nivel_y_evita_duplicados`. | Sí: se eligió `--nivel`/`--grupo` y se dejó un error explícito. |
 | Entorno | Si falta Docling/Tesseract, el backend devuelve `BackendError` y se registra en `error`; no hay fallback silencioso. | `test_error_del_backend_se_registra` y `run_vision.py` con `--backend ocr_docling`. | Sí: instalar la dependencia o cambiar de backend. |
-| Lectura VLM | En limpio y foto realista el VLM no alucinó ni corrigió texto: 0 entidades inventadas y 0 mal leídas (3.3). El modo de falla por alucinación es posible en imágenes más degradadas, no observado aquí. | CER ≤ 0.003 y 0 % inventadas en `metricas_transcripcion/resumen.md`; prompt literal y válvula en `prompts.py`. | Mitigable, no eliminable: prompt + válvula + juez + revisión humana. |
+| Lectura VLM (uso realista) | En limpio y foto realista el VLM no alucinó ni corrigió texto: 0 entidades inventadas (3.3). | CER ≤ 0.003; cachés NER idénticos a los del texto (`resultados/ner_*.json`). | — |
+| Lectura VLM (recorte fuerte) | En `rotacion_recorte_severo` el VLM completa frases cortadas con hallazgos que no están en la imagen (2 de 15) o reescribe la nota (2 de 15); en sombra y perspectiva severas lee literal (30 de 30). | `resultados/adversariales_resultado.csv` (7/8 retos) y `adversariales_barrido.csv` (4.2). | Mitigable, no eliminable: prompt literal + válvula + aviso de lectura automática y texto leído visibles en la app. |
+| Válvula | La válvula salió con dos redacciones que no empiezan con «No»: «Se aprecia texto legible en la imagen.» (revisión, `ex_22_p2`) y «La imagen no aprecia texto legible en la imagen.» (caso_05). | `test_eco_sin_contenido_es_valvula` y `test_valvula_con_la_imagen_como_sujeto` en `M4/vision/test_vision.py`. | Sí: `es_valvula` reconoce ambas como respuesta completa, sin descartar una nota que siga después. |
 
-El VLM se ejecutó en Colab sobre los niveles limpio y foto realista (3.3 y 3.5); la fila de OCR
-proviene de la validación local con Tesseract. En ninguno de los dos casos la lectura introdujo un
-fallo que afecte el resultado del NER frente al texto gold.
+El VLM se ejecutó en Colab sobre los niveles limpio y foto realista (3.3 y 3.5) y sobre los tres
+niveles severos con texto tapado (4.2); la fila de OCR proviene de la validación local con
+Tesseract. En el uso realista la lectura no introdujo ningún fallo frente al texto gold; con
+recorte fuerte sí, y por eso la app muestra lo que leyó.

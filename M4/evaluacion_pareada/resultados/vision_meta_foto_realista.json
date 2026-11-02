@@ -1,0 +1,105 @@
+{
+  "fuente": "vision",
+  "backend": "vlm",
+  "modelo": "Qwen/Qwen2-VL-2B-Instruct",
+  "manifest": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/eval_set/casos_foto_realista.csv",
+  "n_casos": 15,
+  "n_ok": 15,
+  "n_error": 0,
+  "n_valvula": 0,
+  "latencia_media_s": 4.493,
+  "latencia_total_s": 67.401,
+  "por_doc": {
+    "caso_01__p1": {
+      "segundos": 17.526,
+      "valvula": false,
+      "error": null,
+      "sha256": "3dcf1e8e8d39fc4accb69e56c946499ab491c149a441a3e6256cffbc2de14c25"
+    },
+    "caso_02__p1": {
+      "segundos": 4.407,
+      "valvula": false,
+      "error": null,
+      "sha256": "bfd89eb8b37b3c8d54f9c786b3f439546eab56e1f9bffdfdda10bac115a7ce68"
+    },
+    "caso_03__p1": {
+      "segundos": 4.341,
+      "valvula": false,
+      "error": null,
+      "sha256": "3977bd8fb74e297ec5c26dd176af2e96902672f1c9b22b5c84b2984c00bdba8c"
+    },
+    "caso_04__p1": {
+      "segundos": 4.041,
+      "valvula": false,
+      "error": null,
+      "sha256": "414d67eb31e347c2428afc11d315f72eefa00655dae6da7230be800999b65f55"
+    },
+    "caso_05__p1": {
+      "segundos": 3.378,
+      "valvula": false,
+      "error": null,
+      "sha256": "500ce8a398ae06e8e90567ea9136b0eff1236b8d9c1fdbf5deccf3527ae71d7d"
+    },
+    "caso_06__p1": {
+      "segundos": 4.304,
+      "valvula": false,
+      "error": null,
+      "sha256": "d98b861c83590b69c82fc4cad5e0acf6e9362cc26d7930244d09e1f42ccbd5f6"
+    },
+    "caso_07__p1": {
+      "segundos": 3.439,
+      "valvula": false,
+      "error": null,
+      "sha256": "15065bff499dcdb24d10cb82b51508cb25cbfb5717fa10c875804fe98dc7801d"
+    },
+    "caso_08__p1": {
+      "segundos": 2.972,
+      "valvula": false,
+      "error": null,
+      "sha256": "916b7eb59e434af0482f8756a07a085fb55f11022ff92195206e30d4423c363c"
+    },
+    "caso_09__p1": {
+      "segundos": 2.992,
+      "valvula": false,
+      "error": null,
+      "sha256": "7dd34798437ad51dff2b30a32ec77586449ada1c15d3e81817137efd3276ca80"
+    },
+    "caso_10__p1": {
+      "segundos": 3.384,
+      "valvula": false,
+      "error": null,
+      "sha256": "f215d6da52951399c9b6243349323f89a4ffd30a43df1cf9ca3139e1008dd2f3"
+    },
+    "caso_11__p1": {
+      "segundos": 3.621,
+      "valvula": false,
+      "error": null,
+      "sha256": "e8ba570973ea43b8992b9e010c6ce89dd6d8afcf7cd1cd2ebef154909a01cd50"
+    },
+    "caso_12__p1": {
+      "segundos": 3.344,
+      "valvula": false,
+      "error": null,
+      "sha256": "54a17952f9640117bc236cc3feb5a7bb5b6bdbabd90c78a68a6580338f1dcf30"
+    },
+    "caso_13__p1": {
+      "segundos": 3.138,
+      "valvula": false,
+      "error": null,
+      "sha256": "b6977eac8df469bf9cce85d85803641abc64e2098ecf376a349826d818a55a60"
+    },
+    "caso_14__p1": {
+      "segundos": 3.075,
+      "valvula": false,
+      "error": null,
+      "sha256": "64bdaf36aac40052733367c3ef560d9e60cdc27488fb25f92569007ad43cef06"
+    },
+    "caso_15__p1": {
+      "segundos": 3.439,
+      "valvula": false,
+      "error": null,
+      "sha256": "9f99d3d11502d5c18c7395f88652564d72bd2bb74617dc6292c17c6c67bb2c5e"
+    }
+  },
+  "n_docs": 15
+}
