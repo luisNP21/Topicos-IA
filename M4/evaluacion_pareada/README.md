@@ -64,6 +64,30 @@ Adversariales (`resultados/adversariales_resultado.csv`): 7 de 8 retos pasan. `c
 rotación y recorte severo no pasa: la lectura agrega «diarrea, pérdida de peso, fatiga», que no
 está en la nota. Detalle y barrido de los niveles completos en `M4/README_detallado.md` (sección 4.2).
 
+### Qué contiene `resultados/`
+
+Las cifras consolidadas son las de arriba; esta tabla solo explica qué es cada archivo de la
+carpeta y de dónde sale. Todos usan el mismo gold `M4/eval_set/eval_set_casos.jsonl` (15 casos, 57
+entidades).
+
+| Archivo | Qué es |
+|---|---|
+| `resultado_dimension1_texto.json` | Salida del harness sobre el **texto** gold: `true_by_doc`, `pred_by_doc` y métricas |
+| `resultado_dimension1_limpio.json` | Igual, sobre la **imagen limpia** leída por el VLM |
+| `resultado_dimension1_foto_realista.json` | Igual, sobre la **foto realista** |
+| `ner_texto.json` / `ner_limpio.json` / `ner_foto_realista.json` | Cache de entidades que el NER predijo por documento, en cada condición |
+| `vision_meta_limpio.json` / `vision_meta_foto_realista.json` | Metadatos del VLM por condición: latencia media, válvulas, errores |
+| `scorecard_texto.md` / `scorecard_limpio.md` / `scorecard_foto_realista.md` | Scorecard legible (las 4 dimensiones) por condición |
+| `resumen_metricas_transcripcion.md` | CER/WER de la transcripción y auditoría de entidades (aciertos / FP / inventadas) |
+| `transcripciones_vlm_sombra_severo.json` | Transcripciones del VLM en el nivel adversarial de sombra severa |
+| `transcripciones_vlm_rotacion_recorte_severo.json` | Idem, rotación y recorte severos |
+| `transcripciones_vlm_perspectiva_severo.json` | Idem, perspectiva severa |
+| `adversariales_resultado.csv` | Los 8 retos adversariales con su criterio y resultado pasa/no pasa |
+| `adversariales_barrido.csv` | Barrido de los 15 casos en los tres niveles severos completos |
+
+La tabla pareada que consolida estos archivos es `M4/scorecard_m4.csv`, generada por
+`delta_pareado.py`.
+
 ## `resultados_revision/`
 
 Salidas de la revisión docente, generadas con Qwen2-VL-2B en Apple M4 Max (MPS fp16) y el mismo
