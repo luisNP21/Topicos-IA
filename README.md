@@ -136,10 +136,10 @@ Permite que la nota clínica entre como **imagen** (foto o escaneo), no solo com
 **Lo medido** (15 casos, backend VLM; detalle en `M4/README.md`):
 
 - **Transcripción:** CER 0.000 en imagen limpia y 0.003 en foto realista; 0 entidades inventadas.
-- **NER en el harness:** imagen limpia y foto realista dan **exactamente el mismo resultado que el texto gold** (F1 exacto 0.617, semántico 0.660, juez 4.417): **delta cero** en las tres dimensiones.
+- **NER en el harness:** imagen limpia y foto realista dan **exactamente el mismo resultado que el texto gold** (15 casos, 57 entidades: 29 aciertos, F1 exacto 0.652, semántico 0.697, juez 4.483; `M4/scorecard_m4.csv`): **delta cero** en las tres dimensiones.
 - **Costo:** ~4.5 s por documento de transcripción con el VLM; es el único costo frente a leer el texto directo.
 
-Conclusión: el componente habilita la entrada por imagen sin pérdida de calidad frente al texto en el uso realista. El límite de F1 (recall 0.468) es del NER de M1/M2 y afecta por igual a texto e imagen, no lo introduce la visión.
+Conclusión: el componente habilita la entrada por imagen sin pérdida de calidad frente al texto en el uso realista. El límite de F1 (recall 0.509) es del NER de M1/M2 y afecta por igual a texto e imagen, no lo introduce la visión.
 
 ---
 

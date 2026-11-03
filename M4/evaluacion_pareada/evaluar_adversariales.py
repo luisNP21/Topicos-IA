@@ -1,6 +1,6 @@
 """Evalúa los casos adversariales con su criterio declarado (pasa / no pasa).
 
-Criterios (columna tipo_criterio de adversariales.csv):
+Criterios (columna tipo_criterio de adversariales_m3.csv):
 - valvula: la salida debe ser la válvula de escape (es_valvula de M4/vision/prompts.py).
 - sin_inventado: la transcripción no puede contener una frase nueva, es decir, dos o más
   palabras de contenido seguidas (>= 5 letras) que no están en el texto original ni se
@@ -11,8 +11,10 @@ Criterios (columna tipo_criterio de adversariales.csv):
 Uso:
     python M4/evaluacion_pareada/evaluar_adversariales.py \
         --transcripciones CACHE_rotacion_recorte.json CACHE_sombra.json \
-        [--gold M2/examples/gold_examples.jsonl] [--casos M4/evaluacion_pareada/adversariales.csv] \
+        [--gold M4/eval_set/eval_set_casos.jsonl] [--casos M4/evaluacion_pareada/adversariales_m3.csv] \
         [--salida M4/evaluacion_pareada/adversariales_resultado.csv]
+Los retos de la revisión sobre DisTEMIST (adversariales.csv, doc_id ex_*) se evalúan con
+`--casos M4/evaluacion_pareada/adversariales.csv --gold M2/examples/gold_examples.jsonl`.
 Cada cache es la salida de M4/vision ({id: Transcripcion}); el nivel se toma de la ruta
 `imagen` de cada transcripción o del nombre del archivo.
 """
@@ -87,8 +89,8 @@ def evaluar(caso: dict, t: dict | None, original: str) -> dict:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--transcripciones", nargs="+", required=True)
-    ap.add_argument("--gold", default=str(REPO / "M2/examples/gold_examples.jsonl"))
-    ap.add_argument("--casos", default=str(AQUI / "adversariales.csv"))
+    ap.add_argument("--gold", default=str(REPO / "M4/eval_set/eval_set_casos.jsonl"))
+    ap.add_argument("--casos", default=str(AQUI / "adversariales_m3.csv"))
     ap.add_argument("--salida", default=str(AQUI / "adversariales_resultado.csv"))
     args = ap.parse_args(argv)
 
