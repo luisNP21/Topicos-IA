@@ -62,7 +62,7 @@ realista, las 32 entidades predichas son 29 aciertos, 3 FP del NER y 0 inventada
 
 Adversariales (`resultados/adversariales_resultado.csv`): 7 de 8 retos pasan. `caso_13` con
 rotación y recorte severo no pasa: la lectura agrega «diarrea, pérdida de peso, fatiga», que no
-está en la nota. Detalle y barrido de los niveles completos en `M4/README.md` (sección 4.2).
+está en la nota. Detalle y barrido de los niveles completos en `M4/README_detallado.md` (sección 4.2).
 
 ## `resultados_revision/`
 

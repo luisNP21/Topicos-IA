@@ -133,7 +133,7 @@ Permite que la nota clínica entre como **imagen** (foto o escaneo), no solo com
 
 **Lo implementado:** backends de transcripción (VLM y OCR clásico), válvula de escape cuando la imagen no es legible, puente al NER que produce el cache `{doc_id: [entidades]}` que el harness ya consume, un set de evaluación con imágenes sintéticas (15 casos, 28 niveles de degradación) y una app de chat que acepta imagen o texto.
 
-**Lo medido** (15 casos, backend VLM; detalle en `M4/README.md`):
+**Lo medido** (15 casos, backend VLM; detalle en `M4/README_detallado.md`):
 
 - **Transcripción:** CER 0.000 en imagen limpia y 0.003 en foto realista; 0 entidades inventadas.
 - **NER en el harness:** imagen limpia y foto realista dan **exactamente el mismo resultado que el texto gold** (15 casos, 57 entidades: 29 aciertos, F1 exacto 0.652, semántico 0.697, juez 4.483; `M4/scorecard_m4.csv`): **delta cero** en las tres dimensiones.
