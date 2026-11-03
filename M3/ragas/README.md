@@ -51,54 +51,32 @@ Para modo mock solo se necesitan `sentence-transformers`, `numpy` y `pyyaml`.
 
 ---
 
-## Salida de ejemplo (modo mock)
+## Resultados (corrida real)
 
-```
-[ragas] modo=mock | n_casos=3
-[ragas] faithfulness      : 0.6823
-[ragas] context_precision : 0.5241
-[ragas] context_recall    : 0.5912
-[ragas] answer_relevancy  : 0.6104
+Reportes versionados en `M3/ragas/resultados/`. El `run_ragas.py` escribe un JSON nuevo por
+corrida (no sobrescribe) con el nombre `evaluacion_m3_<fecha>Z.json`. La corrida de referencia es
+la última: `evaluacion_m3_20261103T185126284245Z.json`.
 
-============================================================
-TABLA DE CRUCE RAGAS x HARNESS M2
-============================================================
-| doc_id | F1 extraccion (M2) | Context recall | Faithfulness | Diagnostico |
-|---|---|---|---|---|
-| ex_0   | 0.652 | 0.591 | 0.682 | caso_mixto |
-| ex_1   | 0.284 | 0.591 | 0.682 | problema_extraccion |
-...
+RAGAS no calcula todas las métricas en los 15 casos: en abstenciones y respuestas sin afirmaciones
+verificables la métrica queda sin valor. Por eso cada métrica se reporta **con su cobertura** y el
+promedio es sobre los casos válidos, no sobre 15.
 
-Resumen de diagnosticos:
-  caso_mixto: 38 documentos
-  problema_extraccion: 12 documentos
-  funcionamiento_correcto: 6 documentos
-  problema_corpus_retrieval: 3 documentos
-```
+| Métrica | Valor | Cobertura (casos válidos de 15) |
+|---|---|---|
+| Faithfulness (Fidelidad) | 0.406 | 7 |
+| Context Precision (Precisión) | 0.222 | 4 |
+| Context Recall (Cobertura) | 0.333 | 8 |
+| Answer Relevancy (Relevancia) | 0.295 | 7 |
 
-### Salida de la corrida real (modo real end-to-end)
+El cruce con el harness (`cruce_harness.py`) corre sobre los 15 casos y presenta por separado el F1
+de extracción de M2 y los agregados de RAGAS (no son muestras pareadas, así que no se infiere un
+diagnóstico por documento). El reparto **no marca ningún caso como alucinación**: la limitante es
+la cobertura del corpus de 3 guías, no la generación.
 
-Ejecución sobre los 15 casos del pipeline integrado en `start_pipeline_M3_ejecutado.ipynb`:
-
-```
-[ragas] Cargados 15 casos reales desde M3/outputs/resultado_generacion.json
-[ragas] Modo: 'real' | Casos: 15
-
---- Metricas RAGAS calculadas ---
-  Faithfulness (Fidelidad)     : 0.5973 (59.73%)
-  Context Precision (Precision): 0.0833 (8.33%)
-  Context Recall (Cobertura)   : 0.0000 (0.00%)
-  Answer Relevancy (Relevancia): 0.2772 (27.72%)
-
-============================================================
-TABLA DE CRUCE RAGAS x HARNESS M2 (F1 global M2 = 0.7156)
-============================================================
-Resumen de diagnósticos (59 documentos evaluados):
-  problema_corpus_retrieval      : 58 documentos (98.3%)
-  caso_mixto                     : 1 documento (ex_56, F1 = 0.316) (1.7%)
-  alucinacion_pura / generacion  : 0 documentos (0.0%)
-  extraccion_perfecta_ragas_bajo : 0 documentos (0.0%)
-```
+Lectura: los scores bajos reflejan la cobertura del corpus, no invención. En los casos respondidos
+la relevancia es alta donde el juez pudo calcularla (caso_11 0.92). Una corrida previa
+(`evaluacion_m3_20261026T041555261137Z.json`, faithfulness 0.371, recall 0.143) queda versionada
+como evidencia de la variabilidad del juez LLM entre corridas.
 
 ---
 

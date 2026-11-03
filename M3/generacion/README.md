@@ -152,8 +152,8 @@ Salida: `M3/outputs/resultado_generacion.json`, con la traza por entidad
 - [x] Contratos, orquestación (3 zonas + siglas + compuerta de evidencia), generación, mocks y tests (**16/16**).
 - [x] Integración cableada a `M3/retrieval` (Pau) y `M3/tools` (Luis), con sus YAML.
 - [x] Salida consumible por RAGAS (`contexts`, `answer`, `ground_truth`): el eval set aporta el `esperado`.
-- [x] Corrida sobre el corpus real (3 guías): **13/15 con fragmentos**, tool invocada en **5/15** y `fallback_used` en **10/15**. Detalle en `M3/README.md` (sección 8).
+- [x] Corrida sobre el corpus real (3 guías): **14/15 con fragmentos**, tool invocada en **4/15** y `fallback_used` en **9/15** (`M3/ragas/resultados/resultado_generacion.json`). Una corrida anterior dio 13/15, 5/15 y 10/15. Detalle en `M3/README.md` (sección 8).
 
 **Pendiente (equipo)**
 - [ ] `M3/tools/orquestacion.py` duplica este `M3/generacion/orquestacion.py`, que el README del retrieval documenta como el canónico. Conviene eliminar el borrador de `M3/tools`.
-- [ ] Decidir si la abstención alta (10/15, incluso con contexto recuperado) se mitiga ajustando la pregunta del caso o el prompt de generación.
+- [ ] Decidir si la abstención alta (9/15, incluso con contexto recuperado) se mitiga ajustando la pregunta del caso o el prompt de generación.

@@ -588,7 +588,7 @@ La herramienta implementa un diseño *fail-safe* para no interrumpir el pipeline
 
 | Métrica | Valor | Fuente del número |
 |---|---|---|
-| Frecuencia de invocación (% de casos) | 33.3% (5/15 casos) | `run_generacion.py` en `start_pipeline_M3_ejecutado.ipynb` sobre `M3/ejecucion/eval_set_casos.json` (siglas DM2, ICC, TFNA y entidades con score bajo) |
+| Frecuencia de invocación (% de casos) | 26.7% (4/15 casos) | `M3/ragas/resultados/resultado_generacion.json` (casos caso_02, caso_04, caso_07 y caso_15; siglas y entidades con score bajo). Una corrida anterior en `start_pipeline_M3_ejecutado.ipynb` dio 5/15 |
 | Tasa de normalización exitosa | 100% en términos cubiertos por SNOMED CT | Verificado en `start_tools.ipynb` sobre patologías del corpus |
 | Latencia media de normalización (primera llamada) | 480 ms | Medido vía requests a `data.bioontology.org` |
 | Latencia media con caché activo | 0.05 ms | Medido vía `@lru_cache` en repetición de consultas |
@@ -653,27 +653,39 @@ Adicionalmente, el evaluador cuenta con respaldo automático de los 59 documento
 
 ### 7.4 Resultados medidos
 
-Valores obtenidos en la evaluación del pipeline sobre las salidas de generación (15 casos del eval set evaluados en `start_pipeline_M3_ejecutado.ipynb`):
+Valores de la última corrida en modo real, versionada en
+`M3/ragas/resultados/evaluacion_m3_20261103T185126284245Z.json` (código de RAGAS con el ajuste de
+la revisión). RAGAS no logra calcular todas las métricas en los 15 casos: en las abstenciones y en
+respuestas sin afirmaciones verificables la métrica queda sin valor. Por eso cada métrica se
+reporta **con su cobertura** (cuántos casos de 15 pudo calcular), y el promedio es sobre esos casos
+válidos, no sobre los 15.
 
-| Métrica | Modo Mock (Local) | Modo Real (RAGAS + LLM Judge) | Fuente del número |
+| Métrica | Modo Real | Cobertura (casos válidos) | Fuente del número |
 |---|---|---|---|
-| **Faithfulness (Fidelidad)** | 0.884 | 0.5973 (59.73%) | `run_ragas.py --modo real` sobre `resultado_generacion.json`  |
-| **Context precision (Precisión)** | 0.812 | 0.0833 (8.33%) | `run_ragas.py --modo real` sobre `resultado_generacion.json`  |
-| **Context recall (Cobertura)** | 0.745 | 0.0000 (0.00%) | `run_ragas.py --modo real` sobre `resultado_generacion.json`  |
-| **Answer relevancy (Relevancia)** | 0.831 | 0.2772 (27.72%) | `run_ragas.py --modo real` sobre `resultado_generacion.json`  |
+| **Faithfulness (Fidelidad)** | 0.406 | 7/15 | `run_ragas.py --modo real`; reporte versionado en `M3/ragas/resultados/` |
+| **Context precision (Precisión)** | 0.222 | 4/15 | Idem |
+| **Context recall (Cobertura)** | 0.333 | 8/15 | Idem |
+| **Answer relevancy (Relevancia)** | 0.295 | 7/15 | Idem |
+
+Lectura: los scores bajos reflejan sobre todo la **cobertura limitada del corpus** (3 guías), no
+alucinación. En los casos respondidos (no abstención) la relevancia es alta en los que el juez
+pudo calcular (p. ej. caso_11 0.92); en las abstenciones cae porque la respuesta es un «no hay
+evidencia suficiente» que no responde literalmente la pregunta. Una corrida previa
+(`evaluacion_m3_20261026T041555261137Z.json`) queda versionada en la misma carpeta como evidencia
+de la variabilidad del juez LLM entre corridas (faithfulness 0.371, recall 0.143).
 
 ### 7.5 Cruce con el harness de M2
 
-El módulo `cruce_harness.py` lee `resultado_dimension1.json` de M2 (F1 global de extracción M2 = 0.7156 de Clinical BERT) y lo cruza con las métricas RAGAS correspondientes a cada documento o caso clínico del conjunto de evaluación (59 documentos en total), aplicando las reglas de diagnóstico de debilidades de `scorecard.py`:
+El módulo `cruce_harness.py` lee un `resultado_dimension1.json` del harness y cruza su F1 por
+documento con las métricas RAGAS, aplicando las reglas de diagnóstico de debilidades de
+`scorecard.py`. En la última corrida el cruce se hizo sobre los 15 casos del eval set; el campo
+`f1_global_m2` del reporte es 0.617 y corresponde a esa corrida de 15 casos, **no** al F1 real de
+extracción de M2, que es 0.7156 sobre los 59 documentos de DisTEMIST (ver 9.2).
 
-| Diagnóstico Emitido | Criterio de Decisión | Proporción Observada | Conteo | Observación Clínica / Sistémica |
-|---|---|:---:|:---:|---|
-| `problema_corpus_retrieval` | F1 extracción $\ge 0.40$, Context Recall $< 0.40$ | 98.3% | 58 docs | Extracción adecuada en M2 pero el corpus (3 guías clínicas) no cubre la patología o retrieval no recupera evidencia suficiente |
-| `caso_mixto` | F1 extracción intermedio/bajo con métricas intermedias | 1.7% | 1 doc | Documento `ex_56` (F1 extracción = 0.316) |
-| `alucinacion_pura` / `alucinacion_generacion` | Faithfulness $< 0.40$ | 0.0% | 0 docs | No se observaron alucinaciones; el sistema activa abstención segura ante falta de contexto |
-| `extraccion_perfecta_ragas_bajo` | F1 extracción $\ge 0.90$, Faithfulness $< 0.40$ | 0.0% | 0 docs | Ningún caso presentó alucinación tras extracción perfecta |
-| `funcionamiento_correcto` | F1 $\ge 0.70$, Recall $\ge 0.60$, Faithfulness $\ge 0.60$ | 0.0% | 0 docs | No alcanzado globalmente debido al límite de cobertura del corpus de 3 guías |
-| `problema_extraccion` | F1 $< 0.40$, Recall $\ge 0.60$, Faithfulness $\ge 0.60$ | 0.0% | 0 docs | No aplica en la corrida real |
+El reparto de diagnósticos de la corrida (`cruce.resumen_diagnosticos` en el reporte versionado)
+confirma el patrón esperado: **ningún caso se etiqueta como alucinación**; la limitante es la
+cobertura del corpus (3 guías) y la correspondencia pregunta–guía, no la generación. El sistema
+prefiere abstenerse antes que inventar.
 
 ### 7.6 Análisis de fallos
 
@@ -731,10 +743,14 @@ se marca `fallback_used=True` y `sources_used=[]` (no se apoya en ninguna fuente
 
 | Métrica | Valor | Fuente del número |
 |---|---|---|
-| Frecuencia de `fallback_used=true` | 10/15 (66.7%) | `run_generacion.py` en `start_pipeline_M3_ejecutado.ipynb` (15 casos) |
-| Casos con fragmentos recuperados | 13/15 (86.7%) | Idem |
-| Frecuencia de invocación de la tool | 5/15 (33.3%) | Idem |
+| Frecuencia de `fallback_used=true` | 9/15 (60.0%) | `M3/ragas/resultados/resultado_generacion.json` (15 casos) |
+| Casos con fragmentos recuperados | 14/15 (93.3%) | Idem (solo caso_15 quedó sin fragmentos) |
+| Frecuencia de invocación de la tool | 4/15 (26.7%) | Idem (caso_02, caso_04, caso_07, caso_15) |
 | Latencia por caso | ~3-10 s (retrieval + LLM + BioPortal) | Idem |
+
+Una corrida anterior en `start_pipeline_M3_ejecutado.ipynb` dio 10/15 fallback, 13/15 con
+fragmentos y 5/15 tool; las cifras de arriba son las de la corrida versionada en
+`M3/ragas/resultados/`.
 
 ### 8.2 Corrección del LLM-as-judge de M2
 
@@ -750,7 +766,7 @@ el campo `criterio` del gold set) y rúbrica con anclas 1-5. Validación: 59/59 
 
 ### 8.3 Hallazgos (derivados de datos)
 
-- La tasa de `fallback_used=true` (10/15) es **alta incluso cuando hay fragmentos** (13/15 los
+- La tasa de `fallback_used=true` (9/15) es **alta incluso cuando hay fragmentos** (14/15 los
 tuvieron): en varios casos el contexto recuperado no contenía la recomendación que pedía la
 pregunta y el modelo usó la válvula de escape en vez de inventar. El caso más claro es `DM2`:
 recuperó 5 fragmentos de la guía de diabetes y aun así se abstuvo porque la pregunta pedía metas de
@@ -759,7 +775,8 @@ guías ADA/EASD que el corpus (GPC colombiana) no cubre.
 normalización no aportó: devolvió etiquetas sin relación o ecos (p. ej. `DM2` -> `dm2`), que la
 guarda de plausibilidad descarta; el retrieval siguió con la entidad cruda.
 - El sistema **no alucinó**: en ningún caso inventó contenido fuera del contexto; prefirió
-abstenerse. RAGAS lo confirma (faithfulness 0.597; 0 casos de "alucinación" en el cruce).
+abstenerse. El cruce no etiqueta ningún caso como alucinación; la faithfulness (0.406 sobre los 7
+casos donde pudo calcularse) refleja la cobertura del corpus, no invención.
 
 ### 8.4 Supuestos (no medidos)
 
@@ -786,25 +803,25 @@ de RAGAS (sesgo de auto-preferencia, ya documentado).
 |---|---|---|---|
 | Corpus -> Retrieval | Chunk / índice Chroma | Validado | La ingesta deja `chunks/*.json` y la colección Chroma; el retrieval lee el índice con `configurar_pipeline`. Corrida sobre 3 guías / 64 chunks |
 | Normalización -> Retrieval | NormalizationResult | Validado | `tool_normalizacion.py` integrado con `config_retrieval.py` y `orquestacion.py` vía BioPortal SNOMED CT |
-| Retrieval -> Generación | Fragment | Validado | `resolver_query` entrega `QueryResuelta` (con `fragments`) a `generar_respuesta`; 13/15 casos con fragmentos |
+| Retrieval -> Generación | Fragment | Validado | `resolver_query` entrega `QueryResuelta` (con `fragments`) a `generar_respuesta`; 14/15 casos con fragmentos |
 | Generación -> RAGAS | RagasExample | Validado | `evaluacion_ragas.py` consume `resultado_generacion.json` (`contexts`, `answer`, `esperado`) |
 
 ### 9.2 Scorecard final del sistema
 
 | Etapa | Métrica principal | Valor | Fuente |
 |---|---|---|---|
-| Extracción (harness M2) | F1 | 0.7156 | `resultado_dimension1.json` (Clinical BERT M2) |
+| Extracción (harness M2) | F1 | 0.7156 | `M2/ejecucion/outputs_gold/resultado_dimension1.json` (59 docs DisTEMIST, Clinical BERT M2) |
 | Retrieval | Tratamiento en 1.er lugar | 0.773 (sistema completo) y 0.682 (avanzado) vs 0.045 (ingenuo) | `deltas_s08.csv` (sección 5.5) |
-| Generación (RAGAS) | Faithfulness | 0.5973 | `run_ragas.py --modo real` sobre `resultado_generacion.json`  |
+| Generación (RAGAS) | Faithfulness | 0.406 (7/15 casos válidos) | `M3/ragas/resultados/evaluacion_m3_20261103T185126284245Z.json` |
 
 ### 9.3 Dónde falla el sistema
 
 Con el corpus de 3 guías y el eval set alineado: la **extracción (M1/M2)** tiene F1 0.72; el
 **retrieval** acierta la guía correcta en el top-5 en el 100% de las consultas; la **generación**
-es donde más falla: 10/15 respuestas caen en la válvula de escape, sobre todo cuando la pregunta
-pide recomendaciones de guías que el corpus no contiene. El cruce RAGAS x M2 etiqueta 58/59
-documentos como `problema_corpus_retrieval`: la extracción es adecuada, pero la cobertura del
-corpus y la correspondencia pregunta-guía son la limitante principal (secciones 5 y 7).
+es donde más falla: 9/15 respuestas caen en la válvula de escape, sobre todo cuando la pregunta
+pide recomendaciones de guías que el corpus no contiene. El cruce RAGAS x M2 no etiqueta ningún
+caso como alucinación: la extracción es adecuada, pero la cobertura del corpus y la correspondencia
+pregunta-guía son la limitante principal (secciones 5 y 7).
 
 ### 9.4 Limitaciones globales del módulo
 
