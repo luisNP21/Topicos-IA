@@ -233,6 +233,7 @@ class RegistroConsultas:
         self.n = 0
         self.n_errores = 0
         self.ultima: dict | None = None
+        self.latencias: list[float] = []          # total por consulta, para el promedio
 
     def nueva(self, texto: str, imagenes: list[str], backend: str, max_entidades: int) -> Traza:
         return Traza(texto, imagenes, backend, max_entidades, self.guardar_texto)
@@ -241,6 +242,7 @@ class RegistroConsultas:
         self.n += 1
         self.n_errores += bool(registro.get("error"))
         self.ultima = registro
+        self.latencias.append(registro["latencia_s"].get("total", 0.0))
         try:
             self.carpeta.mkdir(parents=True, exist_ok=True)
             with open(self.archivo, "a", encoding="utf-8") as f:
@@ -332,6 +334,37 @@ def salud(pipeline, registro: RegistroConsultas | None = None, profundo: bool = 
             "archivo_log": str(registro.archivo),
         }
     return resultado
+
+
+_ESTADOS = {
+    "ok": "Funcionando",
+    "degradado": "Funcionando con limitaciones",
+    "error": "Con fallas",
+}
+
+
+def _segundos(s: float) -> str:
+    return f"{s:.1f}".replace(".", ",") + " s"
+
+
+def resumen_estado(pipeline, registro: RegistroConsultas | None = None) -> str:
+    """Estado del sistema en lenguaje simple para la interfaz: solo estado y latencia.
+
+    El detalle técnico (chequeos, modelos, GPU, versión, etc.) queda en salud() / API /health."""
+    estado = salud(pipeline, registro)["estado"]
+
+    if registro is not None and registro.latencias:
+        lat = registro.latencias
+        latencia = f"última consulta {_segundos(lat[-1])}"
+        if len(lat) > 1:
+            latencia += f" · promedio {_segundos(sum(lat) / len(lat))} ({len(lat)} consultas)"
+    else:
+        latencia = "aún no hay consultas"
+
+    return "\n\n".join([
+        f"**Estado:** {_ESTADOS[estado]}",
+        f"**Latencia:** {latencia}",
+    ])
 
 
 if __name__ == "__main__":

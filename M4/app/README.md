@@ -78,9 +78,13 @@ git push origin v1.0-demo
 
 Sin carpeta `.git` (p. ej. un Space que copia solo los archivos) se usa la variable `APP_VERSION`.
 
-**Health check.** Tres formas, todas con el mismo JSON (`estado`: `ok` / `degradado` / `error`):
+**Estado del sistema (en la app).** Un acordeón al pie, pensado para el usuario y sin detalle
+técnico: muestra solo el **estado** (funcionando / funcionando con limitaciones / con fallas) y la
+**latencia** (última consulta y promedio de la sesión). Se llena al abrir la página y con el botón *Actualizar*.
 
-- En la app: acordeón **Estado del sistema** → *Comprobar estado*.
+**Health check técnico.** El JSON completo (`estado`: `ok` / `degradado` / `error`, con cada chequeo)
+no se muestra en la interfaz; queda para monitoreo:
+
 - Por API, también sobre el enlace `gradio.live`:
   `from gradio_client import Client; Client("<url>").predict(api_name="/health")`.
 - Antes de lanzar: `python M4/app/app.py --health` carga todo, imprime el JSON y sale con código 1 si
@@ -129,11 +133,11 @@ en vez de inventar.
 ## Decisiones
  
 - **Backend de visión.** `auto` usa el VLM (Qwen2-VL-2B) si hay GPU; si no, OCR con Docling, porque
-  el VLM en CPU tarda minutos por página. El usuario puede elegirlo en "Opciones".
+  el VLM en CPU tarda minutos por página. La interfaz no ofrece elegir motor ni el máximo de
+  hallazgos: siempre usa `auto` y `rag.max_entidades` de `config_app.yaml`.
 - **Precarga del motor de visión.** El backend por defecto se carga al iniciar la app, no con la
   primera imagen; así el tiempo de la página es solo lectura (~30 s con el VLM en una T4). Si la
-  precarga falla, la app arranca igual y lo carga con la primera imagen. Otros motores elegidos en
-  "Opciones" se siguen cargando la primera vez que se usan.
+  precarga falla, la app arranca igual y lo carga con la primera imagen.
 - **Aviso «lectura automática, verifique el original».** Aparece en toda respuesta que viene de una
   imagen, porque los hallazgos dependen de lo que el modelo leyó.
 - **`vlm_max_new_tokens: 1024`.** El config de `M4/vision` usa 512; una página A4 completa puede

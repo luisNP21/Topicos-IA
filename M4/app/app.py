@@ -21,16 +21,13 @@ from pathlib import Path
  
 import gradio as gr
  
-from operacion import RegistroConsultas, Traza, salud, texto_version
+from operacion import RegistroConsultas, Traza, resumen_estado, salud, texto_version
 from pipeline_app import REPO, PipelineClinico
  
 EXT_IMAGEN = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tif", ".tiff"}
-BACKENDS = [
-    ("Automático (VLM con GPU, OCR sin GPU)", "auto"),
-    ("VLM Qwen2-VL (requiere GPU)", "vlm"),
-    ("OCR Docling (CPU)", "ocr_docling"),
-    ("OCR Tesseract (CPU, requiere binario)", "ocr_tesseract"),
-]
+# Motor para leer imágenes: siempre automático (VLM si hay GPU, OCR Docling si no). La interfaz
+# ya no ofrece elegir motor ni el máximo de hallazgos: ambos salen de config_app.yaml.
+BACKEND_IMAGENES = "auto"
  
 AVISO = (
     "**Demostración académica (Tópicos IA, EAFIT).** No reemplaza el criterio de un profesional "
@@ -262,7 +259,10 @@ def construir_app(pipeline: PipelineClinico) -> gr.Blocks:
         yield aviso_archivos + armar_respuesta(transcripcion, entidades, origen, resultados, principal,
                                                entidades[n:], info["guias"])
 
-    def responder(mensaje: dict, historial, backend: str, max_entidades: int):
+    backend = BACKEND_IMAGENES
+    max_entidades = int(pipeline.cfg["rag"]["max_entidades"])
+
+    def responder(mensaje: dict, historial):
         texto = (mensaje.get("text") or "").strip()
         archivos = mensaje.get("files") or []
         imagenes = [f for f in archivos if Path(f).suffix.lower() in EXT_IMAGEN]
@@ -298,17 +298,20 @@ def construir_app(pipeline: PipelineClinico) -> gr.Blocks:
           f"LLM: {info['modelo_llm'] or 'no disponible'} | GPU: {'sí' if info['gpu'] else 'no'} | "
           f"log: {registro.archivo}", flush=True)
 
-    with gr.Blocks(title=pipeline.cfg["interfaz"]["titulo"], fill_height=True) as demo:
+    with gr.Blocks(title=pipeline.cfg["interfaz"]["titulo"]) as demo:
         _chat(pipeline, responder, descripcion)
         with gr.Accordion("Estado del sistema", open=False):
-            gr.Markdown(f"{texto_version()}. Comprueba que los modelos y el índice estén cargados "
-                        "y hace una búsqueda de prueba en las guías. También disponible por API "
-                        "como `/health` (cliente `gradio_client`).")
-            boton = gr.Button("Comprobar estado", size="sm")
-            salida = gr.JSON(label="Health check")
-            # Cola propia: el health check no espera detrás de una consulta de ~30 s.
-            boton.click(lambda: salud(pipeline, registro, profundo=True), outputs=salida,
-                        api_name="health", concurrency_id="health", concurrency_limit=1)
+            estado_md = gr.Markdown()
+            boton = gr.Button("Actualizar", size="sm")
+            # Resumen para el usuario (estado, modelos, latencia). Cola propia: no espera
+            # detrás de una consulta de ~30 s.
+            for evento in (demo.load, boton.click):
+                evento(lambda: resumen_estado(pipeline, registro), outputs=estado_md,
+                       api_name=False, concurrency_id="health", concurrency_limit=1)
+        # Health check completo (JSON técnico) solo por API, para monitoreo: /health
+        def health() -> dict:
+            return salud(pipeline, registro, profundo=True)
+        gr.api(health, api_name="health", concurrency_id="health", concurrency_limit=1)
     return demo
 
 
@@ -320,13 +323,6 @@ def _chat(pipeline: PipelineClinico, responder, descripcion: str) -> gr.ChatInte
             file_types=["image"], file_count="multiple",
             placeholder="Escribe el caso clínico (y si quieres, una pregunta con ¿...?) o adjunta la foto de la nota",
         ),
-        additional_inputs=[
-            gr.Dropdown(BACKENDS, value=pipeline.cfg["vision"]["backend_por_defecto"],
-                        label="Motor para leer imágenes"),
-            gr.Slider(1, 30, value=int(pipeline.cfg["rag"]["max_entidades"]), step=1,
-                      label="Máximo de hallazgos a buscar en las guías"),
-        ],
-        additional_inputs_accordion=gr.Accordion("Opciones", open=False),
         examples=[[{"text": EJEMPLO_TEXTO, "files": []}]],
         run_examples_on_click=False,
         title=pipeline.cfg["interfaz"]["titulo"],
