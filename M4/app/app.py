@@ -6,18 +6,23 @@ guías clínicas que las respaldan, con la respuesta redactada por el LLM de M3.
 Ejecutar desde la raíz del repo:
     python M4/app/app.py                # http://127.0.0.1:7860
     python M4/app/app.py --share        # enlace público temporal (útil en Colab con GPU)
+    python M4/app/app.py --health       # carga todo, imprime el health check y termina
+
+Cada consulta deja una línea en M4/app/.cache/logs/consultas.jsonl (ver operacion.py).
 """
 
 from __future__ import annotations
  
 import argparse
 import html
+import json
 import re
 from pathlib import Path
  
 import gradio as gr
  
-from pipeline_app import PipelineClinico
+from operacion import RegistroConsultas, Traza, salud, texto_version
+from pipeline_app import REPO, PipelineClinico
  
 EXT_IMAGEN = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tif", ".tiff"}
 BACKENDS = [
@@ -202,64 +207,112 @@ def armar_respuesta(transcripcion: dict | None, entidades: list[str], origen: st
 # ---------------------------------------------------------------------------
 # Interfaz
 # ---------------------------------------------------------------------------
-def construir_app(pipeline: PipelineClinico) -> gr.ChatInterface:
+def construir_app(pipeline: PipelineClinico) -> gr.Blocks:
     info = pipeline.info
  
-    def responder(mensaje: dict, historial, backend: str, max_entidades: int):
-        texto = (mensaje.get("text") or "").strip()
-        archivos = mensaje.get("files") or []
-        imagenes = [f for f in archivos if Path(f).suffix.lower() in EXT_IMAGEN]
-        ignorados = [Path(f).name for f in archivos if f not in imagenes]
- 
-        if not texto and not imagenes:
-            yield "Escribe un caso clínico o adjunta la imagen de una nota clínica (PNG o JPG)."
-            return
- 
+    def _responder(traza: Traza, texto: str, imagenes: list[str], ignorados: list[str],
+                   backend: str, n: int):
+        """Genera los mensajes de avance y la respuesta final; anota todo en `traza`."""
         aviso_archivos = (f"<sub>Archivos ignorados (solo se aceptan imágenes): {', '.join(ignorados)}</sub>\n\n"
                           if ignorados else "")
- 
+
         def estado(msg: str) -> str:
             return f"{aviso_archivos}_{msg}_"
- 
+
         transcripcion = None
         if imagenes:
             nombre = pipeline.vision.resolver_backend(backend)
             espera = " Puede tardar alrededor de un minuto por página." if nombre == "vlm" else ""
             yield estado(f"Leyendo {'la imagen' if len(imagenes) == 1 else f'{len(imagenes)} imágenes'}...{espera}")
-            transcripcion = pipeline.transcribir(imagenes, backend)
+            with traza.etapa("vision"):
+                transcripcion = pipeline.transcribir(imagenes, backend)
+            traza.vision(transcripcion)
             if not transcripcion["texto"] and not texto:
+                traza.resultado = "imagen_ilegible"
                 yield (aviso_archivos + "No se pudo leer texto en la imagen. Prueba con una foto más nítida, "
                        "de frente y con buena luz, o escribe el caso.\n\n" + _bloque_tecnico(transcripcion, []))
                 return
- 
+
         texto_total = "\n".join(p for p in [transcripcion["texto"] if transcripcion else "", texto] if p)
         yield estado("Identificando hallazgos clínicos...")
-        entidades, origen = pipeline.extraer_entidades(texto_total)
+        with traza.etapa("ner"):
+            entidades, origen = pipeline.extraer_entidades(texto_total)
+        traza.entidades(entidades, origen, min(n, len(entidades)))
         if not entidades:
+            traza.resultado = "sin_entidades"
             yield (aviso_archivos + "No se identificaron hallazgos clínicos (enfermedades o diagnósticos) "
                    "en el texto, así que no hay nada que buscar en las guías.")
             return
- 
-        n = int(max_entidades)
+
         resultados = []
         for i, entidad in enumerate(entidades[:n], 1):
             yield estado(f"Buscando en las guías: {_capitalizar(entidad)} ({i} de {min(n, len(entidades))})...")
-            resultados.append(pipeline.buscar(entidad))
- 
+            with traza.etapa("busqueda"):
+                resultados.append(pipeline.buscar(entidad))
+
         principal = pipeline.elegir_principal(resultados)
         if principal is not None:
             yield estado(f"Redactando la respuesta para {_nombre(principal)}...")
-            pipeline.redactar(principal, pipeline.extraer_pregunta(texto))
- 
+            with traza.etapa("redaccion"):
+                pipeline.redactar(principal, pipeline.extraer_pregunta(texto))
+        traza.principal(resultados, principal, info.get("umbral_evidencia"))
+        traza.resultado = ("respuesta" if principal is not None and principal.get("respuesta") and not principal.get("fallback")
+                           else "solo_fragmentos" if principal is not None else "sin_cobertura")
+
         yield aviso_archivos + armar_respuesta(transcripcion, entidades, origen, resultados, principal,
                                                entidades[n:], info["guias"])
- 
+
+    def responder(mensaje: dict, historial, backend: str, max_entidades: int):
+        texto = (mensaje.get("text") or "").strip()
+        archivos = mensaje.get("files") or []
+        imagenes = [f for f in archivos if Path(f).suffix.lower() in EXT_IMAGEN]
+        ignorados = [Path(f).name for f in archivos if f not in imagenes]
+
+        if not texto and not imagenes:
+            yield "Escribe un caso clínico o adjunta la imagen de una nota clínica (PNG o JPG)."
+            return
+
+        # Log por consulta (entrada, ruta, confianza, latencia). Se guarda SIEMPRE, también
+        # si la consulta falla, y un fallo del log nunca tumba la respuesta.
+        traza = registro.nueva(texto, imagenes, backend, int(max_entidades))
+        error = None
+        try:
+            yield from _responder(traza, texto, imagenes, ignorados, backend, int(max_entidades))
+        except Exception as exc:
+            error = f"{type(exc).__name__}: {exc}"
+            yield (f"Ocurrió un error al procesar la consulta (`{html.escape(error)}`). "
+                   f"Identificador para el log: `{traza.registro['id']}`.")
+        finally:
+            registro.guardar(traza.terminar(traza.resultado or ("error" if error else "interrumpida"), error))
+
+    cfg_logs = pipeline.cfg.get("logs", {})
+    registro = RegistroConsultas(REPO / cfg_logs.get("dir", "M4/app/.cache/logs"),
+                                 guardar_texto=bool(cfg_logs.get("guardar_texto", False)))
+
     descripcion = f"{AVISO}\n\n**Guías disponibles:** {html.escape('; '.join(info['guias']))}"
     for aviso in pipeline.avisos_carga:
         descripcion += f"\n\n**Aviso:** {aviso}"
-    print(f"[app] Umbrales {info['umbral']}/{info['umbral_evidencia']} ({info['origen_umbrales']}) | "
-          f"LLM: {info['modelo_llm'] or 'no disponible'} | GPU: {'sí' if info['gpu'] else 'no'}", flush=True)
- 
+    descripcion += f"\n\n<sub>{texto_version()}</sub>"
+    print(f"[app] {texto_version().replace('`', '')} | "
+          f"Umbrales {info['umbral']}/{info['umbral_evidencia']} ({info['origen_umbrales']}) | "
+          f"LLM: {info['modelo_llm'] or 'no disponible'} | GPU: {'sí' if info['gpu'] else 'no'} | "
+          f"log: {registro.archivo}", flush=True)
+
+    with gr.Blocks(title=pipeline.cfg["interfaz"]["titulo"], fill_height=True) as demo:
+        _chat(pipeline, responder, descripcion)
+        with gr.Accordion("Estado del sistema", open=False):
+            gr.Markdown(f"{texto_version()}. Comprueba que los modelos y el índice estén cargados "
+                        "y hace una búsqueda de prueba en las guías. También disponible por API "
+                        "como `/health` (cliente `gradio_client`).")
+            boton = gr.Button("Comprobar estado", size="sm")
+            salida = gr.JSON(label="Health check")
+            # Cola propia: el health check no espera detrás de una consulta de ~30 s.
+            boton.click(lambda: salud(pipeline, registro, profundo=True), outputs=salida,
+                        api_name="health", concurrency_id="health", concurrency_limit=1)
+    return demo
+
+
+def _chat(pipeline: PipelineClinico, responder, descripcion: str) -> gr.ChatInterface:
     return gr.ChatInterface(
         fn=responder,
         multimodal=True,
@@ -287,9 +340,15 @@ def main() -> None:
     parser.add_argument("--share", action="store_true", help="Enlace público temporal de Gradio")
     parser.add_argument("--host", default="127.0.0.1", help="0.0.0.0 para exponerla en la red")
     parser.add_argument("--port", type=int, default=None)
+    parser.add_argument("--health", action="store_true",
+                        help="Carga la app, imprime el health check en JSON y termina (código 1 si hay error)")
     args = parser.parse_args()
  
     pipeline = PipelineClinico().cargar()
+    if args.health:
+        estado = salud(pipeline, profundo=True)
+        print(json.dumps(estado, ensure_ascii=False, indent=2))
+        raise SystemExit(1 if estado["estado"] == "error" else 0)
     app = construir_app(pipeline)
     app.queue(default_concurrency_limit=1)     # un solo juego de modelos en memoria
     app.launch(share=args.share, server_name=args.host,

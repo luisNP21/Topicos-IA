@@ -21,7 +21,8 @@ No reimplementa ninguna pieza: llama al código del equipo (`M4/vision`, `M2/run
 | `pipeline_app.py` | Carga las piezas y expone `transcribir`, `extraer_entidades`, `buscar`, `elegir_principal`, `redactar` y `analizar` |
 | `evaluar_principal.py` | Compara la enfermedad principal que elige la app con la `entidad` del eval set de M3 |
 | `config_app.yaml` | Rutas, umbrales, backend de visión por defecto, límite de entidades |
-| `requirements.txt` | Dependencias (reutiliza las de M2 y M4/vision) |
+| `operacion.py` | Versión de Git, logs por consulta, health check y generador del `requirements.txt` fijado |
+| `requirements.txt` | Dependencias con versiones fijadas (autocontenido; `torch` no se fija) |
  
 ## Qué necesita
  
@@ -62,6 +63,54 @@ La primera vez descarga los modelos (embeddings e5-base, reranker, Clinical BERT
 !pip install -r M4/app/requirements.txt
 # escribir /content/corpus/.env con PROJECT_ROOT=/content/drive/MyDrive/TopicosIA/Proyecto-Salud y GROQ_API_KEY
 !python M4/app/app.py --share
+```
+
+## Operación: versión, health check, logs y dependencias
+
+**Versión visible.** El pie de la descripción de la app y la primera línea de la consola muestran
+`git describe` (el tag si lo hay, si no el commit), la rama y la fecha del commit. `-dirty` significa
+que lo que corre tiene cambios sin commit. Para la demo, etiquetar el commit que se presenta:
+
+```bash
+git tag -a v1.0-demo -m "Demo M4"
+git push origin v1.0-demo
+```
+
+Sin carpeta `.git` (p. ej. un Space que copia solo los archivos) se usa la variable `APP_VERSION`.
+
+**Health check.** Tres formas, todas con el mismo JSON (`estado`: `ok` / `degradado` / `error`):
+
+- En la app: acordeón **Estado del sistema** → *Comprobar estado*.
+- Por API, también sobre el enlace `gradio.live`:
+  `from gradio_client import Client; Client("<url>").predict(api_name="/health")`.
+- Antes de lanzar: `python M4/app/app.py --health` carga todo, imprime el JSON y sale con código 1 si
+  hay error.
+
+Revisa el índice de guías y el NER (críticos), el motor de visión, el LLM y la GPU (si faltan, la app
+funciona con limitaciones: `degradado`), y hace una búsqueda de prueba real
+(`diabetes mellitus tipo 2`, ~0,4 s, sin LLM). Tiene su propia cola, así que responde aunque haya una
+consulta en curso. También informa cuántas consultas van, cuántas con error y la última.
+
+**Logs por consulta.** Cada consulta agrega una línea a `M4/app/.cache/logs/consultas.jsonl` (no se
+versiona) y un resumen en la consola:
+
+| Campo | Contenido |
+|---|---|
+| `entrada` | tipo (`texto` / `imagen` / `imagen+texto`), tamaño y hash del texto y de cada imagen, motor pedido |
+| `ruta` | motor de visión y estado por página, entidades detectadas/consultadas/con evidencia, enfermedad principal, si se normalizó, `chunk_id` usados |
+| `confianza` | score del reranker de la principal vs. `umbral_evidencia`, nº de fragmentos, fallback, error del LLM |
+| `latencia_s` | `vision`, `ner`, `busqueda`, `redaccion` y `total` |
+| `resultado` | `respuesta`, `solo_fragmentos`, `sin_cobertura`, `sin_entidades`, `imagen_ilegible` o `error` |
+
+El texto de la nota **no** se guarda, solo su tamaño y hash (`logs.guardar_texto` en `config_app.yaml`).
+Si una consulta falla, igual queda registrada con el error, y la app muestra su `id` para buscarla.
+
+**Dependencias fijadas.** `requirements.txt` tiene `==` en todo lo que el repo ya tenía fijado. Las que
+no (`chromadb`, `docling`, `groq`, `qwen-vl-utils`, ...) se fijan generando el archivo en el entorno
+donde la app funcionó de punta a punta:
+
+```bash
+python M4/app/operacion.py --requirements > M4/app/requirements.txt
 ```
  
 ## Capturas
@@ -126,4 +175,5 @@ en vez de inventar.
 - Una entidad sin fragmentos sobre el umbral de evidencia: se muestra la válvula de escape de M3, sin
   llamar al LLM.
 - Error del LLM en una entidad: se muestra el error en esa entidad; las demás siguen.
+- Error inesperado en una consulta: se muestra el error con el `id` de la consulta y queda en el log.
  

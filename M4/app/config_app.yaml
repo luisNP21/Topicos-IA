@@ -54,3 +54,10 @@ interfaz:
   titulo: "Asistente de guías clínicas"
   puerto: 7860
  
+logs:
+  # Una línea JSON por consulta: entrada (tipo, tamaño, hash), ruta (motor de visión,
+  # entidades, enfermedad principal, chunk_id), confianza (score vs. umbral) y latencia
+  # por etapa. Relativa a la raíz del repo; no se versiona (.gitignore).
+  dir: "M4/app/.cache/logs"
+  # false -> NO se guarda el texto de la nota, solo su tamaño y hash (privacidad).
+  guardar_texto: false
