@@ -15,38 +15,38 @@ Uso como librería (sin interfaz):
 """
 
 from __future__ import annotations
-
+ 
 import importlib
 import os
 import sys
 import time
 from pathlib import Path
 from typing import Callable
-
+ 
 import yaml
-
+ 
 APP_DIR = Path(__file__).resolve().parent
 REPO = APP_DIR.parents[1]                       # M4/app -> M4 -> repo
 CONFIG_APP = APP_DIR / "config_app.yaml"
-
+ 
 Progreso = Callable[[str], None]
-
-
+ 
+ 
 def _log(msg: str) -> None:
     print(f"[app {time.strftime('%H:%M:%S')}] {msg}", flush=True)
-
-
+ 
+ 
 # ---------------------------------------------------------------------------
 # Entorno y recursos
 # ---------------------------------------------------------------------------
 def cargar_entorno() -> Path:
     """Carga el .env (raíz del repo o carpeta actual) y devuelve PROJECT_ROOT validado."""
     from dotenv import find_dotenv, load_dotenv
-
+ 
     if (REPO / ".env").exists():
         load_dotenv(REPO / ".env")
     load_dotenv(find_dotenv(usecwd=True))
-
+ 
     root = (os.environ.get("PROJECT_ROOT") or "").strip().strip('"').strip("'")
     if not root:
         raise RuntimeError(
@@ -57,8 +57,8 @@ def cargar_entorno() -> Path:
     if not ruta.exists():
         raise RuntimeError(f"PROJECT_ROOT apunta a una carpeta que no existe: {ruta}")
     return ruta
-
-
+ 
+ 
 def verificar_recursos(cfg: dict, project_root: Path) -> None:
     """Falla con una lista clara de lo que falta, antes de cargar modelos pesados."""
     r = cfg["rutas"]
@@ -78,14 +78,14 @@ def verificar_recursos(cfg: dict, project_root: Path) -> None:
             "(MyDrive/TopicosIA/Proyecto-Salud) a la misma ruta relativa:\n  - "
             + "\n  - ".join(faltan)
         )
-
-
+ 
+ 
 # ---------------------------------------------------------------------------
 # Importaciones aisladas
 # ---------------------------------------------------------------------------
 _MODULOS_VISION = ("contratos", "prompts", "backends", "transcripcion")
-
-
+ 
+ 
 def _importar_vision():
     """Importa M4/vision sin dejar su `contratos` en caché (lo usaría M3 por error)."""
     vision_dir = str(REPO / "M4" / "vision")
@@ -102,8 +102,8 @@ def _importar_vision():
         while vision_dir in sys.path:
             sys.path.remove(vision_dir)
     return transcripcion, backends, prompts
-
-
+ 
+ 
 def _importar_m3():
     """M3/generacion queda primero en sys.path: su `contratos` y su `orquestacion` mandan."""
     generacion_dir = REPO / "M3" / "generacion"
@@ -111,33 +111,33 @@ def _importar_m3():
         if str(d) in sys.path:
             sys.path.remove(str(d))
         sys.path.insert(0, str(d))
-
+ 
     for nombre in ("contratos", "orquestacion"):
         mod = sys.modules.get(nombre)
         if mod is not None and Path(getattr(mod, "__file__", "")).parent != generacion_dir:
             sys.modules.pop(nombre)
-
+ 
     generacion = importlib.import_module("generacion")
     orquestacion = importlib.import_module("orquestacion")
     config_retrieval = importlib.import_module("config_retrieval")
     retrieval = importlib.import_module("retrieval")
-
+ 
     if Path(orquestacion.__file__).parent != generacion_dir:
         raise ImportError(f"Se importó un 'orquestacion' equivocado: {orquestacion.__file__}")
     return generacion, orquestacion, config_retrieval, retrieval
-
-
+ 
+ 
 # ---------------------------------------------------------------------------
 # Piezas
 # ---------------------------------------------------------------------------
 class ExtractorNER:
     """Texto -> entidades de enfermedad, en orden de aparición y sin repetir.
-
+ 
     Usa las mismas funciones que M2 (predict_word_level, chunk_words, normalizar_entidad).
     La única diferencia con `bio_to_entity_set` de M2 es que conserva el orden, para que
     la app consulte primero las entidades que aparecen primero en la nota.
     """
-
+ 
     def __init__(self, cfg_ner: dict, adapter_path: Path, project_root: Path):
         for d in (REPO / "M2", REPO / "M2" / "run_inference"):
             if str(d) not in sys.path:
@@ -145,7 +145,7 @@ class ExtractorNER:
         from common import chunk_words, normalizar_entidad
         from inference import predict_word_level
         from model_loader import cargar_modelo
-
+ 
         self._chunk_words = chunk_words
         self._normalizar = normalizar_entidad
         self._predecir = predict_word_level
@@ -154,7 +154,7 @@ class ExtractorNER:
         self.model, self.tokenizer, self.id2label = cargar_modelo(
             {"checkpoint": cfg_ner["checkpoint"], "adapter_path": str(adapter_path)}, None
         )
-
+ 
     def __call__(self, texto: str) -> list[str]:
         palabras = texto.split()
         if not palabras:
@@ -176,7 +176,7 @@ class ExtractorNER:
                     actual = []
             if actual:
                 menciones.append(" ".join(actual))
-
+ 
         vistas, salida = set(), []
         for m in menciones:
             n = self._normalizar(m)
@@ -184,11 +184,11 @@ class ExtractorNER:
                 vistas.add(n)
                 salida.append(n)
         return salida
-
-
+ 
+ 
 class Vision:
     """Imágenes -> texto con los backends de M4/vision. Cada backend se carga una sola vez."""
-
+ 
     def __init__(self, cfg_vision_app: dict):
         self.trans, self.backends, self.prompts = _importar_vision()
         with open(REPO / "M4" / "vision" / "config.yaml", encoding="utf-8") as f:
@@ -196,7 +196,7 @@ class Vision:
         self.cfg.setdefault("vlm", {})["max_new_tokens"] = int(cfg_vision_app["vlm_max_new_tokens"])
         self._cache: dict[str, object] = {}
         self.mensaje_sin_texto = self.prompts.MENSAJE_SIN_TEXTO
-
+ 
     @staticmethod
     def hay_gpu() -> bool:
         try:
@@ -204,17 +204,17 @@ class Vision:
             return bool(torch.cuda.is_available())
         except Exception:
             return False
-
+ 
     def resolver_backend(self, nombre: str) -> str:
         if nombre in (None, "", "auto"):
             return "vlm" if self.hay_gpu() else "ocr_docling"
         return nombre
-
+ 
     def _backend(self, nombre: str):
         if nombre not in self._cache:
             self._cache[nombre] = self.backends.crear_backend(nombre, self.cfg)
         return self._cache[nombre]
-
+ 
     def transcribir(self, rutas: list[str], backend: str) -> dict:
         nombre = self.resolver_backend(backend)
         motor = self._backend(nombre)
@@ -225,8 +225,8 @@ class Vision:
             paginas.append(t)
         legibles = [p["texto"] for p in paginas if not p["valvula"] and not p["error"]]
         return {"backend": nombre, "texto": "\n".join(legibles), "paginas": paginas}
-
-
+ 
+ 
 # ---------------------------------------------------------------------------
 # Pipeline completo
 # ---------------------------------------------------------------------------
@@ -240,19 +240,19 @@ class PipelineClinico:
         self.generar_fn = None
         self.info: dict = {}
         self.avisos_carga: list[str] = []
-
+ 
     # -- carga ---------------------------------------------------------------
     def cargar(self, progreso: Progreso = _log) -> "PipelineClinico":
         self.project_root = cargar_entorno()
         progreso(f"PROJECT_ROOT: {self.project_root}")
         verificar_recursos(self.cfg, self.project_root)
-
+ 
         progreso("Importando visión (M4/vision)...")
         self.vision = Vision(self.cfg["vision"])
-
+ 
         progreso("Importando retrieval y generación (M3)...")
         self._gen, self._orq, self._cfg_retr, self._retr = _importar_m3()
-
+ 
         progreso("Preparando índice de guías (la 1.ª vez descarga modelos y reconstruye Chroma)...")
         ruta_cfg, origen_umbrales = self._config_retrieval_app()
         os.environ["M3_RETRIEVAL_CONFIG"] = str(ruta_cfg)
@@ -260,11 +260,11 @@ class PipelineClinico:
         indice = self._cfg_retr.configurar_pipeline(cfg_retr)
         self.params = self._cfg_retr.parametros_orquestacion(cfg_retr)
         self.normalizar_fn = self._cfg_retr.normalizador_desde_config(cfg_retr)
-
+ 
         progreso("Cargando NER (Clinical BERT + LoRA de M1)...")
         self.ner = ExtractorNER(self.cfg["ner"], self.project_root / self.cfg["rutas"]["adapter_ner"],
                                 self.project_root)
-
+ 
         gen_cfg = yaml.safe_load((REPO / "M3/generacion/config.yaml").read_text(encoding="utf-8"))["generacion"]
         try:
             self.generar_fn = self._gen.GroqGenerator(
@@ -277,7 +277,7 @@ class PipelineClinico:
             self.avisos_carga.append(
                 f"Sin generación con LLM ({exc}). Se muestran entidades y fragmentos, sin respuesta redactada."
             )
-
+ 
         self.info = {
             "n_chunks": len(indice.chunks),
             "guias": sorted({indice.manifest.get(c["doc_id"], {}).get("titulo") or c["doc_id"]
@@ -295,7 +295,7 @@ class PipelineClinico:
                  f"umbrales {self.info['umbral']}/{self.info['umbral_evidencia']} ({origen_umbrales}) | "
                  f"visión por defecto: {self.info['backend_por_defecto']}")
         return self
-
+ 
     def _config_retrieval_app(self) -> tuple[Path, str]:
         """Copia de config_retrieval.yaml con rutas locales (el original tiene rutas de Colab)."""
         cfg = yaml.safe_load((REPO / "M3/retrieval/config_retrieval.yaml").read_text(encoding="utf-8"))
@@ -305,7 +305,7 @@ class PipelineClinico:
         real["corpus_json"] = str(self.project_root / r["corpus_chunks"])
         real["manifest"] = str(self.project_root / r["corpus_manifest"])
         real["chroma_dir"] = str((REPO / r["chroma_local"]).resolve())
-
+ 
         u = self.cfg["umbrales"]
         umbrales_json = (REPO / real["salida"] / "umbrales.json").resolve()
         if u.get("preferir_umbrales_json", True) and umbrales_json.exists():
@@ -316,16 +316,16 @@ class PipelineClinico:
             cfg["orquestacion"]["umbral"] = float(u["umbral"])
             cfg["orquestacion"]["umbral_evidencia"] = float(u["umbral_evidencia"])
             origen = "config_app.yaml"
-
+ 
         destino = REPO / r["cache_dir"] / "config_retrieval_app.yaml"
         destino.parent.mkdir(parents=True, exist_ok=True)
         destino.write_text(yaml.safe_dump(cfg, allow_unicode=True, sort_keys=False), encoding="utf-8")
         return destino, origen
-
+ 
     # -- pasos (la interfaz los llama uno a uno para mostrar el avance) --------
     def transcribir(self, imagenes: list[str], backend: str = "auto") -> dict:
         return self.vision.transcribir(imagenes, backend)
-
+ 
     def extraer_entidades(self, texto: str) -> tuple[list[str], str]:
         """Devuelve (entidades, origen). Una consulta corta sin entidades se usa tal cual."""
         entidades = self.ner(texto)
@@ -335,9 +335,12 @@ class PipelineClinico:
         if limpio and len(limpio) <= 80 and "\n" not in limpio:
             return [limpio.lower()], "consulta_directa"
         return [], "ner"
-
-    def consultar(self, entidad: str) -> dict:
-        """Una entidad -> orquestación (retrieval + normalización) -> fragmentos -> respuesta."""
+ 
+    def buscar(self, entidad: str) -> dict:
+        """Una entidad -> orquestación de M3 (retrieval + normalización + compuerta) -> fragmentos.
+ 
+        No llama al LLM: es rápido (~0,35 s) y se hace para todas las entidades, para poder
+        elegir la enfermedad principal del caso antes de redactar."""
         inicio = time.perf_counter()
         q = self._orq.resolver_query(
             entidad, retrieve_fn=self._retr.retrieve_advanced, normalizar_fn=self.normalizar_fn,
@@ -350,42 +353,83 @@ class PipelineClinico:
             "seccion": f.get("seccion"), "score": f.get("score"), "score_tipo": f.get("score_tipo"),
             "texto": f.get("texto", ""),
         } for f in q["fragments"]]
-
-        respuesta, fallback, fuentes = None, not q["fragments"], []
-        error = None
-        if self.generar_fn is not None or not q["fragments"]:
-            try:
-                resp = self._gen.generar_respuesta(
-                    q["query_final"], q["fragments"], generar_fn=self.generar_fn,
-                    pregunta=self._retr.pregunta_intencion(q["query_final"]),
-                )
-                respuesta, fallback, fuentes = resp["answer"], resp["fallback_used"], resp["sources_used"]
-            except Exception as exc:          # error explícito, no se inventa respuesta
-                error = f"{type(exc).__name__}: {exc}"
-
         return {
             "entidad": entidad, "query_final": q["query_final"],
             "tool_invoked": q["tool_invoked"], "tool_reason": q["tool_reason"],
-            "fragmentos": fragmentos, "respuesta": respuesta, "fallback": fallback,
-            "fuentes_usadas": fuentes, "error": error,
+            "fragmentos": fragmentos, "_fragments_m3": q["fragments"],
+            "respuesta": None, "fallback": not q["fragments"], "fuentes_usadas": [],
+            "pregunta": None, "error": None,
             "segundos": round(time.perf_counter() - inicio, 2),
         }
-
+ 
+    @staticmethod
+    def elegir_principal(resultados: list[dict]) -> dict | None:
+        """La enfermedad principal del caso: la entidad con más evidencia en las guías.
+ 
+        Criterio determinista (como la orquestación de M3, sin pedirle al LLM que decida):
+        entre las entidades con al menos un fragmento sobre el umbral de evidencia, la de
+        mayor score del reranker en su primer fragmento. En empate gana la que aparece
+        primero en la nota. Si ninguna tiene evidencia, no hay principal (válvula de escape).
+        Ojo: es la enfermedad sobre la que las guías pueden responder mejor, no un diagnóstico
+        clínico principal decidido por el sistema."""
+        con_evidencia = [r for r in resultados if r["fragmentos"]]
+        if not con_evidencia:
+            return None
+        return max(con_evidencia, key=lambda r: max(
+            (f["score"] for f in r["fragmentos"] if isinstance(f.get("score"), (int, float))), default=0.0))
+ 
+    @staticmethod
+    def extraer_pregunta(texto: str) -> str | None:
+        """Si el usuario escribió una pregunta ("¿...?"), se usa para la generación, como la
+        columna `pregunta` del eval set de M3. Si no, se usa la pregunta de intención."""
+        import re
+        preguntas = re.findall(r"¿[^?¿]{5,}\?", texto or "")
+        return preguntas[-1].strip() if preguntas else None
+ 
+    def redactar(self, resultado: dict, pregunta: str | None = None) -> dict:
+        """Genera la respuesta con el LLM de M3 sobre los fragmentos de una entidad."""
+        inicio = time.perf_counter()
+        pregunta = pregunta or self._retr.pregunta_intencion(resultado["query_final"])
+        resultado["pregunta"] = pregunta
+        if self.generar_fn is None and resultado["_fragments_m3"]:
+            return resultado                  # sin GROQ_API_KEY: solo fragmentos
+        try:
+            resp = self._gen.generar_respuesta(
+                resultado["query_final"], resultado["_fragments_m3"], generar_fn=self.generar_fn,
+                pregunta=pregunta,
+            )
+            resultado.update(respuesta=resp["answer"], fallback=resp["fallback_used"],
+                             fuentes_usadas=resp["sources_used"])
+        except Exception as exc:              # error explícito, no se inventa respuesta
+            resultado["error"] = f"{type(exc).__name__}: {exc}"
+        resultado["segundos"] = round(resultado["segundos"] + time.perf_counter() - inicio, 2)
+        return resultado
+ 
+    def consultar(self, entidad: str, pregunta: str | None = None) -> dict:
+        """Buscar + redactar para una sola entidad (uso como librería)."""
+        return self.redactar(self.buscar(entidad), pregunta)
+ 
     # -- todo junto (uso como librería) ----------------------------------------
     def analizar(self, texto: str = "", imagenes: list[str] | None = None, backend: str = "auto",
-                 max_entidades: int | None = None) -> dict:
+                 max_entidades: int | None = None, pregunta: str | None = None) -> dict:
+        """Nota (texto y/o imágenes) -> entidades -> una enfermedad principal con su respuesta."""
         imagenes = imagenes or []
         transcripcion = self.transcribir(imagenes, backend) if imagenes else None
         partes = [transcripcion["texto"]] if transcripcion else []
         if texto.strip():
             partes.append(texto.strip())
         texto_total = "\n".join(p for p in partes if p)
-
+ 
         entidades, origen = self.extraer_entidades(texto_total) if texto_total else ([], "ner")
         n = int(max_entidades or self.cfg["rag"]["max_entidades"])
+        resultados = [self.buscar(e) for e in entidades[:n]]
+        principal = self.elegir_principal(resultados)
+        if principal is not None:
+            self.redactar(principal, pregunta or self.extraer_pregunta(texto))
         return {
             "transcripcion": transcripcion, "texto": texto_total,
             "entidades": entidades, "origen_entidades": origen,
-            "resultados": [self.consultar(e) for e in entidades[:n]],
+            "principal": principal, "resultados": resultados,
             "no_consultadas": entidades[n:],
         }
+ 
