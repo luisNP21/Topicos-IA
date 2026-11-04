@@ -214,7 +214,20 @@ class Vision:
         if nombre not in self._cache:
             self._cache[nombre] = self.backends.crear_backend(nombre, self.cfg)
         return self._cache[nombre]
- 
+
+    def precargar(self, backend: str) -> str:
+        """Crea el backend y carga sus pesos ya, para que la primera imagen no pague la carga.
+
+        Los backends de M4/vision cargan de forma perezosa en su primer `transcribir`
+        (VLM: `_model`; Docling: `_converter`). Aquí se fuerza esa carga al iniciar."""
+        nombre = self.resolver_backend(backend)
+        motor = self._backend(nombre)
+        sin_cargar = (getattr(motor, "_model", "") is None
+                      or getattr(motor, "_converter", "") is None)
+        if sin_cargar and hasattr(motor, "_cargar"):
+            motor._cargar()
+        return nombre
+
     def transcribir(self, rutas: list[str], backend: str) -> dict:
         nombre = self.resolver_backend(backend)
         motor = self._backend(nombre)
@@ -264,7 +277,18 @@ class PipelineClinico:
         progreso("Cargando NER (Clinical BERT + LoRA de M1)...")
         self.ner = ExtractorNER(self.cfg["ner"], self.project_root / self.cfg["rutas"]["adapter_ner"],
                                 self.project_root)
- 
+
+        # Precarga del motor de visión por defecto (sugerencia de la revisión de M4):
+        # sin esto, la primera imagen incluía la carga del VLM (~4 GB) en su tiempo.
+        backend_vision = self.cfg["vision"]["backend_por_defecto"]
+        progreso(f"Cargando motor de visión ({self.vision.resolver_backend(backend_vision)})...")
+        try:
+            self.vision.precargar(backend_vision)
+        except Exception as exc:
+            self.avisos_carga.append(
+                f"No se pudo precargar el motor de visión ({exc}). Se cargará con la primera imagen."
+            )
+
         gen_cfg = yaml.safe_load((REPO / "M3/generacion/config.yaml").read_text(encoding="utf-8"))["generacion"]
         try:
             self.generar_fn = self._gen.GroqGenerator(

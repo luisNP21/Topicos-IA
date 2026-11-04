@@ -81,6 +81,12 @@ en vez de inventar.
  
 - **Backend de visión.** `auto` usa el VLM (Qwen2-VL-2B) si hay GPU; si no, OCR con Docling, porque
   el VLM en CPU tarda minutos por página. El usuario puede elegirlo en "Opciones".
+- **Precarga del motor de visión.** El backend por defecto se carga al iniciar la app, no con la
+  primera imagen; así el tiempo de la página es solo lectura (~30 s con el VLM en una T4). Si la
+  precarga falla, la app arranca igual y lo carga con la primera imagen. Otros motores elegidos en
+  "Opciones" se siguen cargando la primera vez que se usan.
+- **Aviso «lectura automática, verifique el original».** Aparece en toda respuesta que viene de una
+  imagen, porque los hallazgos dependen de lo que el modelo leyó.
 - **`vlm_max_new_tokens: 1024`.** El config de `M4/vision` usa 512; una página A4 completa puede
   superarlo y cortar el final de la nota.
 - **Umbrales.** Usa `M3/retrieval/outputs/umbrales.json` si existe; si no, 0.174 / 0.174 (calibración

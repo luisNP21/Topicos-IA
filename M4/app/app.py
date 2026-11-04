@@ -33,6 +33,12 @@ AVISO = (
     "(Groq) para redactar la respuesta. Las guías disponibles son las del corpus del proyecto."
 )
  
+AVISO_LECTURA = (
+    "⚠️ **Lectura automática de la imagen: verifique el original.** El texto se extrajo con "
+    "un modelo de visión y puede omitir o confundir palabras; los hallazgos y las guías "
+    "consultadas dependen de esa lectura."
+)
+
 EJEMPLO_TEXTO = (
     "Mujer de 64 años con diabetes mellitus tipo 2 de larga evolución e insuficiencia cardíaca "
     "con fracción de eyección reducida, que consulta por disnea progresiva y edemas en miembros "
@@ -170,6 +176,7 @@ def armar_respuesta(transcripcion: dict | None, entidades: list[str], origen: st
     partes.append(resumen)
  
     if transcripcion and transcripcion["texto"]:
+        partes.append(AVISO_LECTURA)
         partes.append("<details><summary>Ver el texto leído de la imagen</summary>\n\n"
                       f"{html.escape(transcripcion['texto'])}\n\n</details>")
  
