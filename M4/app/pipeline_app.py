@@ -193,7 +193,9 @@ class Vision:
         self.trans, self.backends, self.prompts = _importar_vision()
         with open(REPO / "M4" / "vision" / "config.yaml", encoding="utf-8") as f:
             self.cfg = yaml.safe_load(f)
-        self.cfg.setdefault("vlm", {})["max_new_tokens"] = int(cfg_vision_app["vlm_max_new_tokens"])
+        cfg_vlm = self.cfg.setdefault("vlm", {})
+        cfg_vlm["max_new_tokens"] = int(cfg_vision_app["vlm_max_new_tokens"])
+        cfg_vlm["max_pixels"] = cfg_vision_app.get("vlm_max_pixels")
         self._cache: dict[str, object] = {}
         self.mensaje_sin_texto = self.prompts.MENSAJE_SIN_TEXTO
  

@@ -89,6 +89,14 @@ en vez de inventar.
   imagen, porque los hallazgos dependen de lo que el modelo leyó.
 - **`vlm_max_new_tokens: 1024`.** El config de `M4/vision` usa 512; una página A4 completa puede
   superarlo y cortar el final de la nota.
+- **`vlm_max_pixels: 1003520` (1280×28×28).** Qwen2-VL usa ~1 token por parche de 28×28 px; una
+  foto de celular sin límite son miles de tokens de imagen (más lento y más VRAM). Con este límite la
+  imagen se reescala, manteniendo la proporción, a ~1000×1000 px como máximo. Si una nota con letra
+  pequeña se lee mal, subirlo (p. ej. `1605632` = 2048×28×28) o poner `null` (sin límite, como en
+  las métricas de `M4/vision`).
+- **Válvula ampliada.** Además de respuestas vacías o que empiezan con «No se aprecia…», ahora se
+  detecta una respuesta que entera es solo un comentario («Se aprecia texto legible»): antes esa
+  frase pasaba como si fuera la nota. Detalle en `M4/vision/README.md`.
 - **Umbrales.** Usa `M3/retrieval/outputs/umbrales.json` si existe; si no, 0.174 / 0.174 (calibración
   final de `M3/README.md`, sección 5). Los provisionales de `config_retrieval.yaml` (0.754 / 0.554)
   vienen del corpus de prueba y aquí no se usan.
