@@ -1,0 +1,50 @@
+[
+  {
+    "metric_name": "Guía correcta en 1.er lugar",
+    "naive": 0.955,
+    "advanced": 0.909,
+    "delta": -0.046
+  },
+  {
+    "metric_name": "Guía correcta en el top-5",
+    "naive": 1.0,
+    "advanced": 0.909,
+    "delta": -0.091
+  },
+  {
+    "metric_name": "MRR de la guía",
+    "naive": 0.97,
+    "advanced": 0.909,
+    "delta": -0.061
+  },
+  {
+    "metric_name": "Precisión de guía en el top-5",
+    "naive": 0.936,
+    "advanced": 0.909,
+    "delta": -0.027
+  },
+  {
+    "metric_name": "Tratamiento en 1.er lugar",
+    "naive": 0.045,
+    "advanced": 0.682,
+    "delta": 0.637
+  },
+  {
+    "metric_name": "MRR del tratamiento",
+    "naive": 0.161,
+    "advanced": 0.784,
+    "delta": 0.623
+  },
+  {
+    "metric_name": "Precisión de tratamiento en el top-5",
+    "naive": 0.118,
+    "advanced": 0.491,
+    "delta": 0.373
+  },
+  {
+    "metric_name": "Latencia (ms por consulta)",
+    "naive": 14.2,
+    "advanced": 117.7,
+    "delta": 103.5
+  }
+]

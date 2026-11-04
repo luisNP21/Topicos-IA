@@ -1,0 +1,26 @@
+{
+  "descripcion": "Gold set de retrieval para el corpus real (perfil real de config_retrieval.yaml).",
+  "anotador": "IA (Claude), simulando un anotador humano. Sin revisión humana.",
+  "fecha_anotacion": null,
+  "fecha_incorporacion": "2026-09-28",
+  "archivos": {
+    "consultas": "gold_consultas.jsonl",
+    "anotaciones": "gold_anotaciones.csv"
+  },
+  "corpus": {
+    "n_chunks": 64,
+    "n_guias": 3,
+    "chunks_por_guia": {
+      "gpc_depresion_adultos": 29,
+      "gpc_diabetes_mellitus_tipo_2": 12,
+      "gpc_falla_cardiaca": 23
+    },
+    "huella_sha256": "e261c2e78ef60911",
+    "huella_metodo": "retrieval.info_indice: sha256 de 'chunk_id<TAB>texto' ordenado por chunk_id (16 primeros caracteres)"
+  },
+  "consultas": {
+    "total": 40,
+    "dentro_del_corpus": 22,
+    "fuera_del_corpus": 18
+  }
+}

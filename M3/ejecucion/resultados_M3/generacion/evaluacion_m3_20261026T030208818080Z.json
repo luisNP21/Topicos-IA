@@ -1,0 +1,333 @@
+{
+  "meta": {
+    "fecha_utc": "2026-10-26T03:02:08.818080+00:00",
+    "versiones": {
+      "ragas": "0.2.6",
+      "numpy": "2.1.3",
+      "langchain-groq": "0.3.3",
+      "sentence-transformers": "5.7.0"
+    },
+    "config": {
+      "config_yaml": "/content/Topicos-IA/M3/ragas/config.yaml",
+      "ragas": {
+        "modo": "real",
+        "llm_provider": "groq",
+        "llm_model": "qwen/qwen3.8-27b",
+        "embedding_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+      },
+      "cruce_harness": {
+        "resultado_dimension1_path": "M2/ejecucion/outputs_gold/resultado_dimension1.json",
+        "umbral_f1_bajo": 0.4,
+        "umbral_f1_alto": 0.7,
+        "umbral_recall_bajo": 0.4,
+        "umbral_faithfulness_bajo": 0.4
+      }
+    },
+    "esquema_reporte": 1,
+    "codigo_evaluacion_sha256": {
+      "evaluacion_ragas.py": "9e9c5ac9cbe1e77519b7084c8fb3f47bc4c48b9519df801abdf0813f84d8ad0b",
+      "cruce_harness.py": "70f9a3c5b8bd76c6824e14d666276e221615242d1e7cdae64637a9f0e394d55a",
+      "run_ragas.py": "0d0a3031a73cb29862d7a0d57e817976f45bafb1d2cb71d058243e64e4e465cc"
+    }
+  },
+  "ragas": {
+    "modo": "real",
+    "backend": "ragas",
+    "fuente": "/content/Topicos-IA/M3/outputs/resultado_generacion.json",
+    "n_casos": 15,
+    "modelo_juez": "qwen/qwen3.8-27b",
+    "modelo_embeddings_configurado": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "metricas": {
+      "faithfulness": 0.8916666666666666,
+      "context_precision": 0.0,
+      "context_recall": 0.0,
+      "answer_relevancy": 0.8151221375517359
+    },
+    "cobertura": {
+      "faithfulness": {
+        "n_validos": 3,
+        "n_total": 15,
+        "n_no_calculados": 12
+      },
+      "context_precision": {
+        "n_validos": 1,
+        "n_total": 15,
+        "n_no_calculados": 14
+      },
+      "context_recall": {
+        "n_validos": 4,
+        "n_total": 15,
+        "n_no_calculados": 11
+      },
+      "answer_relevancy": {
+        "n_validos": 2,
+        "n_total": 15,
+        "n_no_calculados": 13
+      }
+    },
+    "por_caso": [
+      {
+        "indice_evaluacion": 0,
+        "id": "caso_01",
+        "abstencion_declarada": false,
+        "metricas": {
+          "faithfulness": null,
+          "context_precision": null,
+          "context_recall": 0.0,
+          "answer_relevancy": 0.8317033594470268
+        },
+        "estado_metricas": {
+          "faithfulness": "no_finito_o_invalido",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "calculado",
+          "answer_relevancy": "calculado"
+        }
+      },
+      {
+        "indice_evaluacion": 1,
+        "id": "caso_02",
+        "abstencion_declarada": true,
+        "metricas": {
+          "faithfulness": 0.875,
+          "context_precision": null,
+          "context_recall": 0.0,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "calculado",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "calculado",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      },
+      {
+        "indice_evaluacion": 2,
+        "id": "caso_03",
+        "abstencion_declarada": false,
+        "metricas": {
+          "faithfulness": null,
+          "context_precision": null,
+          "context_recall": 0.0,
+          "answer_relevancy": 0.7985409156564449
+        },
+        "estado_metricas": {
+          "faithfulness": "no_finito_o_invalido",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "calculado",
+          "answer_relevancy": "calculado"
+        }
+      },
+      {
+        "indice_evaluacion": 3,
+        "id": "caso_04",
+        "abstencion_declarada": true,
+        "metricas": {
+          "faithfulness": 0.8,
+          "context_precision": null,
+          "context_recall": null,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "calculado",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "no_finito_o_invalido",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      },
+      {
+        "indice_evaluacion": 4,
+        "id": "caso_05",
+        "abstencion_declarada": true,
+        "metricas": {
+          "faithfulness": null,
+          "context_precision": null,
+          "context_recall": null,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "no_finito_o_invalido",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "no_finito_o_invalido",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      },
+      {
+        "indice_evaluacion": 5,
+        "id": "caso_06",
+        "abstencion_declarada": false,
+        "metricas": {
+          "faithfulness": null,
+          "context_precision": null,
+          "context_recall": null,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "no_finito_o_invalido",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "no_finito_o_invalido",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      },
+      {
+        "indice_evaluacion": 6,
+        "id": "caso_07",
+        "abstencion_declarada": false,
+        "metricas": {
+          "faithfulness": null,
+          "context_precision": null,
+          "context_recall": null,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "no_finito_o_invalido",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "no_finito_o_invalido",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      },
+      {
+        "indice_evaluacion": 7,
+        "id": "caso_08",
+        "abstencion_declarada": true,
+        "metricas": {
+          "faithfulness": null,
+          "context_precision": null,
+          "context_recall": null,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "no_finito_o_invalido",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "no_finito_o_invalido",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      },
+      {
+        "indice_evaluacion": 8,
+        "id": "caso_09",
+        "abstencion_declarada": true,
+        "metricas": {
+          "faithfulness": null,
+          "context_precision": null,
+          "context_recall": null,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "no_finito_o_invalido",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "no_finito_o_invalido",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      },
+      {
+        "indice_evaluacion": 9,
+        "id": "caso_10",
+        "abstencion_declarada": true,
+        "metricas": {
+          "faithfulness": null,
+          "context_precision": null,
+          "context_recall": null,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "no_finito_o_invalido",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "no_finito_o_invalido",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      },
+      {
+        "indice_evaluacion": 10,
+        "id": "caso_11",
+        "abstencion_declarada": false,
+        "metricas": {
+          "faithfulness": null,
+          "context_precision": null,
+          "context_recall": 0.0,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "no_finito_o_invalido",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "calculado",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      },
+      {
+        "indice_evaluacion": 11,
+        "id": "caso_12",
+        "abstencion_declarada": true,
+        "metricas": {
+          "faithfulness": null,
+          "context_precision": null,
+          "context_recall": null,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "no_finito_o_invalido",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "no_finito_o_invalido",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      },
+      {
+        "indice_evaluacion": 12,
+        "id": "caso_13",
+        "abstencion_declarada": false,
+        "metricas": {
+          "faithfulness": 1.0,
+          "context_precision": null,
+          "context_recall": null,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "calculado",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "no_finito_o_invalido",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      },
+      {
+        "indice_evaluacion": 13,
+        "id": "caso_14",
+        "abstencion_declarada": true,
+        "metricas": {
+          "faithfulness": null,
+          "context_precision": null,
+          "context_recall": null,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "no_finito_o_invalido",
+          "context_precision": "no_finito_o_invalido",
+          "context_recall": "no_finito_o_invalido",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      },
+      {
+        "indice_evaluacion": 14,
+        "id": "caso_15",
+        "abstencion_declarada": true,
+        "metricas": {
+          "faithfulness": null,
+          "context_precision": 0.0,
+          "context_recall": null,
+          "answer_relevancy": null
+        },
+        "estado_metricas": {
+          "faithfulness": "no_finito_o_invalido",
+          "context_precision": "calculado",
+          "context_recall": "no_finito_o_invalido",
+          "answer_relevancy": "no_finito_o_invalido"
+        }
+      }
+    ],
+    "estado": "parcial"
+  },
+  "cruce_harness": {
+    "f1_global_m2": 0.7155844155844157,
+    "resumen_diagnosticos": {},
+    "alcance": "agregados_no_pareados",
+    "n_documentos_m2": 59
+  }
+}
