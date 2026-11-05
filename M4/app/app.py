@@ -36,7 +36,7 @@ AVISO = (
 )
  
 AVISO_LECTURA = (
-    "⚠️ **Lectura automática de la imagen: verifique el original.** El texto se extrajo con "
+    "⚠ **Lectura automática de la imagen: verifique el original.** El texto se extrajo con "
     "un modelo de visión y puede omitir o confundir palabras; los hallazgos y las guías "
     "consultadas dependen de esa lectura."
 )
@@ -219,7 +219,7 @@ def construir_app(pipeline: PipelineClinico) -> gr.Blocks:
         transcripcion = None
         if imagenes:
             nombre = pipeline.vision.resolver_backend(backend)
-            espera = " Puede tardar alrededor de un minuto por página." if nombre == "vlm" else ""
+            espera = " Puede tardar unos segundos." if nombre == "vlm" else ""
             yield estado(f"Leyendo {'la imagen' if len(imagenes) == 1 else f'{len(imagenes)} imágenes'}...{espera}")
             with traza.etapa("vision"):
                 transcripcion = pipeline.transcribir(imagenes, backend)
