@@ -33,13 +33,46 @@ INSTRUCCION_TRANSCRIPCION = (
 # de una frase clínica.
 PATRON_VALVULA = re.compile(
     r"^\s*(no se aprecia|no se puede leer|no hay texto|no puedo|"
-    r"no es legible|ilegible|sin texto)",
+    r"no es legible|ilegible|sin texto|lo siento|"
+    r"i cannot|i can'?t|i'?m sorry|there is no text|no (legible |readable )?text)",
+    re.IGNORECASE,
+)
+
+# Respuestas que COMPLETAS son solo un comentario sobre la imagen, no una nota.
+# Caso típico (revisión de M4): el VLM contesta «Se aprecia texto legible», es decir,
+# pierde el "No" de la válvula o describe la imagen en vez de transcribirla. Con el
+# patrón de arriba eso pasaba como si fuera la nota. Aquí se exige que sea TODA la
+# respuesta, para no descartar una nota real que empiece con «Se aprecia edema…».
+PATRON_SOLO_COMENTARIO = re.compile(
+    r"^(?:(?:en )?la imagen )?(?:no )?"
+    r"(?:se aprecia|se aprecian|se observa|se ve|se lee|hay|contiene|tiene|muestra)"
+    r"(?: (?:ningún|ningun|algún|algun|un|el))? texto"
+    r"(?: (?:legible|visible|escrito|ilegible|claro))?"
+    r"(?: (?:en|de) (?:la|esta) (?:imagen|nota|foto))?"
+    r"|(?:el )?texto (?:es )?(?:ilegible|no legible|no es legible)"
+    r"|(?:imagen )?(?:en blanco|vacía|vacia|ilegible)"
+    r"|(?:the image (?:contains|has|shows) )?(?:no )?(?:legible |readable |visible )?text"
+    r"(?: (?:is )?(?:visible|legible))?(?: in the image)?",
     re.IGNORECASE,
 )
 
 
+def _normalizar_respuesta(texto: str) -> str:
+    """Quita comillas, viñetas y puntuación de los bordes; colapsa espacios."""
+    t = " ".join(texto.split())
+    return t.strip(" \t\"'«»“”‘’*_-.:;!¡¿?()[]").strip()
+
+
 def es_valvula(texto: str | None) -> bool:
-    """True si la salida del backend equivale a 'no hay texto legible'."""
+    """True si la salida del backend equivale a 'no hay texto legible'.
+
+    Tres casos: respuesta vacía; respuesta que EMPIEZA con una negativa de lectura
+    («No se aprecia…», «Ilegible…»); o respuesta que ENTERA es solo un comentario
+    sobre la imagen sin transcribir nada («Se aprecia texto legible»)."""
     if not texto or not texto.strip():
         return True
-    return bool(PATRON_VALVULA.match(texto))
+    normalizado = _normalizar_respuesta(texto)
+    if not normalizado:
+        return True
+    return bool(PATRON_VALVULA.match(normalizado)
+                or PATRON_SOLO_COMENTARIO.fullmatch(normalizado))
