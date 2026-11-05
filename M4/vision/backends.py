@@ -66,13 +66,27 @@ class BackendVLMQwen:
             if device not in ("auto",):
                 self._model = self._model.to(device)
             self._model.eval()
-            self._proc = AutoProcessor.from_pretrained(model_id)
+            self._proc = AutoProcessor.from_pretrained(model_id, **self._limites_pixeles())
         except Exception as exc:  # pragma: no cover - descarga/GPU
             raise BackendError(
                 f"No se pudo cargar el VLM '{model_id}'. "
                 "Verificar GPU, memoria y conexión a Hugging Face."
             ) from exc
         self._torch = torch
+
+    def _limites_pixeles(self) -> dict:
+        """`min_pixels` / `max_pixels` del config (None -> los del modelo, sin límite práctico).
+
+        Qwen2-VL convierte la imagen en ~1 token por cada parche de 28x28 px. Sin límite,
+        una foto de 12 MP son miles de tokens: más lento y más VRAM. Con
+        max_pixels = 1280*28*28 la imagen se reescala (manteniendo la proporción) a
+        <= 1280 tokens visuales."""
+        limites = {}
+        for clave in ("min_pixels", "max_pixels"):
+            valor = self.cfg.get(clave)
+            if valor:
+                limites[clave] = int(valor)
+        return limites
 
     def transcribir(
         self,
@@ -94,7 +108,9 @@ class BackendVLMQwen:
             {
                 "role": "user",
                 "content": [
-                    {"type": "image", "image": imagen},
+                    # qwen-vl-utils reescala con los límites del mensaje (si no, usa los
+                    # suyos, muy altos); el procesador aplica los mismos en el otro camino.
+                    {"type": "image", "image": imagen, **self._limites_pixeles()},
                     {"type": "text", "text": instruccion},
                 ],
             },
