@@ -151,11 +151,33 @@ decide. -->
 
 > _¿Qué puede salir mal para una persona real? ¿Cómo lo mitigas?_
 
+El sistema sugiere qué sección de guía revisar; no diagnostica ni decide. La decisión clínica es
+siempre del médico.
+
+| Riesgo | Qué puede salir mal | Mitigación | Evidencia |
+|---|---|---|---|
+| Recomendación tomada como indicación | El médico sigue un fragmento que no aplica a su paciente | La respuesta cita guía y sección para que el médico la verifique. Sin evidencia suficiente, el sistema se abstiene en vez de responder | Abstención en 9 de 15 casos (`M3/ragas/resultados/resultado_generacion.json`). En los 2 casos respondidos donde RAGAS pudo medir faithfulness, 0.80 y 0.84: la mayoría de las afirmaciones se apoya en la guía, no todas |
+| Enfermedad omitida | El NER no detecta una enfermedad de la nota y no se consulta su guía | La app muestra las entidades detectadas, así el médico ve qué se consultó y qué no | Recall del NER 0.51 (29 de 57) en los 15 casos (`M4/scorecard_m4.csv`). Limitación declarada |
+| Lectura errónea de una foto | La transcripción agrega una enfermedad que no está en la nota | Válvula de escape ante imágenes ilegibles; la app muestra el texto leído | CER 0.003 en foto realista y 0 entidades inventadas; 7 de 8 retos adversariales pasan. El que falla (`caso_13`, recorte severo) agrega texto que no está en la nota |
+| Privacidad | Datos de un paciente real salen a un servicio externo | La visión y el NER corren en local. Solo la redacción de la respuesta usa Groq. La app avisa que no se ingresen datos reales | Aviso visible en la app (`M4/app/app.py`) |
+| Falsa validez clínica | Se interpretan los resultados como validación médica | Se declara que las guías y los casos se crearon con apoyo de IA y que no hubo revisión de profesionales | Ver "Procedencia de los datos" |
+
+### Procedencia de los datos
+
+- **Guías clínicas (3):** resumidas y estructuradas con IA a partir de guías reales (fuentes en
+  `M3/corpus/fuentes.yaml`). No sustituyen las guías originales.
+- **Casos clínicos de evaluación (15) y sus respuestas esperadas:** redactados con apoyo de IA.
+- **Imágenes de M4:** sintéticas, generadas por código a partir del texto de esos casos (fuentes
+  tipográficas y degradaciones simuladas). No son notas ni fotos de pacientes reales; los sellos
+  usan nombres de hospitales ficticios.
+- **DisTEMIST (M1/M2):** casos clínicos reales publicados en SciELO, con licencia CC BY 4.0.
+
+### Qué se evaluó y qué no
+
+Se evaluó el **comportamiento del sistema**: si extrae las enfermedades, si recupera la sección
+correcta, si se abstiene sin evidencia y si no inventa contenido. **No se evaluó la corrección
+clínica** de las respuestas: no participaron profesionales de la salud, y las guías y casos se
+crearon con apoyo de IA. Las conclusiones clínicas no son extrapolables.
+
 ---
 
-## 8. Compromisos del equipo
-
-<!-- Ejemplo: reuniones los martes; repositorio compartido; cada integrante es
-dueño de un módulo pero todos revisan. -->
-
-> _¿Cómo se organizan? ¿Quién responde por qué? ¿Cómo se comunican?_
