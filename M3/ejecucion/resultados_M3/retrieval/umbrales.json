@@ -1,0 +1,57 @@
+{
+  "sistema_base": "Consultas de tratamiento + reranker",
+  "final": {
+    "umbral": 0.174136,
+    "umbral_evidencia": 0.174136,
+    "hay_zona_dudosa": false,
+    "evidencia_conservada": 1.0,
+    "n": {
+      "primer_fragmento_correcto": 14,
+      "primer_fragmento_incorrecto": 20,
+      "con_evidencia_correcta": 19,
+      "fuera_de_corpus": 15
+    }
+  },
+  "validacion": "cruzada, 3 pliegues estratificados por tipo de consulta",
+  "pliegues": [
+    {
+      "pliegue": 0,
+      "umbral": 0.174136,
+      "umbral_evidencia": 0.174136,
+      "hay_zona_dudosa": false,
+      "evidencia_conservada": 1.0,
+      "n": {
+        "primer_fragmento_correcto": 7,
+        "primer_fragmento_incorrecto": 15,
+        "con_evidencia_correcta": 12,
+        "fuera_de_corpus": 10
+      }
+    },
+    {
+      "pliegue": 1,
+      "umbral": 0.176584,
+      "umbral_evidencia": 0.176584,
+      "hay_zona_dudosa": false,
+      "evidencia_conservada": 1.0,
+      "n": {
+        "primer_fragmento_correcto": 9,
+        "primer_fragmento_incorrecto": 13,
+        "con_evidencia_correcta": 13,
+        "fuera_de_corpus": 9
+      }
+    },
+    {
+      "pliegue": 2,
+      "umbral": 0.174136,
+      "umbral_evidencia": 0.115467,
+      "hay_zona_dudosa": true,
+      "evidencia_conservada": 1.0,
+      "n": {
+        "primer_fragmento_correcto": 12,
+        "primer_fragmento_incorrecto": 12,
+        "con_evidencia_correcta": 13,
+        "fuera_de_corpus": 11
+      }
+    }
+  ]
+}

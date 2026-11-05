@@ -1,0 +1,553 @@
+{
+  "modulo": "generacion_rag",
+  "rol": "agustin",
+  "fecha": "2026-11-03T18:51:23",
+  "proveedor": "groq",
+  "modelo_generador": "qwen/qwen3.8-27b",
+  "usar_mocks": false,
+  "orquestacion": {
+    "umbral": 0.174136,
+    "umbral_evidencia": 0.174136,
+    "forzar_por_sigla": true,
+    "k": 5
+  },
+  "n_entidades": 15,
+  "metricas_generacion": {
+    "tool_invocada_pct": 0.26666666666666666,
+    "fallback_pct": 0.6,
+    "con_fuentes_pct": 0.4
+  },
+  "resultados": [
+    {
+      "id": "caso_01",
+      "entidad": "diabetes mellitus tipo 2",
+      "question": "¿Cuál es la recomendación farmacológica y no farmacológica de primera línea para el inicio del tratamiento de la diabetes mellitus tipo 2 según la guía clínica?",
+      "tipo_caso": "estandar",
+      "query_final": "diabetes mellitus tipo 2",
+      "tool_invoked": false,
+      "tool_reason": "",
+      "fragments": [
+        "gpc_diabetes_mellitus_tipo_2_chunk10",
+        "gpc_diabetes_mellitus_tipo_2_chunk6",
+        "gpc_diabetes_mellitus_tipo_2_chunk7",
+        "gpc_diabetes_mellitus_tipo_2_chunk1",
+        "gpc_diabetes_mellitus_tipo_2_chunk8"
+      ],
+      "scores": [
+        0.86144,
+        0.773524,
+        0.772969,
+        0.759757,
+        0.73045
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "Con exceso de peso, se indica dieta hipocalórica hasta acercarse a un IMC de 25 kg/m². Se sugiere una dieta mediterránea adaptada al medio (recomendación 6): predominio de vegetales, hortalizas, legumbres, cereales integrales, frutas enteras, frutos secos y aceite de oliva; consumo moderado de pescado, aves y lácteos bajos en grasa; y consumo esporádico de carnes rojas, huevos y granos refinados. No se debe estimular el consumo habitual de alcohol. Se sugiere ejercicio aeróbico de intensidad moderada (recomendación 7), como caminar, montar en bicicleta, nadar o bailar, por lo menos 150 minutos a la semana, sin superar una frecuencia cardiaca de (220 - edad) × 0,7. El ejercicio de resistencia con pesas, gradual en carga y frecuencia, se sugiere si el paciente lo prefiere (recomendación 8). Con limitaciones de movilidad, el ejercicio lo individualiza un fisiatra o médico del deporte. Todo paciente debe ingresar a un programa educativo continuo liderado por un educador en diabetes certificado. El manejo es multifactorial e incluye control de dislipidemia, hipertensión arterial y tabaquismo. En pacientes con IMC de 35 kg/m² o más puede considerarse cirugía bariátrica si cumplen criterios. Se deriva a un equipo especializado si no hay respuesta con insulina basal o agonistas de GLP-1.",
+        "El diagnóstico de la diabetes mellitus tipo 2 se establece con cualquiera de estos criterios: glucemia plasmática en ayunas de 126 mg/dL o más; glucemia plasmática de 200 mg/dL o más a las 2 horas de una carga de 75 g de glucosa anhidra (PTOG); HbA1c de 6,5 % o más en cualquier momento; o, en presencia de síntomas como poliuria, polidipsia y pérdida de peso, una glucemia plasmática al azar de 200 mg/dL o más. Para la tamización se recomienda aplicar el cuestionario FINDRISC con punto de corte de 12 (recomendación 1, fuerte a favor, calidad de evidencia moderada). En población colombiana, este punto de corte tiene una sensibilidad del 74 % y una especificidad del 60 %. El puntaje máximo es 26 y debe aplicarlo personal capacitado. A toda persona con puntaje de 12 o más se le hace una prueba diagnóstica, preferiblemente la glucemia plasmática en ayunas. Si el puntaje es menor de 12, se educa en estilos de vida saludables y se repite la tamización a los tres años. Cuando la glucemia en ayunas está entre 100 y 125 mg/dL, o es equívoca, se sugiere confirmar con HbA1c, donde un valor de 6,5 % o más confirma el diagnóstico (recomendación 2, débil a favor, calidad baja). Por su sensibilidad de solo 51,8 %, si la sospecha es alta y la HbA1c resulta menor de 6,5 %, se hace una PTOG. La PTOG también puede usarse en ese rango de glucemia si el paciente la prefiere (recomendación 3, débil a favor, calidad alta). Los laboratorios deben usar métodos de HbA1c certificados por el NGSP. Como diagnóstico diferencial, la guía separa la diabetes de las categorías con riesgo aumentado (glucemia de ayuno alterada e intolerancia a la glucosa), que se remiten a programas de prevención. Al diagnóstico se mide la HbA1c inicial para guiar el tratamiento.",
+        "En pacientes con esta condición recién diagnosticada no se recomienda iniciar solo con cambios en el estilo de vida (recomendación 4, fuerte en contra). Se recomienda iniciar metformina al mismo tiempo que los cambios en el estilo de vida, aunque la HbA1c esté cerca de la meta (recomendación 5, fuerte a favor). Si el paciente está clínicamente inestable (pérdida aguda de peso, deshidratación, cetosis, glucemias muy elevadas), se Cuando la HbA1c al diagnóstico es mayor de 8 %, se recomienda terapia combinada desde el inicio con metformina y otro antidiabético oral (recomendación 9). La combinación preferida es metformina con un iDPP-4 (recomendación 10); la alternativa es metformina con un iSGLT2 (recomendación 11). Si la HbA1c es mayor de 9 % y no se pueden usar esas combinaciones, se sugiere una sulfonilurea de bajo riesgo de hipoglucemia (recomendación 12). No se sugiere combinar metformina con glibenclamida ni con inicia insulina. tiazolidinedionas (recomendaciones 13 y 14). Si con metformina en monoterapia no se alcanza la meta (HbA1c mayor de 7 %) en tres a seis meses, se agrega un segundo antidiabético oral (recomendación 15): como primera opción un iDPP-4 (recomendación 16), como alternativa un iSGLT2 (recomendación 17) y, si ninguno está disponible, una sulfonilurea de bajo riesgo (recomendación 18). Un agonista de GLP-1 también se sugiere por su beneficio sobre el peso (recomendación 21). Si falla la terapia dual, el tercer medicamento es insulina basal en pacientes con IMC menor de 30 (recomendación 22), o un agonista de GLP-1 junto con metformina e iSGLT2 en pacientes con IMC de 30 o más (recomendaciones 23 y 24). Tabla 1. Antidiabéticos: dosis, frecuencia, duración y observaciones | Fármaco | Dosis | Frecuencia | Duración | Observaciones |",
+        "Esta guía ofrece recomendaciones basadas en evidencia para la tamización, el diagnóstico, el tratamiento farmacológico y no farmacológico y la detección de complicaciones de la diabetes mellitus tipo 2 en adultos mayores de 18 años en Colombia. Está dirigida al personal de salud de todos los niveles de atención. No cubre el manejo de la prediabetes, de la enfermedad renal crónica en estadios IV o V ni el manejo específico de la obesidad.",
+        "más (recomendaciones 23 y 24). Tabla 1. Antidiabéticos: dosis, frecuencia, duración y observaciones | Fármaco | Dosis | Frecuencia | Duración | Observaciones | |---------------------------------------------------------------------|---------------------------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------| | Metformina | Inicio 500 mg/día, titulación hasta 1000 mg | Hasta 2 veces al día | Continua; reevaluar a los 3-6 meses | Máximo 1000 mg/día si TFG < 50 ml/min; suspender si TFG < 30 ml/min. Contraindicada con riesgo alto de acidosis láctica (hipoxemia severa, falla hepática, alcoholismo) | | iDPP-4 (gliptinas) | No especificada en la guía | No especificada | Continua | Primera opción como segundo fármaco. Ajustar dosis si TFG < 50 ml/min, excepto linagliptina. No aumenta el peso | | iSGLT2 (gliflozinas) | No especificada en la guía | No especificada | Continua | Alternativa al iDPP-4. Vigilar infecciones genitourinarias; menor eficacia con deterioro renal significativo | | Glimepirida o glicazida | No especificada en la guía | No especificada | Continua | Solo si no hay iDPP-4 ni iSGLT2. Requiere educación y automonitoreo por riesgo de hipoglucemia. No usar si TFG < 30 ml/min, excepto glipizida | | Glibenclamida | No aplica | No aplica | No aplica | No se sugiere por alto riesgo de hipoglucemia | | Tiazolidinedionas (pioglitazona) | No aplica | No aplica | No aplica | No se sugieren por riesgo de edema, falla cardiaca y fracturas | | Agonista de GLP-1 | Titulación progresiva según cada producto | Una o dos veces al día, o semanal | Continua |"
+      ],
+      "answer": "Según la Guía de Práctica Clínica (GPC) para el tratamiento y seguimiento de la diabetes mellitus tipo 2 en la población colombiana mayor de 18 años, las recomendaciones de primera línea son:\n\n**No farmacológicas:**\n*   **Dieta:** Se indica una dieta hipocalórica para acercarse a un IMC de 25 kg/m², sugiriendo una dieta mediterránea adaptada (predominio de vegetales, hortalizas, legumbres, cereales integrales, frutas, frutos secos y aceite de oliva; consumo moderado de pescado, aves y lácteos bajos en grasa; y esporádico de carnes rojas y granos refinados). No se debe estimular el consumo habitual de alcohol.\n*   **Ejercicio:** Se sugiere ejercicio aeróbico de intensidad moderada (caminar, bicicleta, nadar, bailar) por lo menos 150 minutos a la semana, sin superar una frecuencia cardíaca de (220 - edad) × 0,7. El ejercicio de resistencia es opcional si el paciente lo prefiere.\n*   **Educación:** Todo paciente debe ingresar a un programa educativo continuo liderado por un educador en diabetes certificado.\n*   **Manejo multifactorial:** Incluye control de dislipidemia, hipertensión arterial y tabaquismo.\n\n**Farmacológicas:**\n*   **Inicio simultáneo:** Se recomienda iniciar **metformina** al mismo tiempo que los cambios en el estilo de vida, incluso si la HbA1c está cerca de la meta. No se recomienda iniciar *solo* con cambios en el estilo de vida.\n*   **Dosis de Metformina:** Inicio de 500 mg/día, con titulación hasta 1000 mg/día (máximo), administrada hasta 2 veces al día.\n*   **Terapia combinada inicial (si HbA1c > 8%):** Se recomienda terapia combinada desde el inicio con metformina y otro antidiabético oral. La combinación preferida es **metformina + iDPP-4** (gliptinas). La alternativa es **metformina + iSGLT2** (gliflozinas).\n\n**Fuente:** GPC para el tratamiento y seguimiento de la diabetes mellitus tipo 2 en la población colombiana mayor de 18 años (chunks 7, 8 y 10).",
+      "sources_used": [
+        "gpc_diabetes_mellitus_tipo_2_chunk10",
+        "gpc_diabetes_mellitus_tipo_2_chunk6",
+        "gpc_diabetes_mellitus_tipo_2_chunk7",
+        "gpc_diabetes_mellitus_tipo_2_chunk1",
+        "gpc_diabetes_mellitus_tipo_2_chunk8"
+      ],
+      "fallback_used": false,
+      "ground_truth": "La guía clínica recomienda como primera línea la intervención intensiva sobre el estilo de vida (alimentación saludable, reducción ponderal y actividad física aeróbica de al menos 150 minutos semanales) junto con el inicio temprano de monoterapia con metformina oral con titulación progresiva de dosis para mejorar la tolerancia gastrointestinal."
+    },
+    {
+      "id": "caso_02",
+      "entidad": "DM2",
+      "question": "¿Qué grupo de fármacos antidiabéticos orales con beneficio cardiorrenal demostrado se recomienda adicionar a la metformina en pacientes con DM2 y enfermedad cardiovascular establecida?",
+      "tipo_caso": "abreviatura",
+      "query_final": "diabetes mellitus tipo 2",
+      "tool_invoked": true,
+      "tool_reason": "entidad con forma de sigla (score=0.453); normalizada vía SNOMED CT (mock) (score 0.453 -> 0.861)",
+      "fragments": [
+        "gpc_diabetes_mellitus_tipo_2_chunk10",
+        "gpc_diabetes_mellitus_tipo_2_chunk6",
+        "gpc_diabetes_mellitus_tipo_2_chunk7",
+        "gpc_diabetes_mellitus_tipo_2_chunk1",
+        "gpc_diabetes_mellitus_tipo_2_chunk8"
+      ],
+      "scores": [
+        0.86144,
+        0.773524,
+        0.772969,
+        0.759757,
+        0.73045
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "Con exceso de peso, se indica dieta hipocalórica hasta acercarse a un IMC de 25 kg/m². Se sugiere una dieta mediterránea adaptada al medio (recomendación 6): predominio de vegetales, hortalizas, legumbres, cereales integrales, frutas enteras, frutos secos y aceite de oliva; consumo moderado de pescado, aves y lácteos bajos en grasa; y consumo esporádico de carnes rojas, huevos y granos refinados. No se debe estimular el consumo habitual de alcohol. Se sugiere ejercicio aeróbico de intensidad moderada (recomendación 7), como caminar, montar en bicicleta, nadar o bailar, por lo menos 150 minutos a la semana, sin superar una frecuencia cardiaca de (220 - edad) × 0,7. El ejercicio de resistencia con pesas, gradual en carga y frecuencia, se sugiere si el paciente lo prefiere (recomendación 8). Con limitaciones de movilidad, el ejercicio lo individualiza un fisiatra o médico del deporte. Todo paciente debe ingresar a un programa educativo continuo liderado por un educador en diabetes certificado. El manejo es multifactorial e incluye control de dislipidemia, hipertensión arterial y tabaquismo. En pacientes con IMC de 35 kg/m² o más puede considerarse cirugía bariátrica si cumplen criterios. Se deriva a un equipo especializado si no hay respuesta con insulina basal o agonistas de GLP-1.",
+        "El diagnóstico de la diabetes mellitus tipo 2 se establece con cualquiera de estos criterios: glucemia plasmática en ayunas de 126 mg/dL o más; glucemia plasmática de 200 mg/dL o más a las 2 horas de una carga de 75 g de glucosa anhidra (PTOG); HbA1c de 6,5 % o más en cualquier momento; o, en presencia de síntomas como poliuria, polidipsia y pérdida de peso, una glucemia plasmática al azar de 200 mg/dL o más. Para la tamización se recomienda aplicar el cuestionario FINDRISC con punto de corte de 12 (recomendación 1, fuerte a favor, calidad de evidencia moderada). En población colombiana, este punto de corte tiene una sensibilidad del 74 % y una especificidad del 60 %. El puntaje máximo es 26 y debe aplicarlo personal capacitado. A toda persona con puntaje de 12 o más se le hace una prueba diagnóstica, preferiblemente la glucemia plasmática en ayunas. Si el puntaje es menor de 12, se educa en estilos de vida saludables y se repite la tamización a los tres años. Cuando la glucemia en ayunas está entre 100 y 125 mg/dL, o es equívoca, se sugiere confirmar con HbA1c, donde un valor de 6,5 % o más confirma el diagnóstico (recomendación 2, débil a favor, calidad baja). Por su sensibilidad de solo 51,8 %, si la sospecha es alta y la HbA1c resulta menor de 6,5 %, se hace una PTOG. La PTOG también puede usarse en ese rango de glucemia si el paciente la prefiere (recomendación 3, débil a favor, calidad alta). Los laboratorios deben usar métodos de HbA1c certificados por el NGSP. Como diagnóstico diferencial, la guía separa la diabetes de las categorías con riesgo aumentado (glucemia de ayuno alterada e intolerancia a la glucosa), que se remiten a programas de prevención. Al diagnóstico se mide la HbA1c inicial para guiar el tratamiento.",
+        "En pacientes con esta condición recién diagnosticada no se recomienda iniciar solo con cambios en el estilo de vida (recomendación 4, fuerte en contra). Se recomienda iniciar metformina al mismo tiempo que los cambios en el estilo de vida, aunque la HbA1c esté cerca de la meta (recomendación 5, fuerte a favor). Si el paciente está clínicamente inestable (pérdida aguda de peso, deshidratación, cetosis, glucemias muy elevadas), se Cuando la HbA1c al diagnóstico es mayor de 8 %, se recomienda terapia combinada desde el inicio con metformina y otro antidiabético oral (recomendación 9). La combinación preferida es metformina con un iDPP-4 (recomendación 10); la alternativa es metformina con un iSGLT2 (recomendación 11). Si la HbA1c es mayor de 9 % y no se pueden usar esas combinaciones, se sugiere una sulfonilurea de bajo riesgo de hipoglucemia (recomendación 12). No se sugiere combinar metformina con glibenclamida ni con inicia insulina. tiazolidinedionas (recomendaciones 13 y 14). Si con metformina en monoterapia no se alcanza la meta (HbA1c mayor de 7 %) en tres a seis meses, se agrega un segundo antidiabético oral (recomendación 15): como primera opción un iDPP-4 (recomendación 16), como alternativa un iSGLT2 (recomendación 17) y, si ninguno está disponible, una sulfonilurea de bajo riesgo (recomendación 18). Un agonista de GLP-1 también se sugiere por su beneficio sobre el peso (recomendación 21). Si falla la terapia dual, el tercer medicamento es insulina basal en pacientes con IMC menor de 30 (recomendación 22), o un agonista de GLP-1 junto con metformina e iSGLT2 en pacientes con IMC de 30 o más (recomendaciones 23 y 24). Tabla 1. Antidiabéticos: dosis, frecuencia, duración y observaciones | Fármaco | Dosis | Frecuencia | Duración | Observaciones |",
+        "Esta guía ofrece recomendaciones basadas en evidencia para la tamización, el diagnóstico, el tratamiento farmacológico y no farmacológico y la detección de complicaciones de la diabetes mellitus tipo 2 en adultos mayores de 18 años en Colombia. Está dirigida al personal de salud de todos los niveles de atención. No cubre el manejo de la prediabetes, de la enfermedad renal crónica en estadios IV o V ni el manejo específico de la obesidad.",
+        "más (recomendaciones 23 y 24). Tabla 1. Antidiabéticos: dosis, frecuencia, duración y observaciones | Fármaco | Dosis | Frecuencia | Duración | Observaciones | |---------------------------------------------------------------------|---------------------------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------| | Metformina | Inicio 500 mg/día, titulación hasta 1000 mg | Hasta 2 veces al día | Continua; reevaluar a los 3-6 meses | Máximo 1000 mg/día si TFG < 50 ml/min; suspender si TFG < 30 ml/min. Contraindicada con riesgo alto de acidosis láctica (hipoxemia severa, falla hepática, alcoholismo) | | iDPP-4 (gliptinas) | No especificada en la guía | No especificada | Continua | Primera opción como segundo fármaco. Ajustar dosis si TFG < 50 ml/min, excepto linagliptina. No aumenta el peso | | iSGLT2 (gliflozinas) | No especificada en la guía | No especificada | Continua | Alternativa al iDPP-4. Vigilar infecciones genitourinarias; menor eficacia con deterioro renal significativo | | Glimepirida o glicazida | No especificada en la guía | No especificada | Continua | Solo si no hay iDPP-4 ni iSGLT2. Requiere educación y automonitoreo por riesgo de hipoglucemia. No usar si TFG < 30 ml/min, excepto glipizida | | Glibenclamida | No aplica | No aplica | No aplica | No se sugiere por alto riesgo de hipoglucemia | | Tiazolidinedionas (pioglitazona) | No aplica | No aplica | No aplica | No se sugieren por riesgo de edema, falla cardiaca y fracturas | | Agonista de GLP-1 | Titulación progresiva según cada producto | Una o dos veces al día, o semanal | Continua |"
+      ],
+      "answer": "No tengo esa información en mis fuentes.\n\nEl contexto proporcionado (GPC para el tratamiento y seguimiento de la diabetes mellitus tipo 2 en la población colombiana) menciona que la combinación preferida es metformina con un **iDPP-4** (recomendación 10) y la alternativa es metformina con un **iSGLT2** (recomendación 11), pero **no especifica** que estos fármacos se recomienden específicamente por tener \"beneficio cardiorrenal demostrado\" ni menciona la indicación para pacientes con \"enfermedad cardiovascular establecida\". Las fuentes solo detallan las opciones de combinación basadas en niveles de HbA1c y disponibilidad, sin hacer referencia a criterios cardiovasculares específicos para la elección del segundo fármaco.",
+      "sources_used": [],
+      "fallback_used": true,
+      "ground_truth": "En pacientes con DM2 y enfermedad cardiovascular aterosclerótica o enfermedad renal crónica establecida, la guía clínica recomienda adicionar a la metformina un inhibidor del cotransportador sodio-glucosa tipo 2 (iSGLT2 como empagliflozina o dapagliflozina) o un agonista del receptor GLP-1 con beneficio cardiovascular demostrado, independientemente de la meta basal de HbA1c."
+    },
+    {
+      "id": "caso_03",
+      "entidad": "diabetes mellitus tipo 2",
+      "question": "¿Cuál es la indicación de inicio de insulinoterapia basal en pacientes con diabetes mellitus tipo 2 que presentan síntomas cardinales graves e hiperglucemia marcada?",
+      "tipo_caso": "urgencia",
+      "query_final": "diabetes mellitus tipo 2",
+      "tool_invoked": false,
+      "tool_reason": "",
+      "fragments": [
+        "gpc_diabetes_mellitus_tipo_2_chunk10",
+        "gpc_diabetes_mellitus_tipo_2_chunk6",
+        "gpc_diabetes_mellitus_tipo_2_chunk7",
+        "gpc_diabetes_mellitus_tipo_2_chunk1",
+        "gpc_diabetes_mellitus_tipo_2_chunk8"
+      ],
+      "scores": [
+        0.86144,
+        0.773524,
+        0.772969,
+        0.759757,
+        0.73045
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "Con exceso de peso, se indica dieta hipocalórica hasta acercarse a un IMC de 25 kg/m². Se sugiere una dieta mediterránea adaptada al medio (recomendación 6): predominio de vegetales, hortalizas, legumbres, cereales integrales, frutas enteras, frutos secos y aceite de oliva; consumo moderado de pescado, aves y lácteos bajos en grasa; y consumo esporádico de carnes rojas, huevos y granos refinados. No se debe estimular el consumo habitual de alcohol. Se sugiere ejercicio aeróbico de intensidad moderada (recomendación 7), como caminar, montar en bicicleta, nadar o bailar, por lo menos 150 minutos a la semana, sin superar una frecuencia cardiaca de (220 - edad) × 0,7. El ejercicio de resistencia con pesas, gradual en carga y frecuencia, se sugiere si el paciente lo prefiere (recomendación 8). Con limitaciones de movilidad, el ejercicio lo individualiza un fisiatra o médico del deporte. Todo paciente debe ingresar a un programa educativo continuo liderado por un educador en diabetes certificado. El manejo es multifactorial e incluye control de dislipidemia, hipertensión arterial y tabaquismo. En pacientes con IMC de 35 kg/m² o más puede considerarse cirugía bariátrica si cumplen criterios. Se deriva a un equipo especializado si no hay respuesta con insulina basal o agonistas de GLP-1.",
+        "El diagnóstico de la diabetes mellitus tipo 2 se establece con cualquiera de estos criterios: glucemia plasmática en ayunas de 126 mg/dL o más; glucemia plasmática de 200 mg/dL o más a las 2 horas de una carga de 75 g de glucosa anhidra (PTOG); HbA1c de 6,5 % o más en cualquier momento; o, en presencia de síntomas como poliuria, polidipsia y pérdida de peso, una glucemia plasmática al azar de 200 mg/dL o más. Para la tamización se recomienda aplicar el cuestionario FINDRISC con punto de corte de 12 (recomendación 1, fuerte a favor, calidad de evidencia moderada). En población colombiana, este punto de corte tiene una sensibilidad del 74 % y una especificidad del 60 %. El puntaje máximo es 26 y debe aplicarlo personal capacitado. A toda persona con puntaje de 12 o más se le hace una prueba diagnóstica, preferiblemente la glucemia plasmática en ayunas. Si el puntaje es menor de 12, se educa en estilos de vida saludables y se repite la tamización a los tres años. Cuando la glucemia en ayunas está entre 100 y 125 mg/dL, o es equívoca, se sugiere confirmar con HbA1c, donde un valor de 6,5 % o más confirma el diagnóstico (recomendación 2, débil a favor, calidad baja). Por su sensibilidad de solo 51,8 %, si la sospecha es alta y la HbA1c resulta menor de 6,5 %, se hace una PTOG. La PTOG también puede usarse en ese rango de glucemia si el paciente la prefiere (recomendación 3, débil a favor, calidad alta). Los laboratorios deben usar métodos de HbA1c certificados por el NGSP. Como diagnóstico diferencial, la guía separa la diabetes de las categorías con riesgo aumentado (glucemia de ayuno alterada e intolerancia a la glucosa), que se remiten a programas de prevención. Al diagnóstico se mide la HbA1c inicial para guiar el tratamiento.",
+        "En pacientes con esta condición recién diagnosticada no se recomienda iniciar solo con cambios en el estilo de vida (recomendación 4, fuerte en contra). Se recomienda iniciar metformina al mismo tiempo que los cambios en el estilo de vida, aunque la HbA1c esté cerca de la meta (recomendación 5, fuerte a favor). Si el paciente está clínicamente inestable (pérdida aguda de peso, deshidratación, cetosis, glucemias muy elevadas), se Cuando la HbA1c al diagnóstico es mayor de 8 %, se recomienda terapia combinada desde el inicio con metformina y otro antidiabético oral (recomendación 9). La combinación preferida es metformina con un iDPP-4 (recomendación 10); la alternativa es metformina con un iSGLT2 (recomendación 11). Si la HbA1c es mayor de 9 % y no se pueden usar esas combinaciones, se sugiere una sulfonilurea de bajo riesgo de hipoglucemia (recomendación 12). No se sugiere combinar metformina con glibenclamida ni con inicia insulina. tiazolidinedionas (recomendaciones 13 y 14). Si con metformina en monoterapia no se alcanza la meta (HbA1c mayor de 7 %) en tres a seis meses, se agrega un segundo antidiabético oral (recomendación 15): como primera opción un iDPP-4 (recomendación 16), como alternativa un iSGLT2 (recomendación 17) y, si ninguno está disponible, una sulfonilurea de bajo riesgo (recomendación 18). Un agonista de GLP-1 también se sugiere por su beneficio sobre el peso (recomendación 21). Si falla la terapia dual, el tercer medicamento es insulina basal en pacientes con IMC menor de 30 (recomendación 22), o un agonista de GLP-1 junto con metformina e iSGLT2 en pacientes con IMC de 30 o más (recomendaciones 23 y 24). Tabla 1. Antidiabéticos: dosis, frecuencia, duración y observaciones | Fármaco | Dosis | Frecuencia | Duración | Observaciones |",
+        "Esta guía ofrece recomendaciones basadas en evidencia para la tamización, el diagnóstico, el tratamiento farmacológico y no farmacológico y la detección de complicaciones de la diabetes mellitus tipo 2 en adultos mayores de 18 años en Colombia. Está dirigida al personal de salud de todos los niveles de atención. No cubre el manejo de la prediabetes, de la enfermedad renal crónica en estadios IV o V ni el manejo específico de la obesidad.",
+        "más (recomendaciones 23 y 24). Tabla 1. Antidiabéticos: dosis, frecuencia, duración y observaciones | Fármaco | Dosis | Frecuencia | Duración | Observaciones | |---------------------------------------------------------------------|---------------------------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------| | Metformina | Inicio 500 mg/día, titulación hasta 1000 mg | Hasta 2 veces al día | Continua; reevaluar a los 3-6 meses | Máximo 1000 mg/día si TFG < 50 ml/min; suspender si TFG < 30 ml/min. Contraindicada con riesgo alto de acidosis láctica (hipoxemia severa, falla hepática, alcoholismo) | | iDPP-4 (gliptinas) | No especificada en la guía | No especificada | Continua | Primera opción como segundo fármaco. Ajustar dosis si TFG < 50 ml/min, excepto linagliptina. No aumenta el peso | | iSGLT2 (gliflozinas) | No especificada en la guía | No especificada | Continua | Alternativa al iDPP-4. Vigilar infecciones genitourinarias; menor eficacia con deterioro renal significativo | | Glimepirida o glicazida | No especificada en la guía | No especificada | Continua | Solo si no hay iDPP-4 ni iSGLT2. Requiere educación y automonitoreo por riesgo de hipoglucemia. No usar si TFG < 30 ml/min, excepto glipizida | | Glibenclamida | No aplica | No aplica | No aplica | No se sugiere por alto riesgo de hipoglucemia | | Tiazolidinedionas (pioglitazona) | No aplica | No aplica | No aplica | No se sugieren por riesgo de edema, falla cardiaca y fracturas | | Agonista de GLP-1 | Titulación progresiva según cada producto | Una o dos veces al día, o semanal | Continua |"
+      ],
+      "answer": "Según el contexto proporcionado, si el paciente está clínicamente inestable (lo que incluye pérdida aguda de peso, deshidratación, cetosis y glucemias muy elevadas), se inicia insulina.\n\nFuente: GPC para el tratamiento y seguimiento de la diabetes mellitus tipo 2 en la población colombiana mayor de 18 años | gpc_diabetes_mellitus_tipo_2_chunk7",
+      "sources_used": [
+        "gpc_diabetes_mellitus_tipo_2_chunk10",
+        "gpc_diabetes_mellitus_tipo_2_chunk6",
+        "gpc_diabetes_mellitus_tipo_2_chunk7",
+        "gpc_diabetes_mellitus_tipo_2_chunk1",
+        "gpc_diabetes_mellitus_tipo_2_chunk8"
+      ],
+      "fallback_used": false,
+      "ground_truth": "Se recomienda iniciar de inmediato terapia con insulina basal (como insulina glargina o NPH) asociada o no a metformina cuando el paciente presenta hiperglucemia sintomática grave con glucemias superiores a 300 mg/dL, HbA1c mayor al 10% o pérdida de peso involuntaria con síntomas de catabolismo."
+    },
+    {
+      "id": "caso_04",
+      "entidad": "DM2",
+      "question": "¿Cuáles son las metas individualizadas de control glucémico y la recomendación sobre sulfonilureas en adultos mayores con DM2 para prevenir hipoglucemias?",
+      "tipo_caso": "multimorbilidad",
+      "query_final": "diabetes mellitus tipo 2",
+      "tool_invoked": true,
+      "tool_reason": "entidad con forma de sigla (score=0.453); normalizada vía SNOMED CT (mock) (score 0.453 -> 0.861)",
+      "fragments": [
+        "gpc_diabetes_mellitus_tipo_2_chunk10",
+        "gpc_diabetes_mellitus_tipo_2_chunk6",
+        "gpc_diabetes_mellitus_tipo_2_chunk7",
+        "gpc_diabetes_mellitus_tipo_2_chunk1",
+        "gpc_diabetes_mellitus_tipo_2_chunk8"
+      ],
+      "scores": [
+        0.86144,
+        0.773524,
+        0.772969,
+        0.759757,
+        0.73045
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "Con exceso de peso, se indica dieta hipocalórica hasta acercarse a un IMC de 25 kg/m². Se sugiere una dieta mediterránea adaptada al medio (recomendación 6): predominio de vegetales, hortalizas, legumbres, cereales integrales, frutas enteras, frutos secos y aceite de oliva; consumo moderado de pescado, aves y lácteos bajos en grasa; y consumo esporádico de carnes rojas, huevos y granos refinados. No se debe estimular el consumo habitual de alcohol. Se sugiere ejercicio aeróbico de intensidad moderada (recomendación 7), como caminar, montar en bicicleta, nadar o bailar, por lo menos 150 minutos a la semana, sin superar una frecuencia cardiaca de (220 - edad) × 0,7. El ejercicio de resistencia con pesas, gradual en carga y frecuencia, se sugiere si el paciente lo prefiere (recomendación 8). Con limitaciones de movilidad, el ejercicio lo individualiza un fisiatra o médico del deporte. Todo paciente debe ingresar a un programa educativo continuo liderado por un educador en diabetes certificado. El manejo es multifactorial e incluye control de dislipidemia, hipertensión arterial y tabaquismo. En pacientes con IMC de 35 kg/m² o más puede considerarse cirugía bariátrica si cumplen criterios. Se deriva a un equipo especializado si no hay respuesta con insulina basal o agonistas de GLP-1.",
+        "El diagnóstico de la diabetes mellitus tipo 2 se establece con cualquiera de estos criterios: glucemia plasmática en ayunas de 126 mg/dL o más; glucemia plasmática de 200 mg/dL o más a las 2 horas de una carga de 75 g de glucosa anhidra (PTOG); HbA1c de 6,5 % o más en cualquier momento; o, en presencia de síntomas como poliuria, polidipsia y pérdida de peso, una glucemia plasmática al azar de 200 mg/dL o más. Para la tamización se recomienda aplicar el cuestionario FINDRISC con punto de corte de 12 (recomendación 1, fuerte a favor, calidad de evidencia moderada). En población colombiana, este punto de corte tiene una sensibilidad del 74 % y una especificidad del 60 %. El puntaje máximo es 26 y debe aplicarlo personal capacitado. A toda persona con puntaje de 12 o más se le hace una prueba diagnóstica, preferiblemente la glucemia plasmática en ayunas. Si el puntaje es menor de 12, se educa en estilos de vida saludables y se repite la tamización a los tres años. Cuando la glucemia en ayunas está entre 100 y 125 mg/dL, o es equívoca, se sugiere confirmar con HbA1c, donde un valor de 6,5 % o más confirma el diagnóstico (recomendación 2, débil a favor, calidad baja). Por su sensibilidad de solo 51,8 %, si la sospecha es alta y la HbA1c resulta menor de 6,5 %, se hace una PTOG. La PTOG también puede usarse en ese rango de glucemia si el paciente la prefiere (recomendación 3, débil a favor, calidad alta). Los laboratorios deben usar métodos de HbA1c certificados por el NGSP. Como diagnóstico diferencial, la guía separa la diabetes de las categorías con riesgo aumentado (glucemia de ayuno alterada e intolerancia a la glucosa), que se remiten a programas de prevención. Al diagnóstico se mide la HbA1c inicial para guiar el tratamiento.",
+        "En pacientes con esta condición recién diagnosticada no se recomienda iniciar solo con cambios en el estilo de vida (recomendación 4, fuerte en contra). Se recomienda iniciar metformina al mismo tiempo que los cambios en el estilo de vida, aunque la HbA1c esté cerca de la meta (recomendación 5, fuerte a favor). Si el paciente está clínicamente inestable (pérdida aguda de peso, deshidratación, cetosis, glucemias muy elevadas), se Cuando la HbA1c al diagnóstico es mayor de 8 %, se recomienda terapia combinada desde el inicio con metformina y otro antidiabético oral (recomendación 9). La combinación preferida es metformina con un iDPP-4 (recomendación 10); la alternativa es metformina con un iSGLT2 (recomendación 11). Si la HbA1c es mayor de 9 % y no se pueden usar esas combinaciones, se sugiere una sulfonilurea de bajo riesgo de hipoglucemia (recomendación 12). No se sugiere combinar metformina con glibenclamida ni con inicia insulina. tiazolidinedionas (recomendaciones 13 y 14). Si con metformina en monoterapia no se alcanza la meta (HbA1c mayor de 7 %) en tres a seis meses, se agrega un segundo antidiabético oral (recomendación 15): como primera opción un iDPP-4 (recomendación 16), como alternativa un iSGLT2 (recomendación 17) y, si ninguno está disponible, una sulfonilurea de bajo riesgo (recomendación 18). Un agonista de GLP-1 también se sugiere por su beneficio sobre el peso (recomendación 21). Si falla la terapia dual, el tercer medicamento es insulina basal en pacientes con IMC menor de 30 (recomendación 22), o un agonista de GLP-1 junto con metformina e iSGLT2 en pacientes con IMC de 30 o más (recomendaciones 23 y 24). Tabla 1. Antidiabéticos: dosis, frecuencia, duración y observaciones | Fármaco | Dosis | Frecuencia | Duración | Observaciones |",
+        "Esta guía ofrece recomendaciones basadas en evidencia para la tamización, el diagnóstico, el tratamiento farmacológico y no farmacológico y la detección de complicaciones de la diabetes mellitus tipo 2 en adultos mayores de 18 años en Colombia. Está dirigida al personal de salud de todos los niveles de atención. No cubre el manejo de la prediabetes, de la enfermedad renal crónica en estadios IV o V ni el manejo específico de la obesidad.",
+        "más (recomendaciones 23 y 24). Tabla 1. Antidiabéticos: dosis, frecuencia, duración y observaciones | Fármaco | Dosis | Frecuencia | Duración | Observaciones | |---------------------------------------------------------------------|---------------------------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------| | Metformina | Inicio 500 mg/día, titulación hasta 1000 mg | Hasta 2 veces al día | Continua; reevaluar a los 3-6 meses | Máximo 1000 mg/día si TFG < 50 ml/min; suspender si TFG < 30 ml/min. Contraindicada con riesgo alto de acidosis láctica (hipoxemia severa, falla hepática, alcoholismo) | | iDPP-4 (gliptinas) | No especificada en la guía | No especificada | Continua | Primera opción como segundo fármaco. Ajustar dosis si TFG < 50 ml/min, excepto linagliptina. No aumenta el peso | | iSGLT2 (gliflozinas) | No especificada en la guía | No especificada | Continua | Alternativa al iDPP-4. Vigilar infecciones genitourinarias; menor eficacia con deterioro renal significativo | | Glimepirida o glicazida | No especificada en la guía | No especificada | Continua | Solo si no hay iDPP-4 ni iSGLT2. Requiere educación y automonitoreo por riesgo de hipoglucemia. No usar si TFG < 30 ml/min, excepto glipizida | | Glibenclamida | No aplica | No aplica | No aplica | No se sugiere por alto riesgo de hipoglucemia | | Tiazolidinedionas (pioglitazona) | No aplica | No aplica | No aplica | No se sugieren por riesgo de edema, falla cardiaca y fracturas | | Agonista de GLP-1 | Titulación progresiva según cada producto | Una o dos veces al día, o semanal | Continua |"
+      ],
+      "answer": "No tengo esa información en mis fuentes.\n\nEl contexto proporcionado (GPC para el tratamiento y seguimiento de la diabetes mellitus tipo 2 en la población colombiana mayor de 18 años) no especifica metas individualizadas de control glucémico para adultos mayores ni contiene recomendaciones específicas sobre el uso de sulfonilureas en esa población para prevenir hipoglucemias.\n\nLas fuentes solo mencionan que, en el contexto general de tratamiento, si la HbA1c es mayor de 9 % y no se pueden usar combinaciones con iDPP-4 o iSGLT2, se sugiere una sulfonilurea de bajo riesgo de hipoglucemia (recomendación 12), y que no se sugiere combinar metformina con glibenclamida por su alto riesgo de hipoglucemia (Fuente: gpc_diabetes_mellitus_tipo_2_chunk7 y gpc_diabetes_mellitus_tipo_2_chunk8). Sin embargo, no hay mención explícita de \"adultos mayores\" ni de metas individualizadas para ese grupo etario.",
+      "sources_used": [],
+      "fallback_used": true,
+      "ground_truth": "En adultos mayores se recomienda flexibilizar las metas de HbA1c (entre 7.5% y 8.0% según comorbilidad y fragilidad) y suspender o evitar el uso de sulfonilureas de vida media larga como la glibenclamida debido al alto riesgo de hipoglucemias graves y prolongadas, prefiriendo fármacos con bajo riesgo hipoglucémico."
+    },
+    {
+      "id": "caso_05",
+      "entidad": "diabetes mellitus tipo 2",
+      "question": "¿Qué pruebas periódicas de tamizaje y seguimiento establece la guía clínica para la detección temprana de nefropatía y retinopatía en diabetes mellitus tipo 2?",
+      "tipo_caso": "estandar",
+      "query_final": "diabetes mellitus tipo 2",
+      "tool_invoked": false,
+      "tool_reason": "",
+      "fragments": [
+        "gpc_diabetes_mellitus_tipo_2_chunk10",
+        "gpc_diabetes_mellitus_tipo_2_chunk6",
+        "gpc_diabetes_mellitus_tipo_2_chunk7",
+        "gpc_diabetes_mellitus_tipo_2_chunk1",
+        "gpc_diabetes_mellitus_tipo_2_chunk8"
+      ],
+      "scores": [
+        0.86144,
+        0.773524,
+        0.772969,
+        0.759757,
+        0.73045
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "Con exceso de peso, se indica dieta hipocalórica hasta acercarse a un IMC de 25 kg/m². Se sugiere una dieta mediterránea adaptada al medio (recomendación 6): predominio de vegetales, hortalizas, legumbres, cereales integrales, frutas enteras, frutos secos y aceite de oliva; consumo moderado de pescado, aves y lácteos bajos en grasa; y consumo esporádico de carnes rojas, huevos y granos refinados. No se debe estimular el consumo habitual de alcohol. Se sugiere ejercicio aeróbico de intensidad moderada (recomendación 7), como caminar, montar en bicicleta, nadar o bailar, por lo menos 150 minutos a la semana, sin superar una frecuencia cardiaca de (220 - edad) × 0,7. El ejercicio de resistencia con pesas, gradual en carga y frecuencia, se sugiere si el paciente lo prefiere (recomendación 8). Con limitaciones de movilidad, el ejercicio lo individualiza un fisiatra o médico del deporte. Todo paciente debe ingresar a un programa educativo continuo liderado por un educador en diabetes certificado. El manejo es multifactorial e incluye control de dislipidemia, hipertensión arterial y tabaquismo. En pacientes con IMC de 35 kg/m² o más puede considerarse cirugía bariátrica si cumplen criterios. Se deriva a un equipo especializado si no hay respuesta con insulina basal o agonistas de GLP-1.",
+        "El diagnóstico de la diabetes mellitus tipo 2 se establece con cualquiera de estos criterios: glucemia plasmática en ayunas de 126 mg/dL o más; glucemia plasmática de 200 mg/dL o más a las 2 horas de una carga de 75 g de glucosa anhidra (PTOG); HbA1c de 6,5 % o más en cualquier momento; o, en presencia de síntomas como poliuria, polidipsia y pérdida de peso, una glucemia plasmática al azar de 200 mg/dL o más. Para la tamización se recomienda aplicar el cuestionario FINDRISC con punto de corte de 12 (recomendación 1, fuerte a favor, calidad de evidencia moderada). En población colombiana, este punto de corte tiene una sensibilidad del 74 % y una especificidad del 60 %. El puntaje máximo es 26 y debe aplicarlo personal capacitado. A toda persona con puntaje de 12 o más se le hace una prueba diagnóstica, preferiblemente la glucemia plasmática en ayunas. Si el puntaje es menor de 12, se educa en estilos de vida saludables y se repite la tamización a los tres años. Cuando la glucemia en ayunas está entre 100 y 125 mg/dL, o es equívoca, se sugiere confirmar con HbA1c, donde un valor de 6,5 % o más confirma el diagnóstico (recomendación 2, débil a favor, calidad baja). Por su sensibilidad de solo 51,8 %, si la sospecha es alta y la HbA1c resulta menor de 6,5 %, se hace una PTOG. La PTOG también puede usarse en ese rango de glucemia si el paciente la prefiere (recomendación 3, débil a favor, calidad alta). Los laboratorios deben usar métodos de HbA1c certificados por el NGSP. Como diagnóstico diferencial, la guía separa la diabetes de las categorías con riesgo aumentado (glucemia de ayuno alterada e intolerancia a la glucosa), que se remiten a programas de prevención. Al diagnóstico se mide la HbA1c inicial para guiar el tratamiento.",
+        "En pacientes con esta condición recién diagnosticada no se recomienda iniciar solo con cambios en el estilo de vida (recomendación 4, fuerte en contra). Se recomienda iniciar metformina al mismo tiempo que los cambios en el estilo de vida, aunque la HbA1c esté cerca de la meta (recomendación 5, fuerte a favor). Si el paciente está clínicamente inestable (pérdida aguda de peso, deshidratación, cetosis, glucemias muy elevadas), se Cuando la HbA1c al diagnóstico es mayor de 8 %, se recomienda terapia combinada desde el inicio con metformina y otro antidiabético oral (recomendación 9). La combinación preferida es metformina con un iDPP-4 (recomendación 10); la alternativa es metformina con un iSGLT2 (recomendación 11). Si la HbA1c es mayor de 9 % y no se pueden usar esas combinaciones, se sugiere una sulfonilurea de bajo riesgo de hipoglucemia (recomendación 12). No se sugiere combinar metformina con glibenclamida ni con inicia insulina. tiazolidinedionas (recomendaciones 13 y 14). Si con metformina en monoterapia no se alcanza la meta (HbA1c mayor de 7 %) en tres a seis meses, se agrega un segundo antidiabético oral (recomendación 15): como primera opción un iDPP-4 (recomendación 16), como alternativa un iSGLT2 (recomendación 17) y, si ninguno está disponible, una sulfonilurea de bajo riesgo (recomendación 18). Un agonista de GLP-1 también se sugiere por su beneficio sobre el peso (recomendación 21). Si falla la terapia dual, el tercer medicamento es insulina basal en pacientes con IMC menor de 30 (recomendación 22), o un agonista de GLP-1 junto con metformina e iSGLT2 en pacientes con IMC de 30 o más (recomendaciones 23 y 24). Tabla 1. Antidiabéticos: dosis, frecuencia, duración y observaciones | Fármaco | Dosis | Frecuencia | Duración | Observaciones |",
+        "Esta guía ofrece recomendaciones basadas en evidencia para la tamización, el diagnóstico, el tratamiento farmacológico y no farmacológico y la detección de complicaciones de la diabetes mellitus tipo 2 en adultos mayores de 18 años en Colombia. Está dirigida al personal de salud de todos los niveles de atención. No cubre el manejo de la prediabetes, de la enfermedad renal crónica en estadios IV o V ni el manejo específico de la obesidad.",
+        "más (recomendaciones 23 y 24). Tabla 1. Antidiabéticos: dosis, frecuencia, duración y observaciones | Fármaco | Dosis | Frecuencia | Duración | Observaciones | |---------------------------------------------------------------------|---------------------------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------| | Metformina | Inicio 500 mg/día, titulación hasta 1000 mg | Hasta 2 veces al día | Continua; reevaluar a los 3-6 meses | Máximo 1000 mg/día si TFG < 50 ml/min; suspender si TFG < 30 ml/min. Contraindicada con riesgo alto de acidosis láctica (hipoxemia severa, falla hepática, alcoholismo) | | iDPP-4 (gliptinas) | No especificada en la guía | No especificada | Continua | Primera opción como segundo fármaco. Ajustar dosis si TFG < 50 ml/min, excepto linagliptina. No aumenta el peso | | iSGLT2 (gliflozinas) | No especificada en la guía | No especificada | Continua | Alternativa al iDPP-4. Vigilar infecciones genitourinarias; menor eficacia con deterioro renal significativo | | Glimepirida o glicazida | No especificada en la guía | No especificada | Continua | Solo si no hay iDPP-4 ni iSGLT2. Requiere educación y automonitoreo por riesgo de hipoglucemia. No usar si TFG < 30 ml/min, excepto glipizida | | Glibenclamida | No aplica | No aplica | No aplica | No se sugiere por alto riesgo de hipoglucemia | | Tiazolidinedionas (pioglitazona) | No aplica | No aplica | No aplica | No se sugieren por riesgo de edema, falla cardiaca y fracturas | | Agonista de GLP-1 | Titulación progresiva según cada producto | Una o dos veces al día, o semanal | Continua |"
+      ],
+      "answer": "No tengo esa información en mis fuentes.\n\nEl contexto proporcionado cubre la tamización inicial (cuestionario FINDRISC), los criterios de diagnóstico (glucemia, HbA1c, PTOG), el tratamiento farmacológico y no farmacológico, y las recomendaciones sobre dieta y ejercicio. Sin embargo, no incluye las secciones específicas sobre la detección de complicaciones como la nefropatía o la retinopatía, ni las pruebas periódicas para su seguimiento.",
+      "sources_used": [],
+      "fallback_used": true,
+      "ground_truth": "La guía clínica establece realizar al menos una vez al año el tamizaje de nefropatía diabética mediante la medición de la relación albúmina/creatinina en orina ocasional junto con la estimación de la tasa de filtración glomerular, así como un examen de fondo de ojo o retinografía con pupila dilatada para la detección precoz de retinopatía diabética."
+    },
+    {
+      "id": "caso_06",
+      "entidad": "falla cardíaca",
+      "question": "¿Cuáles son los pilares farmacológicos fundamentales recomendados por la guía clínica para reducir la mortalidad en falla cardíaca con fracción de eyección reducida?",
+      "tipo_caso": "estandar",
+      "query_final": "falla cardíaca",
+      "tool_invoked": false,
+      "tool_reason": "",
+      "fragments": [
+        "gpc_falla_cardiaca_chunk12",
+        "gpc_falla_cardiaca_chunk16",
+        "gpc_falla_cardiaca_chunk20",
+        "gpc_falla_cardiaca_chunk13",
+        "gpc_falla_cardiaca_chunk0"
+      ],
+      "scores": [
+        0.639165,
+        0.5587,
+        0.538768,
+        0.264394,
+        0.222636
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "La guía indica qué fármaco usar, en qué paciente y con qué precauciones, pero casi no especifica dosis, frecuencia ni duración; solo reporta el nivel objetivo de digoxina (0,5-0,8 ng/mL) y el punto de corte de BNP. Para las dosis objetivo recomienda lograrlas independientemente del nivel de péptidos natriuréticos (Rec. 24), sin listarlas. El «manejo médico óptimo» que exigen varias recomendaciones incluye al menos IECA o ARA II, betabloqueador, antialdosterónico y diurético.",
+        "muy baja | Mejoran síntomas congestivos y evitan empeoramiento. | | Espironolactona o eplerenona | NYHA II-IV con FE <40 %, TFG >30 mL/min/1,73 m² y potasio <5 mEq/L | 31 | Fuerte a favor; moderada | NYHA II: hospitalización cardiovascular previa o BNP elevado. Monitorizar potasio y función renal. Eplerenona si hay ginecomastia o mastodinia. | | Digoxina o betametildigoxina | NYHA II-IV con FE <40 % y respuesta insuficiente o intolerancia al tratamiento de primera línea | 32 | Fuerte a favor; alta | Reduce hospitalización; no mejora la mortalidad. Niveles 0,5-0,8 ng/mL; medir 8 h tras dosis IV o a los 5-7 días oral. | | Trimetazidina | FE <40 % de etiología isquémica | 33 | Débil a favor; muy baja | Disminuye hospitalización cardiovascular; mejora estado funcional y calidad de vida. | | Ivabradina | NYHA II-IV con FE <40 %, intolerancia a betabloqueadores o FC en reposo >70 lpm pese a ellos | 34 | Fuerte a favor; alta | Definir la razón de la intolerancia y titular el betabloqueador antes de combinar. | | Dinitrato de isosorbide + hidralazina | NYHA III-IV con FE <40 % y respuesta insuficiente o intolerancia al tratamiento de primera línea | 35, 36 | Débil a favor (35); fuerte a favor en afrode scendientes (36) | Disminuye mortalidad por cualquier causa y hospitalización. | | Betabloqueador; IECA (FE >40 %) | Falla con FE conservada | 37, 38 | Débil a favor; baja y muy baja | Betabloqueador reduce hospitalización; IECA reduce mortalidad. | | Digoxina; espironolactona (FE >40 %) | Falla con FE conservada | 39, 40 | Débil en contra",
+        "Se define por síntomas NYHA III-IV, episodios de sobrecarga o hipoperfusión, disfunción cardíaca severa (por ejemplo FE <30 %), capacidad funcional muy deteriorada (caminata de 6 minutos <300 m o consumo de oxígeno <12-14 mL/kg/min), una hospitalización en los últimos 6 meses y persistencia pese a terapia óptima. Manejo recomendado: ·Trasplante: en NYHA III-IV con FE <30 % sintomáticos pese a manejo óptimo, usar SHFM o HFSS y pruebas cardiopulmonares (VO2 pico o VE/VCO2) para definir pronóstico y remisión a programa de trasplante (Rec. 50, fuerte a favor, certeza moderada). ·Clínica de falla cardíaca: seguimiento ambulatorio en NYHA III-IV, con monitoreo en casa si hay dificultad de ingreso (Rec. 51, fuerte a favor, certeza alta). Liderada por cardiología o medicina interna con entrenamiento; incluye controles programados, educación, autocuidado y visitas domiciliarias. ·Revascularización con FE <35 % de etiología isquémica: no se sugiere para reducir mortalidad, hospitalización o infarto (Rec. 52); se sugiere para mejorar la clase funcional al disminuir la angina, según criterio clínico, anatomía y comorbilidades (Rec. 53). No se recomienda usar imágenes de viabilidad miocárdica para decidirla (Rec. 54, fuerte en contra). ·Cirugía valvular (anuloplastia, plastia) en regurgitación mitral funcional con FE baja: no se recomienda adicional a la terapia médica (Rec. 55, fuerte en contra). ·Inotrópicos intravenosos periódicos: no se sugieren (Rec. 56, débil en contra). ·Dispositivo de asistencia ventricular como terapia de destino: se sugiere en NYHA IV con FE <25 %, terapia óptima, no candidatos a trasplante y dependientes de inotrópico o con VO2 pico <14 mL/kg/min, definido por grupo multidisciplinario (Rec. 57, débil a favor, certeza baja).",
+        "| Fármaco / intervención | Indicación (paciente) | Rec. | Fuerza y certeza | Observaciones y monitoreo | |---------------------------------------------------|----------------------------------------------------------------------------------------------------------------|--------|------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| | Diuréticos de asa IV (furosemida) | Falla aguda con síntomas y signos congestivos | 8, 9 | Fuerte a favor; muy baja (8) y moderada (9) | Preferir bolos IV sobre infusión continua. Electrolitos, BUN y creatinina al inicio y cada 3 días; más frecuente en >65 años. Reducir dosis si hay retención de azoados. | | Nitroprusiato | Falla aguda sin hipotensión, además del manejo estándar | 10 | Débil a favor; muy baja | Mejora parámetros hemodinámicos. Vigilar hipotensión sintomática. | | Nitroglicerina | Falla aguda sin hipotensión | 11 | Débil a favor; muy baja | Mejora la disnea. Tolerancia con infusiones continuas de más de 24 h. | | Norepinefrina (en lugar de dopamina) | Falla aguda que requiere vasopresor | 12 | Fuerte a favor; baja | Disminuye mortalidad y arritmias. Administrar por vena central; no usar la misma vía de medición hemodinámica. | | Inotrópicos (levosimendán, milrinone, dobutamina) | Descompensada con hipoperfusión, hipotensión, acidosis metabólica o choque y causas potencialmente reversibles | 14 | Débil a favor; muy baja | No usar de rutina (Rec. 13, fuerte en contra). Milrinone no en cardiopatía isquémica; considerar no dar bolo inicial con milrinone o levosimendán si PAS <90 mmHg; vigilar ritmo. | | Continuar betabloqueador | Falla crónica descompensada que ya recibía betabloqueador | 15 | Fuerte a",
+        "Institución emisora: Ministerio de Salud y Protección Social - Colciencias, con la Universidad de Antioquia. Guía para profesionales de la salud, Guía No. 53. Año: 2016 Fuente: capítulo «Preguntas y recomendaciones» de la guía original (pp. 39-72). Documento reorganizado para uso como corpus de recuperación de información; el contenido clínico proviene íntegramente de la guía original."
+      ],
+      "answer": "Según la **GPC para la rehabilitación de la falla cardíaca en la población mayor de 18 años (chunk12)**, el \"manejo médico óptimo\" que se exige en varias recomendaciones incluye al menos los siguientes fármacos:\n\n*   **IECA** (Inhibidores de la Enzima Convertidora de Angiotensina) **o ARA II** (Antagonistas de los Receptores de Angiotensina).\n*   **Betabloqueador**.\n*   **Antialdosterónico**.\n*   **Diurético**.\n\nAdicionalmente, el **chunk16** especifica que la **Espironolactona o eplerenona** (antialdosterónicos) están indicadas en pacientes NYHA II-IV con FE <40%, y que la **Digoxina** reduce la hospitalización aunque no mejora la mortalidad. El **chunk20** menciona que el manejo óptimo es el criterio para definir pacientes candidatos a trasplante o dispositivos de asistencia ventricular.",
+      "sources_used": [
+        "gpc_falla_cardiaca_chunk12",
+        "gpc_falla_cardiaca_chunk16",
+        "gpc_falla_cardiaca_chunk20",
+        "gpc_falla_cardiaca_chunk13",
+        "gpc_falla_cardiaca_chunk0"
+      ],
+      "fallback_used": false,
+      "ground_truth": "El tratamiento farmacológico fundamental para reducir la morbimortalidad en falla cardíaca con FEVI reducida consiste en la cuádruple terapia: un inhibidor del eje renina-angiotensina (preferentemente sacubitril-valsartán o en su defecto un IECA/ARA-II), un betabloqueante con evidencia probada (carvedilol, bisoprolol o metoprolol succinato), un antagonista de receptores de mineralocorticoides (espironolactona o eplerenona) y un inhibidor de SGLT2 (dapagliflozina o empagliflozina)."
+    },
+    {
+      "id": "caso_07",
+      "entidad": "ICC",
+      "question": "¿Cuál es el manejo diurético inicial prioritario para el alivio de la sobrecarga hídrica y congestión pulmonar en la descompensación aguda de ICC?",
+      "tipo_caso": "urgencia",
+      "query_final": "falla cardíaca",
+      "tool_invoked": true,
+      "tool_reason": "entidad con forma de sigla (score=0.103); normalizada vía SNOMED CT (mock) (score 0.103 -> 0.639)",
+      "fragments": [
+        "gpc_falla_cardiaca_chunk12",
+        "gpc_falla_cardiaca_chunk16",
+        "gpc_falla_cardiaca_chunk20",
+        "gpc_falla_cardiaca_chunk13",
+        "gpc_falla_cardiaca_chunk0"
+      ],
+      "scores": [
+        0.639165,
+        0.5587,
+        0.538768,
+        0.264394,
+        0.222636
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "La guía indica qué fármaco usar, en qué paciente y con qué precauciones, pero casi no especifica dosis, frecuencia ni duración; solo reporta el nivel objetivo de digoxina (0,5-0,8 ng/mL) y el punto de corte de BNP. Para las dosis objetivo recomienda lograrlas independientemente del nivel de péptidos natriuréticos (Rec. 24), sin listarlas. El «manejo médico óptimo» que exigen varias recomendaciones incluye al menos IECA o ARA II, betabloqueador, antialdosterónico y diurético.",
+        "muy baja | Mejoran síntomas congestivos y evitan empeoramiento. | | Espironolactona o eplerenona | NYHA II-IV con FE <40 %, TFG >30 mL/min/1,73 m² y potasio <5 mEq/L | 31 | Fuerte a favor; moderada | NYHA II: hospitalización cardiovascular previa o BNP elevado. Monitorizar potasio y función renal. Eplerenona si hay ginecomastia o mastodinia. | | Digoxina o betametildigoxina | NYHA II-IV con FE <40 % y respuesta insuficiente o intolerancia al tratamiento de primera línea | 32 | Fuerte a favor; alta | Reduce hospitalización; no mejora la mortalidad. Niveles 0,5-0,8 ng/mL; medir 8 h tras dosis IV o a los 5-7 días oral. | | Trimetazidina | FE <40 % de etiología isquémica | 33 | Débil a favor; muy baja | Disminuye hospitalización cardiovascular; mejora estado funcional y calidad de vida. | | Ivabradina | NYHA II-IV con FE <40 %, intolerancia a betabloqueadores o FC en reposo >70 lpm pese a ellos | 34 | Fuerte a favor; alta | Definir la razón de la intolerancia y titular el betabloqueador antes de combinar. | | Dinitrato de isosorbide + hidralazina | NYHA III-IV con FE <40 % y respuesta insuficiente o intolerancia al tratamiento de primera línea | 35, 36 | Débil a favor (35); fuerte a favor en afrode scendientes (36) | Disminuye mortalidad por cualquier causa y hospitalización. | | Betabloqueador; IECA (FE >40 %) | Falla con FE conservada | 37, 38 | Débil a favor; baja y muy baja | Betabloqueador reduce hospitalización; IECA reduce mortalidad. | | Digoxina; espironolactona (FE >40 %) | Falla con FE conservada | 39, 40 | Débil en contra",
+        "Se define por síntomas NYHA III-IV, episodios de sobrecarga o hipoperfusión, disfunción cardíaca severa (por ejemplo FE <30 %), capacidad funcional muy deteriorada (caminata de 6 minutos <300 m o consumo de oxígeno <12-14 mL/kg/min), una hospitalización en los últimos 6 meses y persistencia pese a terapia óptima. Manejo recomendado: ·Trasplante: en NYHA III-IV con FE <30 % sintomáticos pese a manejo óptimo, usar SHFM o HFSS y pruebas cardiopulmonares (VO2 pico o VE/VCO2) para definir pronóstico y remisión a programa de trasplante (Rec. 50, fuerte a favor, certeza moderada). ·Clínica de falla cardíaca: seguimiento ambulatorio en NYHA III-IV, con monitoreo en casa si hay dificultad de ingreso (Rec. 51, fuerte a favor, certeza alta). Liderada por cardiología o medicina interna con entrenamiento; incluye controles programados, educación, autocuidado y visitas domiciliarias. ·Revascularización con FE <35 % de etiología isquémica: no se sugiere para reducir mortalidad, hospitalización o infarto (Rec. 52); se sugiere para mejorar la clase funcional al disminuir la angina, según criterio clínico, anatomía y comorbilidades (Rec. 53). No se recomienda usar imágenes de viabilidad miocárdica para decidirla (Rec. 54, fuerte en contra). ·Cirugía valvular (anuloplastia, plastia) en regurgitación mitral funcional con FE baja: no se recomienda adicional a la terapia médica (Rec. 55, fuerte en contra). ·Inotrópicos intravenosos periódicos: no se sugieren (Rec. 56, débil en contra). ·Dispositivo de asistencia ventricular como terapia de destino: se sugiere en NYHA IV con FE <25 %, terapia óptima, no candidatos a trasplante y dependientes de inotrópico o con VO2 pico <14 mL/kg/min, definido por grupo multidisciplinario (Rec. 57, débil a favor, certeza baja).",
+        "| Fármaco / intervención | Indicación (paciente) | Rec. | Fuerza y certeza | Observaciones y monitoreo | |---------------------------------------------------|----------------------------------------------------------------------------------------------------------------|--------|------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| | Diuréticos de asa IV (furosemida) | Falla aguda con síntomas y signos congestivos | 8, 9 | Fuerte a favor; muy baja (8) y moderada (9) | Preferir bolos IV sobre infusión continua. Electrolitos, BUN y creatinina al inicio y cada 3 días; más frecuente en >65 años. Reducir dosis si hay retención de azoados. | | Nitroprusiato | Falla aguda sin hipotensión, además del manejo estándar | 10 | Débil a favor; muy baja | Mejora parámetros hemodinámicos. Vigilar hipotensión sintomática. | | Nitroglicerina | Falla aguda sin hipotensión | 11 | Débil a favor; muy baja | Mejora la disnea. Tolerancia con infusiones continuas de más de 24 h. | | Norepinefrina (en lugar de dopamina) | Falla aguda que requiere vasopresor | 12 | Fuerte a favor; baja | Disminuye mortalidad y arritmias. Administrar por vena central; no usar la misma vía de medición hemodinámica. | | Inotrópicos (levosimendán, milrinone, dobutamina) | Descompensada con hipoperfusión, hipotensión, acidosis metabólica o choque y causas potencialmente reversibles | 14 | Débil a favor; muy baja | No usar de rutina (Rec. 13, fuerte en contra). Milrinone no en cardiopatía isquémica; considerar no dar bolo inicial con milrinone o levosimendán si PAS <90 mmHg; vigilar ritmo. | | Continuar betabloqueador | Falla crónica descompensada que ya recibía betabloqueador | 15 | Fuerte a",
+        "Institución emisora: Ministerio de Salud y Protección Social - Colciencias, con la Universidad de Antioquia. Guía para profesionales de la salud, Guía No. 53. Año: 2016 Fuente: capítulo «Preguntas y recomendaciones» de la guía original (pp. 39-72). Documento reorganizado para uso como corpus de recuperación de información; el contenido clínico proviene íntegramente de la guía original."
+      ],
+      "answer": "El manejo diurético inicial prioritario consiste en el uso de **diuréticos de asa intravenosos (furosemida)**.\n\n**Detalles de la recomendación:**\n*   **Indicación:** Falla aguda con síntomas y signos congestivos.\n*   **Vía de administración:** Se prefiere la administración en **bolos IV** sobre la infusión continua.\n*   **Monitoreo:** Se deben vigilar electrolitos, BUN y creatinina al inicio y cada 3 días (con mayor frecuencia en pacientes mayores de 65 años).\n*   **Ajuste:** Reducir la dosis si hay retención de azoados.\n\n**Fuente:** GPC para la rehabilitación de la falla cardíaca en la población mayor de 18 años | gpc_falla_cardiaca_chunk13 (Recomendaciones 8 y 9).",
+      "sources_used": [
+        "gpc_falla_cardiaca_chunk12",
+        "gpc_falla_cardiaca_chunk16",
+        "gpc_falla_cardiaca_chunk20",
+        "gpc_falla_cardiaca_chunk13",
+        "gpc_falla_cardiaca_chunk0"
+      ],
+      "fallback_used": false,
+      "ground_truth": "El manejo inicial prioritario consiste en la administración intravenosa de diuréticos de asa (furosemida en bolo o infusión continua), monitorizando la diuresis horaria, la pérdida de peso diaria y la función renal y electrolitos séricos, con el fin de resolver rápidamente los síntomas de congestión venosa y sobrecarga de volumen."
+    },
+    {
+      "id": "caso_08",
+      "entidad": "falla cardíaca",
+      "question": "¿Qué papel y recomendaciones de ejercicio físico supervisado establece la guía de rehabilitación de la falla cardíaca en pacientes ambulatorios estables?",
+      "tipo_caso": "estandar",
+      "query_final": "falla cardíaca",
+      "tool_invoked": false,
+      "tool_reason": "",
+      "fragments": [
+        "gpc_falla_cardiaca_chunk12",
+        "gpc_falla_cardiaca_chunk16",
+        "gpc_falla_cardiaca_chunk20",
+        "gpc_falla_cardiaca_chunk13",
+        "gpc_falla_cardiaca_chunk0"
+      ],
+      "scores": [
+        0.639165,
+        0.5587,
+        0.538768,
+        0.264394,
+        0.222636
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "La guía indica qué fármaco usar, en qué paciente y con qué precauciones, pero casi no especifica dosis, frecuencia ni duración; solo reporta el nivel objetivo de digoxina (0,5-0,8 ng/mL) y el punto de corte de BNP. Para las dosis objetivo recomienda lograrlas independientemente del nivel de péptidos natriuréticos (Rec. 24), sin listarlas. El «manejo médico óptimo» que exigen varias recomendaciones incluye al menos IECA o ARA II, betabloqueador, antialdosterónico y diurético.",
+        "muy baja | Mejoran síntomas congestivos y evitan empeoramiento. | | Espironolactona o eplerenona | NYHA II-IV con FE <40 %, TFG >30 mL/min/1,73 m² y potasio <5 mEq/L | 31 | Fuerte a favor; moderada | NYHA II: hospitalización cardiovascular previa o BNP elevado. Monitorizar potasio y función renal. Eplerenona si hay ginecomastia o mastodinia. | | Digoxina o betametildigoxina | NYHA II-IV con FE <40 % y respuesta insuficiente o intolerancia al tratamiento de primera línea | 32 | Fuerte a favor; alta | Reduce hospitalización; no mejora la mortalidad. Niveles 0,5-0,8 ng/mL; medir 8 h tras dosis IV o a los 5-7 días oral. | | Trimetazidina | FE <40 % de etiología isquémica | 33 | Débil a favor; muy baja | Disminuye hospitalización cardiovascular; mejora estado funcional y calidad de vida. | | Ivabradina | NYHA II-IV con FE <40 %, intolerancia a betabloqueadores o FC en reposo >70 lpm pese a ellos | 34 | Fuerte a favor; alta | Definir la razón de la intolerancia y titular el betabloqueador antes de combinar. | | Dinitrato de isosorbide + hidralazina | NYHA III-IV con FE <40 % y respuesta insuficiente o intolerancia al tratamiento de primera línea | 35, 36 | Débil a favor (35); fuerte a favor en afrode scendientes (36) | Disminuye mortalidad por cualquier causa y hospitalización. | | Betabloqueador; IECA (FE >40 %) | Falla con FE conservada | 37, 38 | Débil a favor; baja y muy baja | Betabloqueador reduce hospitalización; IECA reduce mortalidad. | | Digoxina; espironolactona (FE >40 %) | Falla con FE conservada | 39, 40 | Débil en contra",
+        "Se define por síntomas NYHA III-IV, episodios de sobrecarga o hipoperfusión, disfunción cardíaca severa (por ejemplo FE <30 %), capacidad funcional muy deteriorada (caminata de 6 minutos <300 m o consumo de oxígeno <12-14 mL/kg/min), una hospitalización en los últimos 6 meses y persistencia pese a terapia óptima. Manejo recomendado: ·Trasplante: en NYHA III-IV con FE <30 % sintomáticos pese a manejo óptimo, usar SHFM o HFSS y pruebas cardiopulmonares (VO2 pico o VE/VCO2) para definir pronóstico y remisión a programa de trasplante (Rec. 50, fuerte a favor, certeza moderada). ·Clínica de falla cardíaca: seguimiento ambulatorio en NYHA III-IV, con monitoreo en casa si hay dificultad de ingreso (Rec. 51, fuerte a favor, certeza alta). Liderada por cardiología o medicina interna con entrenamiento; incluye controles programados, educación, autocuidado y visitas domiciliarias. ·Revascularización con FE <35 % de etiología isquémica: no se sugiere para reducir mortalidad, hospitalización o infarto (Rec. 52); se sugiere para mejorar la clase funcional al disminuir la angina, según criterio clínico, anatomía y comorbilidades (Rec. 53). No se recomienda usar imágenes de viabilidad miocárdica para decidirla (Rec. 54, fuerte en contra). ·Cirugía valvular (anuloplastia, plastia) en regurgitación mitral funcional con FE baja: no se recomienda adicional a la terapia médica (Rec. 55, fuerte en contra). ·Inotrópicos intravenosos periódicos: no se sugieren (Rec. 56, débil en contra). ·Dispositivo de asistencia ventricular como terapia de destino: se sugiere en NYHA IV con FE <25 %, terapia óptima, no candidatos a trasplante y dependientes de inotrópico o con VO2 pico <14 mL/kg/min, definido por grupo multidisciplinario (Rec. 57, débil a favor, certeza baja).",
+        "| Fármaco / intervención | Indicación (paciente) | Rec. | Fuerza y certeza | Observaciones y monitoreo | |---------------------------------------------------|----------------------------------------------------------------------------------------------------------------|--------|------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| | Diuréticos de asa IV (furosemida) | Falla aguda con síntomas y signos congestivos | 8, 9 | Fuerte a favor; muy baja (8) y moderada (9) | Preferir bolos IV sobre infusión continua. Electrolitos, BUN y creatinina al inicio y cada 3 días; más frecuente en >65 años. Reducir dosis si hay retención de azoados. | | Nitroprusiato | Falla aguda sin hipotensión, además del manejo estándar | 10 | Débil a favor; muy baja | Mejora parámetros hemodinámicos. Vigilar hipotensión sintomática. | | Nitroglicerina | Falla aguda sin hipotensión | 11 | Débil a favor; muy baja | Mejora la disnea. Tolerancia con infusiones continuas de más de 24 h. | | Norepinefrina (en lugar de dopamina) | Falla aguda que requiere vasopresor | 12 | Fuerte a favor; baja | Disminuye mortalidad y arritmias. Administrar por vena central; no usar la misma vía de medición hemodinámica. | | Inotrópicos (levosimendán, milrinone, dobutamina) | Descompensada con hipoperfusión, hipotensión, acidosis metabólica o choque y causas potencialmente reversibles | 14 | Débil a favor; muy baja | No usar de rutina (Rec. 13, fuerte en contra). Milrinone no en cardiopatía isquémica; considerar no dar bolo inicial con milrinone o levosimendán si PAS <90 mmHg; vigilar ritmo. | | Continuar betabloqueador | Falla crónica descompensada que ya recibía betabloqueador | 15 | Fuerte a",
+        "Institución emisora: Ministerio de Salud y Protección Social - Colciencias, con la Universidad de Antioquia. Guía para profesionales de la salud, Guía No. 53. Año: 2016 Fuente: capítulo «Preguntas y recomendaciones» de la guía original (pp. 39-72). Documento reorganizado para uso como corpus de recuperación de información; el contenido clínico proviene íntegramente de la guía original."
+      ],
+      "answer": "No tengo esa información en mis fuentes.\n\nEl contexto proporcionado (GPC para la rehabilitación de la falla cardíaca, chunks 0, 12, 13, 16 y 20) detalla recomendaciones sobre farmacoterapia (diuréticos, betabloqueadores, IECA, digoxina, etc.), manejo de falla aguda, criterios para trasplante o dispositivos de asistencia ventricular, y la definición de falla cardíaca avanzada. Sin embargo, no contiene información específica sobre las recomendaciones de ejercicio físico supervisado para pacientes ambulatorios estables.",
+      "sources_used": [],
+      "fallback_used": true,
+      "ground_truth": "La guía de rehabilitación en falla cardíaca recomienda la participación en programas de ejercicio físico aeróbico regular y entrenamiento de fuerza muscular supervisados, individualizados según la prueba de esfuerzo previa, demostrando mejoras significativas en la capacidad funcional, reducción de hospitalizaciones por descompensación y mejoría en la calidad de vida."
+    },
+    {
+      "id": "caso_09",
+      "entidad": "insuficiencia cardíaca",
+      "question": "¿Cuáles son las medidas no farmacológicas clave de autocuidado, control de peso y restricción de sodio recomendadas para pacientes con insuficiencia cardíaca?",
+      "tipo_caso": "estandar",
+      "query_final": "insuficiencia cardíaca",
+      "tool_invoked": false,
+      "tool_reason": "",
+      "fragments": [
+        "gpc_falla_cardiaca_chunk20"
+      ],
+      "scores": [
+        0.174136
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "Se define por síntomas NYHA III-IV, episodios de sobrecarga o hipoperfusión, disfunción cardíaca severa (por ejemplo FE <30 %), capacidad funcional muy deteriorada (caminata de 6 minutos <300 m o consumo de oxígeno <12-14 mL/kg/min), una hospitalización en los últimos 6 meses y persistencia pese a terapia óptima. Manejo recomendado: ·Trasplante: en NYHA III-IV con FE <30 % sintomáticos pese a manejo óptimo, usar SHFM o HFSS y pruebas cardiopulmonares (VO2 pico o VE/VCO2) para definir pronóstico y remisión a programa de trasplante (Rec. 50, fuerte a favor, certeza moderada). ·Clínica de falla cardíaca: seguimiento ambulatorio en NYHA III-IV, con monitoreo en casa si hay dificultad de ingreso (Rec. 51, fuerte a favor, certeza alta). Liderada por cardiología o medicina interna con entrenamiento; incluye controles programados, educación, autocuidado y visitas domiciliarias. ·Revascularización con FE <35 % de etiología isquémica: no se sugiere para reducir mortalidad, hospitalización o infarto (Rec. 52); se sugiere para mejorar la clase funcional al disminuir la angina, según criterio clínico, anatomía y comorbilidades (Rec. 53). No se recomienda usar imágenes de viabilidad miocárdica para decidirla (Rec. 54, fuerte en contra). ·Cirugía valvular (anuloplastia, plastia) en regurgitación mitral funcional con FE baja: no se recomienda adicional a la terapia médica (Rec. 55, fuerte en contra). ·Inotrópicos intravenosos periódicos: no se sugieren (Rec. 56, débil en contra). ·Dispositivo de asistencia ventricular como terapia de destino: se sugiere en NYHA IV con FE <25 %, terapia óptima, no candidatos a trasplante y dependientes de inotrópico o con VO2 pico <14 mL/kg/min, definido por grupo multidisciplinario (Rec. 57, débil a favor, certeza baja)."
+      ],
+      "answer": "No tengo esa información en mis fuentes.\n\nEl contexto proporcionado (GPC para la rehabilitación de la falla cardíaca) menciona brevemente que la clínica de falla cardíaca incluye \"educación, autocuidado y visitas domiciliarias\" (Rec. 51), pero **no detalla** las medidas específicas de control de peso ni las restricciones de sodio.",
+      "sources_used": [],
+      "fallback_used": true,
+      "ground_truth": "Se recomienda la educación continua en autocuidado enfocada en la restricción moderada de sal en la dieta (menos de 2 a 3 gramos de sodio al día), control diario del peso corporal por la mañana en ayunas (consultando si se incrementan más de 2 kg en 3 días), reconocimiento temprano de signos de descompensación (edemas, disnea) y adherencia estricta al tratamiento farmacológico."
+    },
+    {
+      "id": "caso_10",
+      "entidad": "falla cardíaca",
+      "question": "¿Cómo debe realizarse el inicio y la titulación de betabloqueantes en un paciente con falla cardíaca estable según las pautas de la guía clínica?",
+      "tipo_caso": "estandar",
+      "query_final": "falla cardíaca",
+      "tool_invoked": false,
+      "tool_reason": "",
+      "fragments": [
+        "gpc_falla_cardiaca_chunk12",
+        "gpc_falla_cardiaca_chunk16",
+        "gpc_falla_cardiaca_chunk20",
+        "gpc_falla_cardiaca_chunk13",
+        "gpc_falla_cardiaca_chunk0"
+      ],
+      "scores": [
+        0.639165,
+        0.5587,
+        0.538768,
+        0.264394,
+        0.222636
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "La guía indica qué fármaco usar, en qué paciente y con qué precauciones, pero casi no especifica dosis, frecuencia ni duración; solo reporta el nivel objetivo de digoxina (0,5-0,8 ng/mL) y el punto de corte de BNP. Para las dosis objetivo recomienda lograrlas independientemente del nivel de péptidos natriuréticos (Rec. 24), sin listarlas. El «manejo médico óptimo» que exigen varias recomendaciones incluye al menos IECA o ARA II, betabloqueador, antialdosterónico y diurético.",
+        "muy baja | Mejoran síntomas congestivos y evitan empeoramiento. | | Espironolactona o eplerenona | NYHA II-IV con FE <40 %, TFG >30 mL/min/1,73 m² y potasio <5 mEq/L | 31 | Fuerte a favor; moderada | NYHA II: hospitalización cardiovascular previa o BNP elevado. Monitorizar potasio y función renal. Eplerenona si hay ginecomastia o mastodinia. | | Digoxina o betametildigoxina | NYHA II-IV con FE <40 % y respuesta insuficiente o intolerancia al tratamiento de primera línea | 32 | Fuerte a favor; alta | Reduce hospitalización; no mejora la mortalidad. Niveles 0,5-0,8 ng/mL; medir 8 h tras dosis IV o a los 5-7 días oral. | | Trimetazidina | FE <40 % de etiología isquémica | 33 | Débil a favor; muy baja | Disminuye hospitalización cardiovascular; mejora estado funcional y calidad de vida. | | Ivabradina | NYHA II-IV con FE <40 %, intolerancia a betabloqueadores o FC en reposo >70 lpm pese a ellos | 34 | Fuerte a favor; alta | Definir la razón de la intolerancia y titular el betabloqueador antes de combinar. | | Dinitrato de isosorbide + hidralazina | NYHA III-IV con FE <40 % y respuesta insuficiente o intolerancia al tratamiento de primera línea | 35, 36 | Débil a favor (35); fuerte a favor en afrode scendientes (36) | Disminuye mortalidad por cualquier causa y hospitalización. | | Betabloqueador; IECA (FE >40 %) | Falla con FE conservada | 37, 38 | Débil a favor; baja y muy baja | Betabloqueador reduce hospitalización; IECA reduce mortalidad. | | Digoxina; espironolactona (FE >40 %) | Falla con FE conservada | 39, 40 | Débil en contra",
+        "Se define por síntomas NYHA III-IV, episodios de sobrecarga o hipoperfusión, disfunción cardíaca severa (por ejemplo FE <30 %), capacidad funcional muy deteriorada (caminata de 6 minutos <300 m o consumo de oxígeno <12-14 mL/kg/min), una hospitalización en los últimos 6 meses y persistencia pese a terapia óptima. Manejo recomendado: ·Trasplante: en NYHA III-IV con FE <30 % sintomáticos pese a manejo óptimo, usar SHFM o HFSS y pruebas cardiopulmonares (VO2 pico o VE/VCO2) para definir pronóstico y remisión a programa de trasplante (Rec. 50, fuerte a favor, certeza moderada). ·Clínica de falla cardíaca: seguimiento ambulatorio en NYHA III-IV, con monitoreo en casa si hay dificultad de ingreso (Rec. 51, fuerte a favor, certeza alta). Liderada por cardiología o medicina interna con entrenamiento; incluye controles programados, educación, autocuidado y visitas domiciliarias. ·Revascularización con FE <35 % de etiología isquémica: no se sugiere para reducir mortalidad, hospitalización o infarto (Rec. 52); se sugiere para mejorar la clase funcional al disminuir la angina, según criterio clínico, anatomía y comorbilidades (Rec. 53). No se recomienda usar imágenes de viabilidad miocárdica para decidirla (Rec. 54, fuerte en contra). ·Cirugía valvular (anuloplastia, plastia) en regurgitación mitral funcional con FE baja: no se recomienda adicional a la terapia médica (Rec. 55, fuerte en contra). ·Inotrópicos intravenosos periódicos: no se sugieren (Rec. 56, débil en contra). ·Dispositivo de asistencia ventricular como terapia de destino: se sugiere en NYHA IV con FE <25 %, terapia óptima, no candidatos a trasplante y dependientes de inotrópico o con VO2 pico <14 mL/kg/min, definido por grupo multidisciplinario (Rec. 57, débil a favor, certeza baja).",
+        "| Fármaco / intervención | Indicación (paciente) | Rec. | Fuerza y certeza | Observaciones y monitoreo | |---------------------------------------------------|----------------------------------------------------------------------------------------------------------------|--------|------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| | Diuréticos de asa IV (furosemida) | Falla aguda con síntomas y signos congestivos | 8, 9 | Fuerte a favor; muy baja (8) y moderada (9) | Preferir bolos IV sobre infusión continua. Electrolitos, BUN y creatinina al inicio y cada 3 días; más frecuente en >65 años. Reducir dosis si hay retención de azoados. | | Nitroprusiato | Falla aguda sin hipotensión, además del manejo estándar | 10 | Débil a favor; muy baja | Mejora parámetros hemodinámicos. Vigilar hipotensión sintomática. | | Nitroglicerina | Falla aguda sin hipotensión | 11 | Débil a favor; muy baja | Mejora la disnea. Tolerancia con infusiones continuas de más de 24 h. | | Norepinefrina (en lugar de dopamina) | Falla aguda que requiere vasopresor | 12 | Fuerte a favor; baja | Disminuye mortalidad y arritmias. Administrar por vena central; no usar la misma vía de medición hemodinámica. | | Inotrópicos (levosimendán, milrinone, dobutamina) | Descompensada con hipoperfusión, hipotensión, acidosis metabólica o choque y causas potencialmente reversibles | 14 | Débil a favor; muy baja | No usar de rutina (Rec. 13, fuerte en contra). Milrinone no en cardiopatía isquémica; considerar no dar bolo inicial con milrinone o levosimendán si PAS <90 mmHg; vigilar ritmo. | | Continuar betabloqueador | Falla crónica descompensada que ya recibía betabloqueador | 15 | Fuerte a",
+        "Institución emisora: Ministerio de Salud y Protección Social - Colciencias, con la Universidad de Antioquia. Guía para profesionales de la salud, Guía No. 53. Año: 2016 Fuente: capítulo «Preguntas y recomendaciones» de la guía original (pp. 39-72). Documento reorganizado para uso como corpus de recuperación de información; el contenido clínico proviene íntegramente de la guía original."
+      ],
+      "answer": "No tengo esa información en mis fuentes.\n\nEl contexto proporcionado menciona el uso de betabloqueadores como parte del \"manejo médico óptimo\" (Fuente: gpc_falla_cardiaca_chunk12), indica que deben continuarse en la falla crónica descompensada si el paciente ya los recibía (Fuente: gpc_falla_cardiaca_chunk13) y establece criterios para añadir ivabradina en caso de intolerancia o frecuencia cardíaca alta pese a ellos (Fuente: gpc_falla_cardiaca_chunk16). Sin embargo, **no especifica las dosis iniciales, la frecuencia de aumento ni el protocolo detallado de titulación** para el inicio del tratamiento en un paciente estable.",
+      "sources_used": [],
+      "fallback_used": true,
+      "ground_truth": "El inicio de betabloqueantes (carvedilol, bisoprolol o metoprolol succinato) debe realizarse en pacientes clínicamente estables y euvolémicos, comenzando con dosis muy bajas y titulando progresivamente al alza cada 2 a 4 semanas según tolerancia de presión arterial y frecuencia cardíaca hasta alcanzar la dosis máxima objetivo tolerada."
+    },
+    {
+      "id": "caso_11",
+      "entidad": "depresión en adultos",
+      "question": "¿Cuál es la recomendación terapéutica de primera línea para el manejo farmacológico y psicoterapéutico de la depresión en adultos con episodio depresivo moderado a grave?",
+      "tipo_caso": "estandar",
+      "query_final": "depresión en adultos",
+      "tool_invoked": false,
+      "tool_reason": "",
+      "fragments": [
+        "gpc_depresion_adultos_chunk17",
+        "gpc_depresion_adultos_chunk1",
+        "gpc_depresion_adultos_chunk18",
+        "gpc_depresion_adultos_chunk23",
+        "gpc_depresion_adultos_chunk20"
+      ],
+      "scores": [
+        0.994616,
+        0.99304,
+        0.989466,
+        0.988625,
+        0.987886
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "·Explorar los eventos estresantes recientes; recomendar rutina cotidiana, hábitos saludables e higiene del sueño. ·Ejercicio de 30 a 45 minutos, tres veces por semana, durante 10 a 14 semanas (programa estructurado de actividad física). ·Psicoeducación como intervención psicoterapéutica de menor intensidad y primera opción (fuerte a favor). ·Tratamiento psicológico breve (TCC o terapia de solución de problemas) de 6 a 8 sesiones en 10-12 semanas para depresión leve a moderada; terapia psicodinámica de corto plazo de 16 a 20 sesiones en 4-6 meses (débil a favor). ·Si no hay mejoría o empeoran los síntomas en el seguimiento, referir a salud mental o psiquiatría (fuerte a favor). Con síntomas persistentes tras tres meses, iniciar TCC.",
+        "Esta guía establece el diagnóstico y el tratamiento del episodio depresivo y del trastorno depresivo recurrente en adultos (mayores de 18 años). Adopta un modelo de atención escalonado de cuatro pasos: (1) reconocimiento, evaluación y manejo inicial; (2) depresión leve; (3) depresión moderada y grave; (4) depresión con alto riesgo para la vida. Usa los criterios CIE-10 para el diagnóstico y la gravedad, recomienda psicoterapia (terapia cognitivo conductual de primera línea) para la depresión leve y la combinación de antidepresivo y psicoterapia para la moderada y grave, con ISRS como primera elección farmacológica. Incluye valoración y manejo del riesgo suicida, seguimiento, depresión resistente, embarazo y lactancia, adulto mayor, y criterios de referencia y contrarreferencia. No cubre la depresión posparto.",
+        "·Combinar antidepresivos y psicoterapia (fuerte a favor). En depresión grave, iniciar primero el antidepresivo y, al haber respuesta, la intervención en crisis con el psicólogo. ·Reevaluar antes de 15 días tras iniciar el tratamiento en depresión moderada y antes de 8 días en la grave. ·Depresión resistente al tratamiento farmacológico: antidepresivo combinado con TCC.",
+        "·Psicoterapia: TCC una vez por semana (al menos al inicio), preferentemente individual; terapia dialéctico conductual en trastorno límite de personalidad; terapia interpersonal en mayores de 60 años. ·Antidepresivo ISRS de preferencia; en mayores de 60 años, ISRS con terapia interpersonal y seguimiento mantenido. ·Ansiolíticos al inicio del antidepresivo si hay ansiedad o agitación. ·Trastorno bipolar: litio en conducta suicida; ácido valproico o carbamazepina si se requiere anticonvulsivante. Esquizofrenia o esquizoafectivo con alto riesgo: clozapina. Trastorno límite de personalidad: carbamazepina de primera elección entre los anticonvulsivantes. ·TEC en depresión grave con necesidad de respuesta rápida por alta intencionalidad suicida.",
+        "La TEC debería considerarse en depresión grave, sobre todo si se necesita respuesta rápida por alta intencionalidad suicida, deterioro físico grave o falla de otros tratamientos. Se administra en entorno hospitalario de tercer nivel, por profesionales experimentados, tras evaluación física y psiquiátrica, con consentimiento informado y supervisión de un comité de bioética. No se recomiendan la estimulación del nervio vago fuera de la investigación ni la estimulación magnética transcraneal."
+      ],
+      "answer": "Para la depresión moderada a grave en adultos, la recomendación de primera línea es la **combinación de antidepresivos y psicoterapia**.\n\n*   **Farmacológico:** Se recomienda el uso de **ISRS (Inhibidores Selectivos de la Recaptación de Serotonina)** como primera elección.\n*   **Psicoterapéutico:** Se recomienda la **Terapia Cognitivo Conductual (TCC)** como primera línea.\n\n**Fuentes:**\n*   [GPC para el tratamiento y seguimiento de la depresión en adultos | gpc_depresion_adultos_chunk1]: \"recomienda... la combinación de antidepresivo y psicoterapia para la moderada y grave, con ISRS como primera elección farmacológica.\"\n*   [GPC para el tratamiento y seguimiento de la depresión en adultos | gpc_depresion_adultos_chunk18]: \"Combinar antidepresivos y psicoterapia (fuerte a favor).\"\n*   [GPC para el tratamiento y seguimiento de la depresión en adultos | gpc_depresion_adultos_chunk1]: \"recomienda psicoterapia (terapia cognitivo conductual de primera línea)\".",
+      "sources_used": [
+        "gpc_depresion_adultos_chunk17",
+        "gpc_depresion_adultos_chunk1",
+        "gpc_depresion_adultos_chunk18",
+        "gpc_depresion_adultos_chunk23",
+        "gpc_depresion_adultos_chunk20"
+      ],
+      "fallback_used": false,
+      "ground_truth": "Para episodios depresivos moderados a graves en adultos, la guía clínica recomienda el tratamiento combinado de psicoterapia estructurada (como terapia cognitivo-conductual o interpersonal) junto con un antidepresivo de primera línea, preferentemente un inhibidor selectivo de la recaptación de serotonina (ISRS como sertralina, escitalopram o fluoxetina) debido a su favorable perfil de eficacia y seguridad."
+    },
+    {
+      "id": "caso_12",
+      "entidad": "trastorno depresivo",
+      "question": "¿Qué precauciones y selección de fármacos antidepresivos se recomiendan para el manejo del trastorno depresivo en el adulto mayor según la guía clínica?",
+      "tipo_caso": "multimorbilidad",
+      "query_final": "trastorno depresivo",
+      "tool_invoked": false,
+      "tool_reason": "",
+      "fragments": [
+        "gpc_depresion_adultos_chunk1",
+        "gpc_depresion_adultos_chunk17",
+        "gpc_depresion_adultos_chunk11",
+        "gpc_depresion_adultos_chunk18",
+        "gpc_depresion_adultos_chunk4"
+      ],
+      "scores": [
+        0.803927,
+        0.596498,
+        0.570867,
+        0.538019,
+        0.52908
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "Esta guía establece el diagnóstico y el tratamiento del episodio depresivo y del trastorno depresivo recurrente en adultos (mayores de 18 años). Adopta un modelo de atención escalonado de cuatro pasos: (1) reconocimiento, evaluación y manejo inicial; (2) depresión leve; (3) depresión moderada y grave; (4) depresión con alto riesgo para la vida. Usa los criterios CIE-10 para el diagnóstico y la gravedad, recomienda psicoterapia (terapia cognitivo conductual de primera línea) para la depresión leve y la combinación de antidepresivo y psicoterapia para la moderada y grave, con ISRS como primera elección farmacológica. Incluye valoración y manejo del riesgo suicida, seguimiento, depresión resistente, embarazo y lactancia, adulto mayor, y criterios de referencia y contrarreferencia. No cubre la depresión posparto.",
+        "·Explorar los eventos estresantes recientes; recomendar rutina cotidiana, hábitos saludables e higiene del sueño. ·Ejercicio de 30 a 45 minutos, tres veces por semana, durante 10 a 14 semanas (programa estructurado de actividad física). ·Psicoeducación como intervención psicoterapéutica de menor intensidad y primera opción (fuerte a favor). ·Tratamiento psicológico breve (TCC o terapia de solución de problemas) de 6 a 8 sesiones en 10-12 semanas para depresión leve a moderada; terapia psicodinámica de corto plazo de 16 a 20 sesiones en 4-6 meses (débil a favor). ·Si no hay mejoría o empeoran los síntomas en el seguimiento, referir a salud mental o psiquiatría (fuerte a favor). Con síntomas persistentes tras tres meses, iniciar TCC.",
+        "El tratamiento farmacológico se administra a pacientes con depresión moderada o grave. Las únicas excepciones son la depresión leve con antecedente de depresión moderada o grave o con síntomas que persisten pese a otras intervenciones, con manejo individualizado por el especialista. La guía nombra los fármacos y sus líneas de tratamiento pero no lista dosis en mg ni frecuencias; remite las dosis y la evidencia de seguridad a su anexo 4, que no está en este documento. Los antidepresivos tardan de dos a ocho semanas en producir mejoría, no generan dependencia, y su retiro brusco puede causar síntomas de discontinuación.",
+        "·Combinar antidepresivos y psicoterapia (fuerte a favor). En depresión grave, iniciar primero el antidepresivo y, al haber respuesta, la intervención en crisis con el psicólogo. ·Reevaluar antes de 15 días tras iniciar el tratamiento en depresión moderada y antes de 8 días en la grave. ·Depresión resistente al tratamiento farmacológico: antidepresivo combinado con TCC.",
+        "Episodio depresivo: cuadro de al menos dos semanas con humor depresivo, pérdida de interés o falta de energía, que cumple los criterios CIE-10; se clasifica en leve, moderado o grave (con o sin síntomas psicóticos). Trastorno depresivo recurrente: episodio depresivo actual más al menos un episodio previo separado por al menos dos meses libres de alteración significativa del ánimo, sin criterios de manía o hipomanía en ningún momento de la vida. Modelo escalonado: modelo de atención en el que se ofrecen primero las intervenciones más efectivas y menos intrusivas, y se pasa al siguiente nivel si el paciente no se beneficia o las rechaza. Síndrome de discontinuación: síntomas por suspensión brusca de un antidepresivo (mareo, náuseas, ansiedad, cefalea, cambios en el ánimo, inquietud, insomnio, sudoración, parestesias). Riesgo suicida: término general para el riesgo de ideación suicida, comunicación suicida (amenaza o plan) o conducta suicida (incluye autolesiones, gestos, intento y suicidio)."
+      ],
+      "answer": "No tengo esa información en mis fuentes.\n\nAunque el contexto menciona que la guía incluye la sección de \"adulto mayor\" (Fuente: GPC para el tratamiento y seguimiento de la depresión en adultos | gpc_depresion_adultos_chunk1), no proporciona los detalles específicos sobre las precauciones ni la selección de fármacos recomendados para ese grupo etario.",
+      "sources_used": [],
+      "fallback_used": true,
+      "ground_truth": "En adultos mayores con trastorno depresivo se recomienda iniciar con un ISRS (como sertralina o escitalopram) a dosis iniciales bajas con titulación lenta, evitando antidepresivos tricíclicos por sus efectos anticolinérgicos (retención urinaria, confusión) y riesgo de cardiotoxicidad, prestando especial atención a las interacciones farmacológicas y al riesgo de hiponatremia."
+    },
+    {
+      "id": "caso_13",
+      "entidad": "depresión",
+      "question": "¿Cuál es el enfoque terapéutico inicial recomendado en guías clínicas para el abordaje de la depresión leve en adultos?",
+      "tipo_caso": "estandar",
+      "query_final": "depresión",
+      "tool_invoked": false,
+      "tool_reason": "",
+      "fragments": [
+        "gpc_depresion_adultos_chunk11",
+        "gpc_depresion_adultos_chunk17",
+        "gpc_depresion_adultos_chunk23",
+        "gpc_depresion_adultos_chunk18",
+        "gpc_depresion_adultos_chunk15"
+      ],
+      "scores": [
+        0.750861,
+        0.590986,
+        0.574035,
+        0.507823,
+        0.419753
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "El tratamiento farmacológico se administra a pacientes con depresión moderada o grave. Las únicas excepciones son la depresión leve con antecedente de depresión moderada o grave o con síntomas que persisten pese a otras intervenciones, con manejo individualizado por el especialista. La guía nombra los fármacos y sus líneas de tratamiento pero no lista dosis en mg ni frecuencias; remite las dosis y la evidencia de seguridad a su anexo 4, que no está en este documento. Los antidepresivos tardan de dos a ocho semanas en producir mejoría, no generan dependencia, y su retiro brusco puede causar síntomas de discontinuación.",
+        "·Explorar los eventos estresantes recientes; recomendar rutina cotidiana, hábitos saludables e higiene del sueño. ·Ejercicio de 30 a 45 minutos, tres veces por semana, durante 10 a 14 semanas (programa estructurado de actividad física). ·Psicoeducación como intervención psicoterapéutica de menor intensidad y primera opción (fuerte a favor). ·Tratamiento psicológico breve (TCC o terapia de solución de problemas) de 6 a 8 sesiones en 10-12 semanas para depresión leve a moderada; terapia psicodinámica de corto plazo de 16 a 20 sesiones en 4-6 meses (débil a favor). ·Si no hay mejoría o empeoran los síntomas en el seguimiento, referir a salud mental o psiquiatría (fuerte a favor). Con síntomas persistentes tras tres meses, iniciar TCC.",
+        "·Psicoterapia: TCC una vez por semana (al menos al inicio), preferentemente individual; terapia dialéctico conductual en trastorno límite de personalidad; terapia interpersonal en mayores de 60 años. ·Antidepresivo ISRS de preferencia; en mayores de 60 años, ISRS con terapia interpersonal y seguimiento mantenido. ·Ansiolíticos al inicio del antidepresivo si hay ansiedad o agitación. ·Trastorno bipolar: litio en conducta suicida; ácido valproico o carbamazepina si se requiere anticonvulsivante. Esquizofrenia o esquizoafectivo con alto riesgo: clozapina. Trastorno límite de personalidad: carbamazepina de primera elección entre los anticonvulsivantes. ·TEC en depresión grave con necesidad de respuesta rápida por alta intencionalidad suicida.",
+        "·Combinar antidepresivos y psicoterapia (fuerte a favor). En depresión grave, iniciar primero el antidepresivo y, al haber respuesta, la intervención en crisis con el psicólogo. ·Reevaluar antes de 15 días tras iniciar el tratamiento en depresión moderada y antes de 8 días en la grave. ·Depresión resistente al tratamiento farmacológico: antidepresivo combinado con TCC.",
+        "| Fase | Objetivos | Tareas | |---------------|---------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------| | Aguda | Obtener respuesta y disminuir la sintomatología | Individualizar según efectos adversos, comorbilidades y abuso de sustancias. | | Continuación | Mantener la atenuación de síntomas, evitar recidivas y lograr mejoría funcional | Estimular la adherencia y la recuperación funcional gradual. | | Mantenimiento | Lograr la remisión completa y evitar recurrencias | Estimular la recuperación funcional total e inserción social; evaluar necesidad de tratamiento adicional. |"
+      ],
+      "answer": "Para la depresión leve en adultos, el enfoque terapéutico inicial recomendado incluye:\n\n1.  **Psicoeducación:** Se considera la intervención psicoterapéutica de menor intensidad y la primera opción (recomendación fuerte a favor).\n2.  **Tratamiento psicológico breve:** Se recomienda Terapia Cognitivo-Conductual (TCC) o terapia de solución de problemas, consistente en 6 a 8 sesiones durante 10-12 semanas.\n3.  **Medidas de estilo de vida:** Explorar eventos estresantes, recomendar rutina cotidiana, hábitos saludables, higiene del sueño y ejercicio físico estructurado (30 a 45 minutos, tres veces por semana, durante 10 a 14 semanas).\n\nEl tratamiento farmacológico generalmente no es la primera línea para la depresión leve, salvo que haya antecedentes de depresión moderada/grave o síntomas persistentes pese a otras intervenciones, en cuyo caso se maneja de forma individualizada por el especialista.\n\n*Fuente: GPC para el tratamiento y seguimiento de la depresión en adultos | gpc_depresion_adultos_chunk17; gpc_depresion_adultos_chunk11*",
+      "sources_used": [
+        "gpc_depresion_adultos_chunk11",
+        "gpc_depresion_adultos_chunk17",
+        "gpc_depresion_adultos_chunk23",
+        "gpc_depresion_adultos_chunk18",
+        "gpc_depresion_adultos_chunk15"
+      ],
+      "fallback_used": false,
+      "ground_truth": "En la depresión leve se recomienda como primera opción el abordaje no farmacológico basado en intervenciones psicosociales, psicoterapia breve o de baja intensidad (como resolución de problemas o psicoeducación) y seguimiento clínico activo, reservando los fármacos antidepresivos para casos en los que los síntomas persistan o no respondan a las medidas psicológicas iniciales."
+    },
+    {
+      "id": "caso_14",
+      "entidad": "depresión en adultos",
+      "question": "¿Cuál es la duración mínima recomendada del tratamiento farmacológico de mantenimiento con antidepresivos tras alcanzar la remisión de un episodio depresivo mayor?",
+      "tipo_caso": "estandar",
+      "query_final": "depresión en adultos",
+      "tool_invoked": false,
+      "tool_reason": "",
+      "fragments": [
+        "gpc_depresion_adultos_chunk17",
+        "gpc_depresion_adultos_chunk1",
+        "gpc_depresion_adultos_chunk18",
+        "gpc_depresion_adultos_chunk23",
+        "gpc_depresion_adultos_chunk20"
+      ],
+      "scores": [
+        0.994616,
+        0.99304,
+        0.989466,
+        0.988625,
+        0.987886
+      ],
+      "score_tipo": "reranker_prob",
+      "contexts": [
+        "·Explorar los eventos estresantes recientes; recomendar rutina cotidiana, hábitos saludables e higiene del sueño. ·Ejercicio de 30 a 45 minutos, tres veces por semana, durante 10 a 14 semanas (programa estructurado de actividad física). ·Psicoeducación como intervención psicoterapéutica de menor intensidad y primera opción (fuerte a favor). ·Tratamiento psicológico breve (TCC o terapia de solución de problemas) de 6 a 8 sesiones en 10-12 semanas para depresión leve a moderada; terapia psicodinámica de corto plazo de 16 a 20 sesiones en 4-6 meses (débil a favor). ·Si no hay mejoría o empeoran los síntomas en el seguimiento, referir a salud mental o psiquiatría (fuerte a favor). Con síntomas persistentes tras tres meses, iniciar TCC.",
+        "Esta guía establece el diagnóstico y el tratamiento del episodio depresivo y del trastorno depresivo recurrente en adultos (mayores de 18 años). Adopta un modelo de atención escalonado de cuatro pasos: (1) reconocimiento, evaluación y manejo inicial; (2) depresión leve; (3) depresión moderada y grave; (4) depresión con alto riesgo para la vida. Usa los criterios CIE-10 para el diagnóstico y la gravedad, recomienda psicoterapia (terapia cognitivo conductual de primera línea) para la depresión leve y la combinación de antidepresivo y psicoterapia para la moderada y grave, con ISRS como primera elección farmacológica. Incluye valoración y manejo del riesgo suicida, seguimiento, depresión resistente, embarazo y lactancia, adulto mayor, y criterios de referencia y contrarreferencia. No cubre la depresión posparto.",
+        "·Combinar antidepresivos y psicoterapia (fuerte a favor). En depresión grave, iniciar primero el antidepresivo y, al haber respuesta, la intervención en crisis con el psicólogo. ·Reevaluar antes de 15 días tras iniciar el tratamiento en depresión moderada y antes de 8 días en la grave. ·Depresión resistente al tratamiento farmacológico: antidepresivo combinado con TCC.",
+        "·Psicoterapia: TCC una vez por semana (al menos al inicio), preferentemente individual; terapia dialéctico conductual en trastorno límite de personalidad; terapia interpersonal en mayores de 60 años. ·Antidepresivo ISRS de preferencia; en mayores de 60 años, ISRS con terapia interpersonal y seguimiento mantenido. ·Ansiolíticos al inicio del antidepresivo si hay ansiedad o agitación. ·Trastorno bipolar: litio en conducta suicida; ácido valproico o carbamazepina si se requiere anticonvulsivante. Esquizofrenia o esquizoafectivo con alto riesgo: clozapina. Trastorno límite de personalidad: carbamazepina de primera elección entre los anticonvulsivantes. ·TEC en depresión grave con necesidad de respuesta rápida por alta intencionalidad suicida.",
+        "La TEC debería considerarse en depresión grave, sobre todo si se necesita respuesta rápida por alta intencionalidad suicida, deterioro físico grave o falla de otros tratamientos. Se administra en entorno hospitalario de tercer nivel, por profesionales experimentados, tras evaluación física y psiquiátrica, con consentimiento informado y supervisión de un comité de bioética. No se recomiendan la estimulación del nervio vago fuera de la investigación ni la estimulación magnética transcraneal."
+      ],
+      "answer": "No tengo esa información en mis fuentes.",
+      "sources_used": [],
+      "fallback_used": true,
+      "ground_truth": "La guía clínica recomienda mantener el tratamiento antidepresivo a la misma dosis terapéutica durante al menos 6 a 9 meses después de haber alcanzado la remisión clínica completa del episodio para consolidar la mejoría y prevenir recaídas tempranas antes de considerar una reducción gradual y pautada del fármaco."
+    },
+    {
+      "id": "caso_15",
+      "entidad": "TFNA",
+      "question": "¿Existe evidencia o recomendaciones específicas en las guías clínicas de práctica del corpus sobre el manejo de la trombocitopenia fetal y neonatal aloinmune (TFNA)?",
+      "tipo_caso": "sin_evidencia",
+      "query_final": "TFNA",
+      "tool_invoked": true,
+      "tool_reason": "entidad con forma de sigla (score=0.045); normalización SIN match: se mantiene la entidad original; ningún fragmento supera umbral_evidencia=0.174: sin evidencia",
+      "fragments": [],
+      "scores": [],
+      "score_tipo": null,
+      "contexts": [],
+      "answer": "No tengo esa información en mis fuentes.",
+      "sources_used": [],
+      "fallback_used": true,
+      "ground_truth": "No se dispone de evidencia ni recomendaciones terapéuticas para la trombocitopenia fetal y neonatal aloinmune en las guías clínicas disponibles en el corpus, por lo que el sistema debe abstenerse de generar recomendaciones farmacológicas sin sustento documental directo."
+    }
+  ]
+}
