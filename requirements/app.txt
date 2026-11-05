@@ -1,0 +1,26 @@
+# Dependencias de la app de entrada, con versiones fijadas.
+#
+# Es autocontenido: así lo que se instala para la demo no cambia si otra
+# pieza mueve sus rangos. torch no se fija: en Colab/Kaggle viene con CUDA.
+#
+# Regenerar en el entorno donde la app funcionó:
+#   python -m clinical_rag.app.operacion --requirements > requirements/app.txt
+
+transformers==5.16.1
+accelerate==1.14.0
+peft==0.20.0
+torchao==0.16.0
+numpy==2.1.3
+PyYAML==6.0.3
+python-dotenv==1.2.3
+sentence-transformers==5.7.0
+gradio==6.30.0
+
+qwen-vl-utils>=0.0.8
+chromadb>=0.5.0
+rank-bm25
+groq
+docling>=2.0.0
+pytesseract>=0.3.10
+Pillow>=10.0
+requests>=2.31
