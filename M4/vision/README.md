@@ -127,20 +127,6 @@ resumen = run(cfg, project_root)
 
 y marca `valvula=True`. Así el sistema no inventa una nota clínica.
 
-`es_valvula()` (en `prompts.py`) activa la válvula en tres casos:
-
-- la respuesta está vacía;
-- la respuesta **empieza** con una negativa de lectura («No se aprecia…», «No se puede leer…»,
-  «Ilegible…», «I cannot…»);
-- la respuesta **completa** es solo un comentario sobre la imagen, sin transcribir nada
-  («Se aprecia texto legible», «La imagen contiene texto», «Texto ilegible», «Imagen en blanco»).
-  Pasa cuando el VLM pierde el «No» de la válvula o describe la imagen en vez de leerla. Se exige
-  que sea toda la respuesta, así que una nota real que empiece con «Se aprecia edema…» no se descarta.
-
-`vlm.max_pixels` / `vlm.min_pixels` limitan la resolución que ve el VLM (~1 token visual por parche
-de 28×28 px). En este config son `null` (sin límite, como se midieron las métricas); la app usa
-`1280*28*28`.
-
 ### Enchufe real a M3
 
 `crear_responder_m3(cfg, project_root, extractor=None)` reutiliza:
