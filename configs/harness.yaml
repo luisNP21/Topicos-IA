@@ -1,0 +1,46 @@
+proyecto:
+  nombre: "Evaluación del detector de enfermedades (DisTEMIST)"
+  seed_global: 42
+
+rutas:
+  gold_set: "data/gold/ner.jsonl"
+  outputs_dir: "artifacts/outputs/ner"
+  inference_config: "configs/ner.yaml"
+
+archivos_salida:
+  dimension1: "resultado_dimension1.json"
+  dimension1b: "resultado_dimension1b.json"
+  dimension3: "resultado_dimension3.json"
+  scorecard_json: "scorecard_ner.json"
+  scorecard_md: "scorecard_ner.md"
+
+modelo:
+  base_checkpoint: "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es"
+
+dimension1b_similitud_semantica:
+  modelo_embeddings: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+  funcion_similitud: "emb"
+  algoritmo_asignacion: "hungaro"
+  calibracion_umbral:
+    n_pares_negativos: 4000
+    seed: 42
+
+dimension3_llm_judge:
+  judge_model: "qwen/qwen3.8-27b"
+  judge_provider: "groq"
+  judge_temperature: 0.0
+  judge_max_tokens: 600
+  judge_pausa_entre_llamadas: 3.0
+  fallar_si_modelo_no_disponible: true
+  pares_longitud_path: "data/length_bias_pairs.json"
+
+scorecard:
+  archivo_salida_json: "scorecard_ner.json y scorecard_ner.md"
+  umbrales_debilidad:
+    f1_bajo: 0.2
+    f1_alto: 0.7
+    score_juez_bajo: 2.5
+    score_juez_alto: 3.5
+
+audit:
+  doc_id: "debe preservarse intacto en eval_set y resultados"

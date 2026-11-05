@@ -1,0 +1,38 @@
+proyecto:
+  nombre: "Generación RAG sobre guías clínicas"
+  seed_global: 42
+
+# Piezas de los companeros: se referencian sus YAML en vez de duplicar su config
+# (como pidio Isabella). Rutas relativas a la raiz del repositorio.
+modulos:
+  retrieval_config: "configs/retrieval.yaml"
+  tool_config: "configs/tools.yaml"
+
+# Pieza de Agustín: generacion final de la respuesta.
+generacion:
+  # false = usa las piezas REALES del equipo (retrieval de Pau + tool de Luis).
+  # true  = usa mocks propios; util para correr sin dependencias externas.
+  usar_mocks: false
+  proveedor: "groq"
+  # Mismo modelo que el juez de M2 (main), por coherencia y porque su cupo
+  # gratuito ya esta validado. Es un modelo de generacion, no de razonamiento.
+  modelo: "qwen/qwen3.8-27b"
+  temperature: 0.0
+  max_tokens: 700
+  # Groq limita por minuto; el espaciado preventivo evita la cascada de 429.
+  pausa_entre_llamadas: 3.0
+
+# Solo se usa con usar_mocks: true (o `--mocks`), para correr sin las piezas reales.
+orquestacion_mock:
+  umbral: 0.5
+  umbral_evidencia: 0.15
+  k: 5
+
+rutas:
+  outputs_dir: "artifacts/outputs/generation"
+  # Nombre exacto que consume RAGAS (src/clinical_rag/evaluation/ragas/evaluacion_ragas.py).
+  archivo_salida: "resultado_generacion.json"
+  # Eval set del equipo (15 casos). Acepta .json (lista) o .jsonl (campo 'consulta').
+  # El notebook lo pasa con --entidades; este default hace que `run_generacion.py`
+  # a secas use el mismo conjunto que la corrida del pipeline.
+  entidades: "data/gold/eval_set_m3.json"

@@ -1,0 +1,123 @@
+Vamos a continuar con el siguiente módulo del proyecto, en este debemos cumplir con la siguiente rúbrica:
+Componente visual implementado
+Componente funcional e integrado al sistema, no un notebook aparte
+
+Justificación del patrón de integración
+Argumenta por qué input, output o tool, y qué se habría perdido con los otros dos
+
+Impacto medido en el harness
+Mide el delta en el harness de M2 y reporta con honestidad, incluido el caso en que el componente no aportó
+
+Casos de prueba
+Casos de prueba propios del dominio, incluidos casos límite donde el componente falla
+
+Ten en cuenta que estos son los temas de visión que he visto en clase:
+Vision Transformer: parches como tokens, el encoder no cambia, ViT vs. CNN
+CLIP: contrastive learning, zero-shot con prompts, búsqueda de imágenes con texto
+Modelos multimodales: la receta encoder visual → proyector → LLM; cómo preguntarle; dónde alucina
+Patrones de integración visual (input / tool / output), ideas por dominio, cómo se mide con el harness
+
+Necesito que me des ideas de como implementar el componente visual en el proyecto
+
+Leyó la memoria
+
+Con lo que tiene el proyecto (extractor de enfermedades de M1/M2 → RAG sobre guías simuladas en M3, y el harness ya desacoplado como harness(eval_set, sistema)), veo tres ideas viables. Al final le doy una recomendación.
+
+Idea A: el input es una nota clínica escaneada o fotografiada (mi recomendación)
+
+Un VLM transcribe la imagen a texto y ese texto entra al pipeline existente (chunking → encoder → entidades → RAG). Es el caso real de muchas clínicas: la nota llega como foto o PDF escaneado, no como texto limpio.
+
+Cómo medirlo con el harness de M2 sin tocarlo:
+
+Renderice los documentos del test de DisTEMIST como imágenes. Como el gold es el texto original, los offsets y las entidades siguen siendo válidos.
+Cree niveles de degradación: render limpio, JPEG a baja resolución, rotación de 2-3°, desenfoque, sombra de foto de celular, fuente tipo manuscrito.
+Defina varios sistema: texto gold (techo), imagen → OCR clásico → NER, e imagen → VLM → NER. Cada uno cachea su predictions/<sistema>.json en run_inference/, y el harness lee el cache como ya lo diseñaron.
+El delta que reporta es la caída de F1 (exacto, semántico y juez) frente al techo de texto. Esto es honesto por construcción: el componente aporta una capacidad nueva, y lo que se mide es cuánto cuesta. Si el VLM no mejora sobre el OCR clásico, también se reporta.
+
+Conexión con la clase:
+
+Los parches de ViT explican por qué la resolución importa: una letra pequeña puede caer dentro de un solo parche y perderse.
+La alucinación del VLM es el riesgo central. Puede “corregir” una enfermedad mal escrita o inventar un fármaco o una enfermedad plausible. Su dimensión de juez ya cubre ese modo de falla (alucinación plausible).
+
+Casos límite propios del dominio (donde el componente debería fallar):
+
+Abreviaturas clínicas (DM2, HTA, EPOC).
+Una entidad partida entre dos líneas por guion.
+Tildes y ñ perdidas.
+Dosis o cifras mal leídas.
+Sellos o firmas encima del texto.
+Tablas de laboratorio.
+Letra manuscrita real, no solo fuente tipo manuscrito.
+Idea B: el output es una nota anotada visualmente
+
+El sistema devuelve la nota con las enfermedades resaltadas (estilo displaCy), vinculadas a la guía recuperada, como tarjeta visual para el clínico.
+
+Cómo medirlo: el F1 del NER no cambia, así que el delta ahí es cero y hay que decirlo. Lo que sí se mide es la fidelidad del render: que los resaltados caigan sobre los offsets correctos, y un cierre de ciclo en el que un VLM lee la imagen renderizada y lista lo que ve resaltado. Compare esa lista contra las entidades predichas.
+
+Limitación: aporta poco a la exactitud y mucho a la usabilidad, que es más difícil de medir con el harness.
+
+Idea C: tool de búsqueda con CLIP sobre figuras de las guías
+
+Los algoritmos y flujogramas de las guías se indexan con CLIP, y se busca por texto (“algoritmo de manejo de hipertensión”).
+
+Por qué la descartaría:
+
+Sus guías son simuladas y de texto, así que tendría que generar figuras artificiales.
+CLIP es débil para leer texto fino dentro de imágenes.
+Medirlo exigiría métricas de retrieval que no son las de M2.
+Justificación del patrón (input vs. tool vs. output)
+
+Para la Idea A, el argumento sería:
+
+Como input, la imagen se transforma antes de cualquier decisión del sistema, y el pipeline posterior queda intacto y comparable. Es determinista: si llega una imagen, se transcribe.
+Como tool, un agente tendría que decidir cuándo transcribir. Ese paso no requiere decisión (si el archivo es una imagen, siempre hay que leerla), así que solo añadiría latencia y no determinismo.
+Como output, no resuelve el problema, porque el sistema seguiría sin poder leer una foto.
+Integración “no como notebook aparte”
+
+Un módulo vision/ con la misma interfaz uniforme run(cfg, project_root) -> dict, una sección en config.yaml y un punto de entrada del sistema (CLI, o una app sencilla en Gradio/Streamlit) que acepte imagen o texto y devuelva entidades más fragmentos de guía.
+
+Dos cosas por aclarar
+Ningún número de F1 o CER lo tengo medido. Todos los deltas salen de correr la comparación. Y las degradaciones sintéticas son una suposición de trabajo: no equivalen a escaneos reales, y conviene decirlo en el informe.
+Falta confirmar qué VLM pueden usar. Puede ser uno por API (revisen si Groq, que ya usan para el juez, ofrece modelo de visión) o uno abierto como Qwen2-VL en Colab.
+
+¿Prefiere que desarrollemos la Idea A con el diseño completo de la comparación (variantes, degradaciones y estructura de vision/), o quiere combinarla con la Idea B como segundo componente?
+
+Me quedo con la idea A. Te voy a pasar las tareas que sacamos en mi equipo, dime si están completas y repártelas (incluyendo las tareas que falten si hay alguna que no tengamos) entre los integrantes que venimos trabajando.
+
+Tareas
+Implementar componente visual
+Justificación del patrón de integración
+Organizar inputs finales para nuestro sistema (incluye documentos escaneados o fotografías para pruebas de M4 y casos límite donde el componente falla)
+Actualizar harness para evaluar componente visual
+Medir el delta en el harness con respecto a la útlima entrega
+Empezar a desarrollar nuestro producto final: Punto de entrada del sistema (una app sencilla en Gradio/Streamlit) que acepte imagen o texto y devuelva entidades más fragmentos de guía
+
+Las tareas cubren la rúbrica casi completa, pero hay huecos y una tarea sobrecargada.
+
+Qué falta o está mal definido
+No hay tarea para generar el set de imágenes degradadas. La Tarea 3 lo menciona de pasada, pero sin ese set no se puede medir el delta (Tareas 4 y 5), y es el primer cuello de botella. Va como tarea propia.
+La Tarea 3 mezcla dos cosas distintas: el set sintético reproducible (renders con degradaciones) y los casos límite curados a mano (fotos reales, manuscrito, sellos), donde se documenta qué falla y por qué. Conviene separarlas.
+No hay tarea de métricas propias de la transcripción (CER/WER y auditoría de alucinaciones del VLM). El F1 del NER mide el efecto final, pero no dice si la caída viene de la lectura del VLM o del NER. Es lo que permite el análisis honesto de dónde falla.
+No hay tarea de informe final con análisis de fallos. La rúbrica pide reportar con honestidad, incluso si el componente no aportó. Hace falta un dueño que consolide.
+Dependencias heredadas de M3 que bloquean estas tareas: el desacople del harness (Isa) bloquea la Tarea 4, la corrección del juez deprecado (Agustín) bloquea la dimensión de juez del delta, y el retrieval de Pau es lo que la app (Tarea 6) devuelve como fragmentos de guía. No son tareas nuevas, pero conviene marcarlas como prerequisitos.
+Reparto propuesto
+
+Lo asigné según los roles que ya vienen teniendo y procuré balancear la carga, porque Pau y Luis ya cargan con partes de M3.
+
+#	Tarea	Responsable	Apoyo
+1	Implementar componente visual: módulo vision/ con transcripción por VLM y baseline de OCR clásico, interfaz run(cfg, project_root), entrada en config.yaml y cache en run_inference/	Agustín	Isabella (integración con cache)
+2	Justificación del patrón (input vs. tool vs. output, y qué se perdería con los otros dos)	Pau	Isabella (revisión)
+3a	(Nueva) Generar el set sintético: render de los documentos del test, degradaciones con parámetros y semillas registradas	Luis
+3b	Organizar inputs finales: casos límite curados y fotos/escaneos reales para M4, con el fallo esperado documentado por caso	Pau	Luis (formato y estructura de carpetas)
+4	Actualizar el harness: adaptadores sistema para cada variante (texto gold, OCR→NER, VLM→NER) y scorecard con desglose por nivel de degradación	Isabella
+5a	(Nueva) Métricas de transcripción: CER/WER y auditoría de entidades inventadas por el VLM	Luis	Agustín (juez sobre alucinaciones)
+5b	Medir el delta frente a la última entrega y consolidar	Isabella	Cada dueño interpreta su dimensión (Luis exacto, Pau semántico, Agustín juez)
+5c	(Nueva) Informe de resultados y análisis de fallos, incluido el caso en que el componente no aporta	Isabella	Contribución de cada integrante sobre su dimensión
+6	Punto de entrada: app Gradio/Streamlit con imagen o texto → entidades + fragmentos de guía	Pau (lidera, porque el retrieval es la salida)	Agustín (hook de generación con LLM externo)
+Orden sugerido
+Primero, en paralelo: 3a (Luis) y 1 (Agustín). Son la base de todo lo demás.
+Después: 3b y 4, que dependen de que existan el set y el módulo.
+Luego: 5a y 5b, cuando haya predicciones cacheadas de todas las variantes.
+Al final: 2, 5c y 6. La justificación y el informe se escriben mejor con resultados en mano, y la app puede avanzar en paralelo una vez que el retrieval esté estable.
+
+Un riesgo a vigilar: Agustín queda con el componente más la corrección del juez, y ambas piezas son críticas para el delta. Si ve que se aprieta, la corrección del juez es lo que yo priorizaría, porque sin ella la dimensión de juez no se puede reportar.

@@ -1,0 +1,24 @@
+sistema: "encoder_solo"
+
+modelo:
+  checkpoint: "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es"
+  adapter_path: "artifacts/models/clinical_bert-distemist-lora"
+
+chunking:
+  window_words: 277
+  overlap_words: 50
+
+eval_set_path: "data/gold/ner.jsonl"
+
+normalizacion:
+  activa: false
+
+# Fuente del texto que alimenta el NER.
+#   tipo: texto  -> usa el texto del gold set (comportamiento histórico).
+#   tipo: vision -> transcribe las imágenes del manifiesto de M4 y usa ese
+#                   texto. Reutiliza src/clinical_rag/vision (backends VLM/OCR) sin tocar el NER.
+# Para evaluar visión en el harness, use src/clinical_rag/ner/config_vision.yaml.
+fuente:
+  tipo: "texto"
+
+output_path: "artifacts/predictions/encoder_solo.json"

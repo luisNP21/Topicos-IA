@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clinical-rag"
+version = "0.1.0"
+description = "Sistema clínico NER + RAG sobre guías clínicas"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+  "pandas>=2.2",
+  "PyYAML>=6.0",
+  "python-dotenv>=1.0",
+  "requests>=2.31",
+  "torch>=2.2",
+  "transformers>=4.45",
+  "peft>=0.10",
+  "accelerate>=0.30",
+  "sentence-transformers>=3.0",
+  "chromadb>=0.5",
+  "rank-bm25>=0.2",
+  "scipy>=1.13",
+  "groq>=0.9",
+  "Pillow>=10.0",
+  "rapidfuzz>=3.6",
+  "gradio>=5.0",
+]
+
+[project.optional-dependencies]
+corpus = ["docling>=2.0"]
+ragas = ["ragas>=0.2", "datasets>=4.0", "langchain-groq>=0.3"]
+vision = ["qwen-vl-utils>=0.0.8", "pytesseract>=0.3.10", "docling>=2.0"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+clinical-rag-ner = "clinical_rag.ner.run_inference:main"
+clinical-rag-harness = "clinical_rag.evaluation.run_harness:main"
+clinical-rag-corpus = "clinical_rag.corpus.run:main"
+clinical-rag-retrieval = "clinical_rag.retrieval.experiment:main"
+clinical-rag-generation = "clinical_rag.generation.run:main"
+clinical-rag-ragas = "clinical_rag.evaluation.ragas.run:main"
+clinical-rag-vision = "clinical_rag.vision.run:main"
+clinical-rag-synthetic = "clinical_rag.synthetic.generate:main"
+clinical-rag-transcription = "clinical_rag.evaluation.transcription.run:main"
+clinical-rag-app = "clinical_rag.app.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

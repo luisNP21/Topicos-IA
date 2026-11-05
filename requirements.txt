@@ -1,0 +1,3 @@
+# Instalación mínima del proyecto. Para extras:
+#   pip install -e ".[corpus,ragas,vision,dev]"
+-e .

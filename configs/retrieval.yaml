@@ -1,0 +1,68 @@
+# Configuración del retrieval y de la orquestación de la normalización.
+# Las rutas relativas se resuelven desde la raíz del repositorio.
+
+corpus: real                      # mock | real
+
+rutas:
+  mock:
+    corpus_json: data/retrieval/mock/corpus.json
+    chroma_dir: artifacts/chroma/mock          # disco local de Colab: se reconstruye en cada sesión
+    manifest: data/retrieval/mock/manifest.json
+    consultas: data/retrieval/mock/queries.jsonl
+    mapa_normalizacion: data/retrieval/mock/normalization.json
+    salida: artifacts/outputs/retrieval_mock
+  real:
+    # La ingesta guarda sus salidas en Drive (PROJECT_ROOT = .../Proyecto-Salud/M3); aquí solo se leen.
+    corpus_json: data/corpus/guias_clinicas/chunks
+    chroma_dir: artifacts/chroma/guias_clinicas         # índice local, reconstruido a partir de corpus_json
+    manifest: data/corpus/guias_clinicas/corpus_manifest.json
+    solo_guias_indexadas: true                # del manifiesto solo se usan las guías que están en el índice
+    consultas: data/retrieval/real/gold_queries.jsonl
+    anotaciones: data/retrieval/real/gold_annotations.csv
+    gold_meta: data/retrieval/real/gold_meta.json
+    # Normalización simulada con el vocabulario de las guías; null usa la herramienta real
+    # (src/clinical_rag/tools, requiere BIOPORTAL_API_KEY).
+    mapa_normalizacion: data/retrieval/real/normalization_simulated.json
+    salida: artifacts/outputs/retrieval
+
+corpus_pipeline:
+  config: configs/corpus.yaml   # de aquí se verifica que el modelo de embeddings coincida
+
+normalizacion:
+  config: configs/tools.yaml    # de aquí se lee la ontología
+
+modelos:
+  embeddings: intfloat/multilingual-e5-base   # debe ser el mismo con el que se construyó el índice
+  reranker: cross-encoder/mmarco-mMiniLMv2-L12-H384-v1
+  reranker_alternativo: BAAI/bge-reranker-v2-m3
+
+retrieval:
+  k: 5                            # fragmentos entregados a la generación
+  n_candidatos: 30                # candidatos que ordena el reranker
+  krrf: 60                        # constante de Reciprocal Rank Fusion
+  encabezado_contextual: true     # BM25 y reranker leen "título. sección. texto"
+  modo_pipeline: intencion        # técnica que usa retrieve_advanced
+
+intencion:
+  plantillas:
+    - "tratamiento de {e}"
+    - "manejo farmacológico de {e}"
+    - "{e}: recomendaciones terapéuticas"
+  pregunta: "¿Cuál es el tratamiento de {e}?"
+
+orquestacion:
+  sistema_base: intencion         # sistema sobre el que opera la normalización
+  forzar_por_sigla: true
+  umbral: null                    # null: se usan los calibrados en <salida>/umbrales.json
+  umbral_evidencia: null
+  umbrales_provisionales:         # solo si aún no hay umbrales calibrados (calibrados en el corpus de prueba)
+    umbral: 0.754
+    umbral_evidencia: 0.554
+
+calibracion:
+  pliegues: 3
+  semilla: 42
+  tolerancia_fuera_de_corpus: 0.0 # fracción de consultas fuera del corpus que puede superar la compuerta
+
+experimento:
+  sistema_advanced: intencion     # sistema que se compara con el ingenuo en delta_naive_vs_advanced.json

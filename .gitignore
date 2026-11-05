@@ -1,32 +1,25 @@
-# Dependencias / entorno
+# Entorno
 .venv/
 venv/
 env/
 __pycache__/
 *.py[cod]
-ipynb_checkpoints/
+.ipynb_checkpoints/
 
-# Variables de entorno (contiene GROQ_API_KEY)
+# Secretos
 .env
 .env.*
+!.env.example
 
-# Artefactos locales generados al correr el harness.
-# Las rutas canonicas versionadas son M2/examples/ y M1/<modelo>/*-lora/;
-# estas carpetas son copias locales que exige config.yaml para ejecutar.
-M2/eval_harness/
-M1/saved_models/
-
-# Salidas locales de la corrida (los results versionados viven en M2/ejecucion/)
-M2/outputs/
-M3/outputs/
-# M4: imagenes del set sintetico y salidas locales (se regeneran con M4/eval_visual/generar_set.py)
-M4/data/
-M4/outputs/
-
-# Cache de predicciones NER (incluye las variantes OCR/VLM de M4/vision).
-M2/predictions/
-
-# Estado de reanudacion del juez (intermedio, no es entregable)
+# Artefactos generados (los adaptadores de artifacts/models sí se versionan)
+artifacts/predictions/
+artifacts/outputs/
+artifacts/vision/
+artifacts/app_cache/
+artifacts/chroma/
+data/visual/
+data/corpus/guias_clinicas/chunks/
+data/corpus/guias_clinicas/corpus_manifest.json
 checkpoint_*.json
 
 # Sistema
