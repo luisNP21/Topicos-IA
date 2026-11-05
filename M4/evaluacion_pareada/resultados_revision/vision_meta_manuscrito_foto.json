@@ -1,0 +1,10 @@
+{
+  "backend": "vlm",
+  "modelo": "Qwen/Qwen2-VL-2B-Instruct",
+  "n_casos": 15,
+  "n_ok": 15,
+  "n_error": 0,
+  "n_valvula": 0,
+  "latencia_media_s": 10.655,
+  "hardware": "Apple M4 Max, MPS fp16 (revisión)"
+}

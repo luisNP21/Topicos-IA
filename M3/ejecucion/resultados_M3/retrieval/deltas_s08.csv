@@ -1,0 +1,10 @@
+Sistema,Consultas con guía en el corpus,Guía correcta en 1.er lugar,Guía correcta en el top-5,MRR de la guía,Guías relevantes en el top-5,Precisión de guía en el top-5,Tratamiento en 1.er lugar,Tratamiento en el top-5,MRR del tratamiento,Precisión de tratamiento en el top-5,Rechazo correcto fuera del corpus,Rechazo erróneo con guía disponible,Consultas que usan la normalización,Latencia (ms por consulta),Clave,Cambio en MRR de la guía frente al ingenuo,Cambio en MRR del tratamiento frente al ingenuo
+Denso (RAG ingenuo),22,0.955,1.0,0.97,1.0,0.936,0.045,0.409,0.161,0.118,0.0,0.0,,14.2,ingenuo,0.0,0.0
+Híbrido BM25 + denso,22,0.955,1.0,0.97,1.0,0.945,0.136,0.409,0.239,0.127,0.0,0.0,,13.1,hibrido,0.0,0.078
+Híbrido + reranker,22,0.909,0.955,0.932,0.955,0.936,0.273,0.864,0.502,0.255,0.0,0.0,,92.5,reranker,-0.038,0.341
+Híbrido + reranker con pregunta de tratamiento,22,0.909,0.909,0.909,0.909,0.909,0.636,0.909,0.761,0.473,0.0,0.0,,93.0,reranker_pregunta,-0.061,0.6
+"Consultas de tratamiento, sin reranker",22,0.909,1.0,0.955,1.0,0.9,0.182,0.682,0.34,0.227,0.0,0.0,,39.4,intencion_sin_reranker,-0.015,0.179
+Consultas de tratamiento + reranker,22,0.909,0.909,0.909,0.909,0.909,0.682,0.909,0.784,0.491,0.0,0.0,,117.7,intencion,-0.061,0.623
+Consultas de tratamiento + reranker + filtro de sección,22,0.909,0.955,0.918,0.955,0.918,0.727,0.909,0.805,0.555,0.0,0.0,,102.3,intencion_seccion,-0.052,0.644
+Sistema completo (normalización + compuerta),22,0.955,0.955,0.955,0.955,0.955,0.727,0.955,0.83,0.545,0.833,0.0,0.475,134.1,completo,-0.015,0.669
+Sistema completo + regla de siglas,22,1.0,1.0,1.0,1.0,1.0,0.773,1.0,0.875,0.548,0.833,0.0,0.525,138.5,completo_siglas,0.03,0.714

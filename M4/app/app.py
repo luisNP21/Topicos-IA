@@ -34,12 +34,7 @@ AVISO = (
     "de la salud. No ingreses datos reales de pacientes: el texto se envía a un servicio externo "
     "(Groq) para redactar la respuesta. Las guías disponibles son las del corpus del proyecto."
 )
- 
-AVISO_LECTURA = (
-    "⚠ **Lectura automática de la imagen: verifique el original.** El texto se extrajo con "
-    "un modelo de visión y puede omitir o confundir palabras; los hallazgos y las guías "
-    "consultadas dependen de esa lectura."
-)
+
 
 EJEMPLO_TEXTO = (
     "Mujer de 64 años con diabetes mellitus tipo 2 de larga evolución e insuficiencia cardíaca "
@@ -178,7 +173,13 @@ def armar_respuesta(transcripcion: dict | None, entidades: list[str], origen: st
     partes.append(resumen)
  
     if transcripcion and transcripcion["texto"]:
-        partes.append(AVISO_LECTURA)
+        sin_lectura = sum(1 for p in transcripcion["paginas"] if p["valvula"] or p["error"])
+        aviso = ("<sub>⚠️ Los hallazgos salen de una lectura automática de la imagen. "
+                 "Revise el texto leído antes de usarlos")
+        if sin_lectura:
+            aviso += (f"; {sin_lectura} de {len(transcripcion['paginas'])} página(s) no se "
+                      "pudieron leer y no se usaron")
+        partes.append(aviso + ".</sub>")
         partes.append("<details><summary>Ver el texto leído de la imagen</summary>\n\n"
                       f"{html.escape(transcripcion['texto'])}\n\n</details>")
  

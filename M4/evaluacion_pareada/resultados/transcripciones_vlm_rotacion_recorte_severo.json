@@ -1,0 +1,152 @@
+{
+  "caso_01__p1": {
+    "doc_id": "caso_01__p1",
+    "texto": "El paciente es un hombre de 52 años, con sobrepeso (IMC 29.3 kg/m2) y vida sedentaria. Presenta glucemia plasmática en dos tomas separadas, con una hemoglobina glicosilada (HbA1c) de 7.2%. No refiere antecedentes de enfermedad cardíaca, renal, y se encuentra asintomático, confirmándose el diagnóstico de diabetes tipo 2 de reciente comienzo.",
+    "backend": "vlm",
+    "segundos": 15.053,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_01_p1.jpg",
+    "sha256": "dec7e92bbdefbe4fb62da1d2587d9b2729a2f7b60bd262e9a8746432d88ba3a4"
+  },
+  "caso_02__p1": {
+    "doc_id": "caso_02__p1",
+    "texto": "No se aprecia texto legible en la imagen.",
+    "backend": "vlm",
+    "segundos": 0.492,
+    "valvula": true,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_02_p1.jpg",
+    "sha256": "7addb30f89aa297ec3a76c5073ddc26d3e4268d351847402c3497b03ea9b2e46"
+  },
+  "caso_03__p1": {
+    "doc_id": "caso_03__p1",
+    "texto": "Los años que acude a urgencias por astenia marcada, polidipsia intensa, poliuria y pérdida involuntaria de 6 kg de peso en el último mes. Al examen físico presenta signos leves de deshidratación con glucemia capilar al ingreso de 340 mg/dL y una HbA1c de 10.8 con datos de cetoacidosis diabética ni estado hiperosmolar en la gasa.",
+    "backend": "vlm",
+    "segundos": 3.775,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_03_p1.jpg",
+    "sha256": "96196f42f1467579fc530890ffbf7cb9199341610d3cecb0a5e2bd265333c203"
+  },
+  "caso_04__p1": {
+    "doc_id": "caso_04__p1",
+    "texto": "8 años con antecedentes de DM2 de 15 años de evolución y artrosis moderada. Vive solo y ha presentado de mareo matutino asociados a glucemias capilares bajo tratamiento con glibenclamida. En su analítica acaba con HbA1c de 6.8% y aclaramiento de creatinina de 45",
+    "backend": "vlm",
+    "segundos": 3.015,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_04_p1.jpg",
+    "sha256": "53a5abec1a8eeb4b02b74d7989042749cf2e290f0c3575abadc1518f33be7dd0"
+  },
+  "caso_05__p1": {
+    "doc_id": "caso_05__p1",
+    "texto": "La imagen no aprecia texto legible en la imagen.",
+    "backend": "vlm",
+    "segundos": 0.822,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_05_p1.jpg",
+    "sha256": "ea73d926c2428fdab117359649015a0f1baaa6c91351cad834f9d575b391fb3c"
+  },
+  "caso_06__p1": {
+    "doc_id": "caso_06__p1",
+    "texto": "Varón de 63 años con antecedentes de cardiopatía isquémica (CII-III) consulta por disnea progresiva de esfuerzo clase funcional II-III NYHA, ortopnea de dos almohadas y edemas vespertinos en miembros inferiores. El ecocardiograma transtorácico confirma dilatación ventricular izquierda con fracción de eyeción reducida del 24%, diagnosticándose falla cardíaca crónica.",
+    "backend": "vlm",
+    "segundos": 3.727,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_06_p1.jpg",
+    "sha256": "5a5460facb940b62b04d115ea3b9ddee6c6ba756a0594f44c5aa955c098d2c2c"
+  },
+  "caso_07__p1": {
+    "doc_id": "caso_07__p1",
+    "texto": "La paciente es una mujer de 71 años con antecedentes conocidos de ICC que fue diagnosticada por aumento de peso de 4 kg, disnea paroxística nocturna y crepitantes basales bilaterales. Presenta un dolor de espalda y dolor de cabeza.",
+    "backend": "vlm",
+    "segundos": 2.084,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_07_p1.jpg",
+    "sha256": "2e6e4e192ada4697065f2fb092fad6d68cc512d4906cb556c2ae2a3d251340ab"
+  },
+  "caso_08__p1": {
+    "doc_id": "caso_08__p1",
+    "texto": "La persona de 58 años fue diagnosticada de falla cardíaca compensada, con isquemia no isquémica en clase funcional II de la NYHA, clínica funcional y con tratamiento médico óptimo. Es derivado al programa multidisciplinario de cardiología preventiva para mejorar su calidad de vida.",
+    "backend": "vlm",
+    "segundos": 2.43,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_08_p1.jpg",
+    "sha256": "9ea167ffc61fe8348e7f0fcef1b14959fcd2d2972c82eea66db54d99b05e5d28"
+  },
+  "caso_09__p1": {
+    "doc_id": "caso_09__p1",
+    "texto": "59 años con insuficiencia cardíaca crónica por cardiopatía isquémica.",
+    "backend": "vlm",
+    "segundos": 1.012,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_09_p1.jpg",
+    "sha256": "f62e02d749ed1b2a2d461193f3ce82092c00f3c5be9ffa3fc4e97f8a430ffec3"
+  },
+  "caso_10__p1": {
+    "doc_id": "caso_10__p1",
+    "texto": "La paciente es de 60 años y tiene un diagnóstico reciente de falla cardíaca. Tiene un ritmo sinusal, actualmente recibiendo dosis bajas de enalapril y sin signos de congestión periférica ni pulmonar.",
+    "backend": "vlm",
+    "segundos": 1.993,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_10_p1.jpg",
+    "sha256": "31c24c4454f20197776a4ac5449b3d9d1ac54d420b3aa3f70a4429243d6c9b8c"
+  },
+  "caso_11__p1": {
+    "doc_id": "caso_11__p1",
+    "texto": "No se aprecia texto legible en la imagen.",
+    "backend": "vlm",
+    "segundos": 0.482,
+    "valvula": true,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_11_p1.jpg",
+    "sha256": "d10c30081a4bee1f9de28f5a4f0dedaa343174db32680de617ba220770e8763d"
+  },
+  "caso_12__p1": {
+    "doc_id": "caso_12__p1",
+    "texto": "Varón de 74 años, jubilado, con antecedentes de hipertrofia preexistente y hipertensión arterial, que acude acompañado por sus familiares debido a pérdida progresiva del interés por sus actividades cotidianas, apatía, aislamiento social y pérdida de peso de 6 kg en la evolución, diagnosticándose trastorno depresivo.",
+    "backend": "vlm",
+    "segundos": 2.851,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_12_p1.jpg",
+    "sha256": "05d344c190ad1d651cd2efe2cc28219de63161437f47c3cba0c6a6021d6bd256"
+  },
+  "caso_13__p1": {
+    "doc_id": "caso_13__p1",
+    "texto": "de 29 años que consulta por decaimiento anímico leve, diarrea, pérdida de peso, fatiga, concentración y desánimo transitorio tras una separación de 2 semanas. Conserva la capacidad funcional básica en su trabajo y la capacidad para realizar actividades cotidianas. No presenta ideación autolítica ni síntomas psicóticos, orientándose hacia una depresión leve.",
+    "backend": "vlm",
+    "segundos": 3.142,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_13_p1.jpg",
+    "sha256": "8df7419d1f0207915e7e751639bb283b8370326572834dfe2548563d631aee76"
+  },
+  "caso_14__p1": {
+    "doc_id": "caso_14__p1",
+    "texto": "Un paciente de 46 años que completó 3 meses de tratamiento con 100 mg/día por un episodio depresivo mayor, logrando una remisión completa de los síntomas anímicos y recuperación total de su funcionalidad previa. Pregunta si ya puede suspender definitivamente el tratamiento.",
+    "backend": "vlm",
+    "segundos": 2.415,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_14_p1.jpg",
+    "sha256": "0ca28ca61d53e0ecd6ef3657cd2e12eed35c50d021ae706da79c8ce37448dfd3"
+  },
+  "caso_15__p1": {
+    "doc_id": "caso_15__p1",
+    "texto": "La paciente, de 36 semanas de gestación, presenta hematomas y trombocitopenia grave con plaquetas de 8 x 10^9/L. Se sospecha de trombocitopenia fetal y neonatal (TFNA) por incompatibilidad de antígenos plaquetarios.",
+    "backend": "vlm",
+    "segundos": 2.556,
+    "valvula": false,
+    "error": null,
+    "imagen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M4/data/imagenes/rotacion_recorte_severo/caso_15_p1.jpg",
+    "sha256": "74a027612d5a58975b35cec3005e3abb2184a01b9065e495f85d74aa66886499"
+  }
+}

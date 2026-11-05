@@ -116,6 +116,27 @@ class TestLimitesPixeles(unittest.TestCase):
             BackendVLMQwen({"max_pixels": 1003520, "min_pixels": 3136})._limites_pixeles(),
             {"min_pixels": 3136, "max_pixels": 1003520},
         )
+    def test_eco_sin_contenido_es_valvula(self):
+        # Salida real de Qwen2-VL-2B en el reto de recorte ex_22_p2.
+        self.assertTrue(es_valvula("Se aprecia texto legible en la imagen."))
+        self.assertTrue(es_valvula("  hay texto legible en la imagen"))
+        self.assertTrue(es_valvula("La imagen contiene texto."))
+
+    def test_nota_que_empieza_con_se_aprecia_no_es_valvula(self):
+        self.assertFalse(es_valvula("Se aprecia texto legible en la imagen: paciente con DM2."))
+        self.assertFalse(es_valvula("Se aprecia edema en miembros inferiores y disnea."))
+        self.assertFalse(es_valvula(
+            "realizada y alopecia, ambos relacionados con la toxicidad a las medidas de soporte"
+        ))
+
+    def test_valvula_con_la_imagen_como_sujeto(self):
+        # Salida real de Qwen2-VL-2B en rotacion_recorte_severo/caso_05_p1.
+        self.assertTrue(es_valvula("La imagen no aprecia texto legible en la imagen."))
+        self.assertTrue(es_valvula("En la imagen no se aprecia texto legible."))
+        self.assertTrue(es_valvula("Esta imagen no contiene texto."))
+        # Si después viene una lectura, no se descarta.
+        self.assertFalse(es_valvula("La imagen no aprecia texto legible en la imagen. Paciente con DM2."))
+        self.assertFalse(es_valvula("La imagen muestra una nota: paciente con DM2 e HTA."))
 
 
 class TestLimpieza(unittest.TestCase):

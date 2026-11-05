@@ -1,0 +1,22 @@
+{
+  "origen": "/content/chroma_guias",
+  "n_chunks": 64,
+  "n_documentos": 3,
+  "documentos": [
+    "gpc_depresion_adultos",
+    "gpc_diabetes_mellitus_tipo_2",
+    "gpc_falla_cardiaca"
+  ],
+  "huella_sha256": "e261c2e78ef60911",
+  "modelo_embeddings": "intfloat/multilingual-e5-base",
+  "modelo_reranker": "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1",
+  "plantillas_intencion": [
+    "tratamiento de {e}",
+    "manejo farmacológico de {e}",
+    "{e}: recomendaciones terapéuticas"
+  ],
+  "pregunta_intencion": "¿Cuál es el tratamiento de {e}?",
+  "chunks_de_tratamiento": 40,
+  "secciones_clasificadas_por_similitud": 32,
+  "fecha": "2026-11-03T18:48:31"
+}

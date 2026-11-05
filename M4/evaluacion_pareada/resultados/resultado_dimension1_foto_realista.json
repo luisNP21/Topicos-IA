@@ -1,0 +1,201 @@
+{
+  "dimension": "metrica_clasica_exact_match",
+  "rol": "luis",
+  "modelo": "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es",
+  "predicciones_origen": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/predictions/vision_vlm_foto_realista.json",
+  "gold_set": "/content/drive/MyDrive/TopicosIA/Proyecto-Salud/M2/eval_harness/gold_m4_foto_realista.jsonl",
+  "n_ejemplos_evaluados": 15,
+  "metrics": {
+    "precision": 0.90625,
+    "recall": 0.5087719298245614,
+    "f1": 0.651685393258427,
+    "tp": 29,
+    "fp": 3,
+    "fn": 28
+  },
+  "true_by_doc": {
+    "caso_01": [
+      "diabetes mellitus tipo 2",
+      "enfermedad cardiovascular",
+      "sobrepeso"
+    ],
+    "caso_02": [
+      "dm2",
+      "hipertensión arterial",
+      "infarto agudo de miocardio",
+      "microalbuminuria persistente"
+    ],
+    "caso_03": [
+      "astenia marcada",
+      "cetoacidosis diabética",
+      "deshidratación",
+      "estado hiperosmolar",
+      "polidipsia intensa",
+      "poliuria"
+    ],
+    "caso_04": [
+      "artrosis moderada",
+      "dm2",
+      "hipertensión",
+      "mareo matutino"
+    ],
+    "caso_05": [
+      "complicaciones crónicas microvasculares",
+      "diabetes mellitus tipo 2",
+      "edemas periféricos"
+    ],
+    "caso_06": [
+      "cardiopatía isquémica",
+      "dilatación ventricular izquierda",
+      "disnea progresiva de esfuerzo",
+      "edemas vespertinos",
+      "falla cardíaca",
+      "falla cardíaca crónica",
+      "fevi reducida",
+      "ortopnea"
+    ],
+    "caso_07": [
+      "crepitantes basales bilaterales",
+      "disnea paroxística nocturna",
+      "icc",
+      "ingurgitación yugular"
+    ],
+    "caso_08": [
+      "falla cardíaca",
+      "falla cardíaca compensada"
+    ],
+    "caso_09": [
+      "cardiopatía hipertensiva",
+      "insuficiencia cardíaca",
+      "insuficiencia cardíaca crónica"
+    ],
+    "caso_10": [
+      "congestión periférica",
+      "falla cardíaca"
+    ],
+    "caso_11": [
+      "anhedonia marcada",
+      "episodio depresivo mayor",
+      "fatiga extrema",
+      "insomnio de despertar precoz",
+      "sentimientos recurrentes de culpa",
+      "tristeza persistente"
+    ],
+    "caso_12": [
+      "aislamiento social",
+      "apatía",
+      "hipertensión arterial",
+      "hipertrofia prostática benigna",
+      "trastorno depresivo"
+    ],
+    "caso_13": [
+      "decaimiento anímico leve",
+      "episodio depresivo leve"
+    ],
+    "caso_14": [
+      "episodio depresivo mayor"
+    ],
+    "caso_15": [
+      "hematomas difusos",
+      "tfna",
+      "trombocitopenia fetal y neonatal aloinmune",
+      "trombocitopenia grave"
+    ]
+  },
+  "pred_by_doc": {
+    "caso_01": [
+      "diabetes mellitus tipo 2",
+      "enfermedad cardiovascular",
+      "sobrepeso"
+    ],
+    "caso_02": [
+      "dm2",
+      "hipertensión arterial",
+      "infarto agudo de miocardio"
+    ],
+    "caso_03": [
+      "cetoacidosis diabética",
+      "deshidratación",
+      "estado hiperosmolar"
+    ],
+    "caso_04": [
+      "artrosis moderada",
+      "dm2",
+      "hipertensión"
+    ],
+    "caso_05": [
+      "complicaciones crónicas microvasculares",
+      "diabetes mellitus tipo 2"
+    ],
+    "caso_06": [
+      "cardiopatía isquémica",
+      "dilatación ventricular izquierda",
+      "falla cardíaca crónica"
+    ],
+    "caso_07": [
+      "icc"
+    ],
+    "caso_08": [
+      "falla cardíaca compensada"
+    ],
+    "caso_09": [
+      "insuficiencia cardíaca crónica por cardiopatía hipertensiva"
+    ],
+    "caso_10": [
+      "falla cardíaca"
+    ],
+    "caso_11": [
+      "episodio depresivo mayor"
+    ],
+    "caso_12": [
+      "hipertensión arterial",
+      "hipertrofia prostática benigna",
+      "trastorno depresivo"
+    ],
+    "caso_13": [
+      "episodio depresivo leve",
+      "ideación autolítica"
+    ],
+    "caso_14": [
+      "episodio depresivo mayor"
+    ],
+    "caso_15": [
+      "hematomas difusos",
+      "tfna) por incompatibilidad de antígenos plaquetarios",
+      "trombocitopenia fetal y neonatal aloinmune",
+      "trombocitopenia grave"
+    ]
+  },
+  "casos_boundary": [
+    {
+      "doc_id": "caso_06",
+      "predicho": "falla cardíaca crónica",
+      "gold": "falla cardíaca"
+    },
+    {
+      "doc_id": "caso_08",
+      "predicho": "falla cardíaca compensada",
+      "gold": "falla cardíaca"
+    },
+    {
+      "doc_id": "caso_09",
+      "predicho": "insuficiencia cardíaca crónica por cardiopatía hipertensiva",
+      "gold": "insuficiencia cardíaca crónica"
+    },
+    {
+      "doc_id": "caso_09",
+      "predicho": "insuficiencia cardíaca crónica por cardiopatía hipertensiva",
+      "gold": "insuficiencia cardíaca"
+    },
+    {
+      "doc_id": "caso_09",
+      "predicho": "insuficiencia cardíaca crónica por cardiopatía hipertensiva",
+      "gold": "cardiopatía hipertensiva"
+    },
+    {
+      "doc_id": "caso_15",
+      "predicho": "tfna) por incompatibilidad de antígenos plaquetarios",
+      "gold": "tfna"
+    }
+  ]
+}

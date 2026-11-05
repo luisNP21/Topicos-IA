@@ -63,6 +63,28 @@ def _normalizar_respuesta(texto: str) -> str:
     return t.strip(" \t\"'«»“”‘’*_-.:;!¡¿?()[]").strip()
 
 
+# Respuesta que solo comenta la imagen sin transcribir nada (p. ej. "Se aprecia
+# texto legible en la imagen."). Se observó con Qwen2-VL-2B en el reto de recorte
+# ex_22_p2: es un eco de la instrucción, no una lectura, y debe tratarse igual que
+# la válvula para que no llegue al NER como si fuera la nota.
+PATRON_ECO_SIN_CONTENIDO = re.compile(
+    r"^\s*(se aprecia|se observa|se ve|hay|la imagen contiene|la imagen tiene)\s+"
+    r"(un\s+|una\s+|el\s+)?texto(\s+legible)?(\s+en\s+la\s+imagen)?\s*\.?\s*$",
+    re.IGNORECASE,
+)
+
+
+# Negativa de lectura con "la imagen" como sujeto (p. ej. "La imagen no aprecia texto
+# legible en la imagen."). Se observó con Qwen2-VL-2B en rotacion_recorte_severo/caso_05:
+# es la válvula mal redactada y no empieza con "no", así que PATRON_VALVULA no la ve.
+# Debe ser toda la respuesta, para no descartar una nota que siga después de la frase.
+PATRON_VALVULA_CON_SUJETO = re.compile(
+    r"^\s*(en\s+)?(la|esta)\s+imagen\s+no\s+(se\s+)?(aprecia|ve|observa|contiene|tiene|muestra|hay)\s+"
+    r"(ningún\s+|un\s+|una\s+|el\s+)?texto(\s+legible)?(\s+en\s+la\s+imagen)?\s*\.?\s*$",
+    re.IGNORECASE,
+)
+
+
 def es_valvula(texto: str | None) -> bool:
     """True si la salida del backend equivale a 'no hay texto legible'.
 
@@ -74,5 +96,9 @@ def es_valvula(texto: str | None) -> bool:
     normalizado = _normalizar_respuesta(texto)
     if not normalizado:
         return True
-    return bool(PATRON_VALVULA.match(normalizado)
-                or PATRON_SOLO_COMENTARIO.fullmatch(normalizado))
+    return bool(
+        PATRON_VALVULA.match(normalizado)
+        or PATRON_SOLO_COMENTARIO.fullmatch(normalizado)
+        or PATRON_ECO_SIN_CONTENIDO.match(texto)
+        or PATRON_VALVULA_CON_SUJETO.match(texto)
+    )
