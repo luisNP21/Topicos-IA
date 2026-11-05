@@ -31,11 +31,6 @@ vlm:
   device: "auto"            # auto | cuda | cpu
   torch_dtype: "float16"    # float16 en GPU; float32 en CPU
   max_new_tokens: 512
-  # Límite de resolución que ve el VLM (~1 token por parche de 28x28 px).
-  # null -> el del modelo (sin límite práctico): así se midieron las métricas de M4.
-  # La app usa 1280*28*28 = 1003520 (ver M4/app/config_app.yaml).
-  min_pixels: null
-  max_pixels: null
   # null -> prompts.SYSTEM_VISION ("transcribe, no diagnostiques")
   system: null
   instruccion: null

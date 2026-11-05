@@ -1,39 +1,15 @@
-# Dependencias de la app de M4, con versiones FIJADAS (==). Instalar desde la raíz del repo:
+# Dependencias de la app de M4. Instalar desde la raíz del repo:
 #   pip install -r M4/app/requirements.txt
-#
-# Es autocontenido (ya no incluye -r de M2 ni de M4/vision): así lo que se instala para la
-# demo no cambia si otra pieza mueve sus rangos.
-#
-# Para regenerarlo con el entorno EXACTO donde la app funcionó de punta a punta (la sesión de
-# Kaggle/Colab de la demo), correr ahí y versionar el resultado:
-#   python M4/app/operacion.py --requirements > M4/app/requirements.txt
-#
-# torch NO se fija: Colab y Kaggle lo traen preinstalado con CUDA, y reinstalarlo puede dejar
-# la GPU inutilizable. El health check de la app muestra la versión con la que corre.
+# Reutiliza las dependencias de las piezas que la app llama (pip resuelve estas rutas
+# relativas a este archivo).
+-r ../../M2/run_inference/requirements.txt
+-r ../vision/requirements.txt
 
-# NER (M2/run_inference, Clinical BERT + LoRA de M1) y VLM (M4/vision): mismas versiones
-# fijadas en M2/run_inference/requirements.txt
-transformers==5.16.1
-accelerate==1.14.0
-peft==0.20.0
-torchao==0.16.0
-numpy==2.1.3
-PyYAML==6.0.3
-python-dotenv==1.2.3
-
-# Retrieval de M3 (embeddings + reranker): misma versión que M2/harness y M3/ragas
-sentence-transformers==5.7.0
+# Retrieval y generación de M3
+chromadb>=0.5.0
+sentence-transformers>=3.0.0
+rank_bm25
+groq
 
 # Interfaz
 gradio==6.30.0
-
-# PENDIENTES DE FIJAR: ningún archivo del repo registra con qué versión se probaron.
-# Se dejan con piso mínimo hasta regenerar este archivo en el entorno de la demo (ver arriba).
-qwen-vl-utils>=0.0.8
-chromadb>=0.5.0
-rank-bm25
-groq
-docling>=2.0.0
-pytesseract>=0.3.10
-Pillow>=10.0
-requests>=2.31
