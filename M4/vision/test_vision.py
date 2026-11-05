@@ -75,6 +75,47 @@ class TestPrompts(unittest.TestCase):
         # Una nota real puede mencionar la frase dentro de una oración.
         self.assertFalse(es_valvula("En la nota se dice que no se aprecia el sello."))
 
+    def test_valvula_respuesta_que_solo_comenta_la_imagen(self):
+        # Caso de la revisión de M4: el VLM pierde el "No" o solo describe la imagen.
+        for respuesta in [
+            "Se aprecia texto legible",
+            "Se aprecia texto legible en la imagen.",
+            "«Se aprecia texto legible.»",
+            '"No se aprecia texto legible en la imagen."',
+            "La imagen contiene texto legible.",
+            "Hay texto",
+            "Texto ilegible",
+            "Imagen en blanco.",
+            "No legible text in the image.",
+            "There is no text in the image.",
+            "   ...   ",
+        ]:
+            with self.subTest(respuesta=respuesta):
+                self.assertTrue(es_valvula(respuesta))
+
+    def test_valvula_no_descarta_notas_reales(self):
+        for nota in [
+            "Se aprecia edema en miembros inferiores.",
+            "Se aprecia texto legible en la etiqueta: metformina 850 mg cada 12 horas.",
+            "Hay dolor torácico de 2 horas de evolución.",
+            "Texto: paciente con DM2 e HTA.",
+            "Imagen de RX de tórax sin consolidaciones.",
+            "El primer caso, se trata de una mujer de 25 años.",
+        ]:
+            with self.subTest(nota=nota):
+                self.assertFalse(es_valvula(nota))
+
+
+class TestLimitesPixeles(unittest.TestCase):
+    def test_limites_desde_config(self):
+        from backends import BackendVLMQwen
+
+        self.assertEqual(BackendVLMQwen({})._limites_pixeles(), {})
+        self.assertEqual(BackendVLMQwen({"max_pixels": None})._limites_pixeles(), {})
+        self.assertEqual(
+            BackendVLMQwen({"max_pixels": 1003520, "min_pixels": 3136})._limites_pixeles(),
+            {"min_pixels": 3136, "max_pixels": 1003520},
+        )
     def test_eco_sin_contenido_es_valvula(self):
         # Salida real de Qwen2-VL-2B en el reto de recorte ex_22_p2.
         self.assertTrue(es_valvula("Se aprecia texto legible en la imagen."))

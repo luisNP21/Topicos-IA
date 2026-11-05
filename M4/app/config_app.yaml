@@ -27,6 +27,12 @@ vision:
   # Límite de tokens que genera el VLM por página. El config de M4/vision usa 512;
   # una página A4 completa en español puede superarlo y cortar el final de la nota.
   vlm_max_new_tokens: 1024
+  # Resolución máxima que ve el VLM. Qwen2-VL usa ~1 token por parche de 28x28 px:
+  # 1280*28*28 = 1003520 px (~1000x1000) -> como máximo ~1280 tokens de imagen.
+  # Una foto de celular sin límite pueden ser miles de tokens (más lento, más VRAM).
+  # Si una nota con letra pequeña se lee mal, subir (p. ej. 2048*28*28 = 1605632);
+  # null -> sin límite (como en las métricas de M4/vision).
+  vlm_max_pixels: 1003520
  
 rag:
   # Cuántas entidades (en orden de aparición) se buscan en las guías. Buscar una cuesta
@@ -48,3 +54,10 @@ interfaz:
   titulo: "Asistente de guías clínicas"
   puerto: 7860
  
+logs:
+  # Una línea JSON por consulta: entrada (tipo, tamaño, hash), ruta (motor de visión,
+  # entidades, enfermedad principal, chunk_id), confianza (score vs. umbral) y latencia
+  # por etapa. Relativa a la raíz del repo; no se versiona (.gitignore).
+  dir: "M4/app/.cache/logs"
+  # false -> NO se guarda el texto de la nota, solo su tamaño y hash (privacidad).
+  guardar_texto: false
